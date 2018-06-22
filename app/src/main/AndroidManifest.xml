@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.biniisu.leanrss">
+    package="com.biniam.rss">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -22,7 +22,7 @@
         android:theme="@style/AppTheme.NoActionBar">
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.biniisu.leanrss.fileprovider"
+            android:authorities="com.biniam.rss.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -54,7 +54,7 @@
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.biniisu.leanrss.ui.base.HomeActivity" />
+                android:value="com.biniam.rss.ui.base.HomeActivity" />
         </activity>
         <activity
             android:name=".ui.base.FeedItemsActivity"
@@ -63,7 +63,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.biniisu.leanrss.ui.base.HomeActivity" />
+                android:value="com.biniam.rss.ui.base.HomeActivity" />
         </activity>
 
         <activity
@@ -115,7 +115,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.biniisu.leanrss.ui.base.SearchForSubscriptionsActivity" />
+                android:value="com.biniam.rss.ui.base.SearchForSubscriptionsActivity" />
         </activity>
         <activity
             android:name=".ui.base.SettingCategoriesActivity"
@@ -123,7 +123,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.biniisu.leanrss.ui.base.HomeActivity" />
+                android:value="com.biniam.rss.ui.base.HomeActivity" />
         </activity>
         <activity
             android:name=".ui.base.SettingsSubCategoryActivity"
@@ -132,7 +132,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.biniisu.leanrss.ui.base.SettingsSubCategoryActivity" />
+                android:value="com.biniam.rss.ui.base.SettingsSubCategoryActivity" />
         </activity>
         <activity
             android:name=".readablyYouTubePlayer.PlayYouTubeActivity"

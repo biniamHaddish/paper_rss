@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.biniisu.leanrss.ui.base.HomeActivity">
+    tools:context="com.biniam.rss.ui.base.HomeActivity">
 
 
     <android.support.v7.widget.Toolbar
@@ -101,7 +101,7 @@
         android:background="@color/transparent" />
 
 
-    <com.biniisu.leanrss.ui.utils.BottomNavigationViewEx
+    <com.biniam.rss.ui.utils.BottomNavigationViewEx
         android:id="@+id/bottomNavView"
         android:layout_width="match_parent"
         android:layout_height="52dp"

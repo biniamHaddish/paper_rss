@@ -26,7 +26,7 @@
         android:transitionName="leanImage"
         />
 
-     <com.biniisu.leanrss.leanrssImageViewer.ImageViewPager
+     <com.biniam.rss.leanrssImageViewer.ImageViewPager
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/view_pager"
         android:layout_width="match_parent"

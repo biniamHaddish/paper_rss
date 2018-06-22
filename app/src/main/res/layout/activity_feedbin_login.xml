@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.biniisu.leanrss.ui.base.FeedbinLoginActivity">
+    tools:context="com.biniam.rss.ui.base.FeedbinLoginActivity">
 
 
     <RelativeLayout
