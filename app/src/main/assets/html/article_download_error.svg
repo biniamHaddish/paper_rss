@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg height="46px" version="1.1" viewBox="0 0 46 46" width="46px"
+    xmlns="http://www.w3.org/2000/svg">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>article_download_error</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g fill="none" fill-rule="evenodd" id="Page-1" stroke="none" stroke-width="1">
+        <g id="article_download_error" transform="translate(-2.000000, -2.000000)">
+            <polygon id="Shape"
+                points="0 0 30.3157895 0 30.3157895 30.3157895 0 30.3157895"></polygon>
+            <path
+                d="M25.2631579,2.52631579 C12.7124211,2.52631579 2.52631579,12.7010526 2.52631579,25.2631579 C2.52631579,37.8252632 12.7124211,48 25.2631579,48 C37.8138947,48 48,37.8252632 48,25.2631579 C48,12.7010526 37.8138947,2.52631579 25.2631579,2.52631579 Z M27.5368421,36.6315789 L22.9894737,36.6315789 L22.9894737,32.0842105 L27.5368421,32.0842105 L27.5368421,36.6315789 Z M27.5368421,27.5368421 L22.9894737,27.5368421 L22.9894737,13.8947368 L27.5368421,13.8947368 L27.5368421,27.5368421 Z"
+                fill="#A2A7A8" fill-rule="nonzero" id="Shape"></path>
+        </g>
+    </g>
+</svg>

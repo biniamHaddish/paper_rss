@@ -1,0 +1,44 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+
+    <!-- No action bar theme-->
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NewSubscriptionActivity" parent="AppTheme.NoActionBar"></style>
+
+    <!--image Viewer Style-->
+    <style name="Theme.AppTheme.FullScreen" parent="ImageViewerParent">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+    <!--end -->
+    <style name="ImageViewerParent" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowNoTitle">true</item>
+
+        <!-- enable window content transitions -->
+        <item name="android:windowActivityTransitions" tools:targetApi="lollipop">true</item>
+    </style>
+
+    <style name="ToolBarTextStyle" parent="TextAppearance.AppCompat.Headline">
+        <item name="android:textSize">@dimen/regular_font_size</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
+</resources>

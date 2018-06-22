@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportHeight="80.0"
+    android:viewportWidth="80.0">
+    <path
+        android:fillColor="#00000000"
+        android:fillType="evenOdd"
+        android:pathData="M9.5,1.5L70.5,1.5A8,8 0,0 1,78.5 9.5L78.5,70.5A8,8 0,0 1,70.5 78.5L9.5,78.5A8,8 0,0 1,1.5 70.5L1.5,9.5A8,8 0,0 1,9.5 1.5z"
+        android:strokeColor="@color/icon_color"
+        android:strokeWidth="3" />
+    <path
+        android:fillColor="@color/carmine_pink_trans_to_carmine_pink"
+        android:fillType="nonZero"
+        android:pathData="M40.5,60.28L37.24,57.32C25.65,46.81 18,39.87 18,31.37C18,24.43 23.43,19 30.37,19C34.29,19 38.05,20.82 40.5,23.69C42.95,20.82 46.71,19 50.62,19C57.56,19 62.99,24.43 62.99,31.37C62.99,39.87 55.35,46.81 43.76,57.32L40.5,60.28Z"
+        android:strokeColor="#00000000"
+        android:strokeWidth="1" />
+</vector>

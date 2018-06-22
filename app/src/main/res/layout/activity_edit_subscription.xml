@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.biniisu.leanrss.ui.base.EditSubscriptionActivity">
+
+
+        <RelativeLayout
+            android:id="@+id/subscriptionNameContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/medium_padding">
+
+
+            <ImageView
+                android:id="@+id/subscriptionIcon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_alignBottom="@+id/subscriptionNameTextInputLayout"
+                android:layout_marginBottom="11dp"
+                android:layout_marginEnd="@dimen/regular_padding"
+                android:layout_marginStart="@dimen/medium_padding"
+                android:background="@drawable/circle_bg"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_rss_feed_24px"
+                android:visibility="invisible" />
+
+            <ProgressBar
+                android:id="@+id/subscriptionIconProgress"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignBottom="@+id/subscriptionNameTextInputLayout"
+                android:layout_marginBottom="11dp"
+                android:layout_marginEnd="@dimen/regular_padding"
+                android:layout_marginStart="@dimen/medium_padding"
+                android:indeterminate="true" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@id/subscriptionNameTextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/extra_large_padding"
+                android:layout_toEndOf="@id/subscriptionIcon"
+                android:hint="@string/subscription_title"
+                app:hintEnabled="true">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/subscriptionName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords|textPersonName"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+                    android:textSize="@dimen/regular_font_size" />
+
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/foldersTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/subscriptionNameContainer"
+            android:layout_marginEnd="@dimen/medium_padding"
+            android:layout_marginStart="@dimen/medium_padding"
+            android:layout_marginTop="@dimen/medium_padding"
+            android:text="@string/choose_tags"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/regular_font_size" />
+
+        <RelativeLayout
+            android:id="@+id/newFolderContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/foldersTitle"
+            android:layout_marginEnd="@dimen/medium_padding"
+            android:layout_marginStart="@dimen/medium_padding"
+            android:layout_marginTop="@dimen/medium_padding">
+
+
+            <ImageView
+                android:id="@+id/plusIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="@dimen/regular_padding"
+                android:scaleType="center"
+                android:src="@drawable/ic_add_black_24dp"
+                android:tint="@color/colorAccent" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/newFolderNameContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/plusIcon"
+                android:layout_marginEnd="@dimen/min_selectable"
+                android:layout_toEndOf="@+id/plusIcon"
+                android:textColorHint="@color/colorAccent"
+                app:errorEnabled="true"
+                app:hintEnabled="false">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/folderName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="48dp"
+                    android:background="@color/transparent"
+                    android:ellipsize="end"
+                    android:hint="@string/create_new_tag"
+                    android:imeOptions="actionDone"
+                    android:inputType="textCapWords|textPersonName"
+                    android:maxLines="1"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+                    android:textSize="@dimen/regular_font_size" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/saveNewFolder"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:paddingBottom="11dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_done_black_24dp"
+                android:tint="@color/colorAccent"
+                android:visibility="invisible" />
+
+
+        </RelativeLayout>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/folderChooserList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/newFolderContainer"
+            android:layout_marginEnd="@dimen/medium_padding"
+            android:layout_marginStart="@dimen/medium_padding" />
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/snackBarAnchor"
+            android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@color/transparent" />
+
+
+</RelativeLayout>

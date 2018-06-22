@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <color name="light_gray">#AAAAAA</color>
+    <color name="monsoon">#777777</color>
+    <color name="jumbo">#888888</color>
+    <color name="gunsmoke">#808285</color>
+    <color name="silver_sand">#BBBBBB</color>
+    <color name="bon_jour">#E2E2E2</color>
+    <color name="bastille">#2E2E2E</color>
+    <color name="mine_shaft">#313131</color>
+    <color name="white_gray">#ECECEC</color>
+    <color name="nero">#252525</color>
+    <color name="aluminum">#999999</color>
+    <color name="aluminum_trans">#45999999</color>
+    <color name="mako">#515354</color>
+    <color name="ship_gray">#4E4E4E</color>
+    <color name="lily_white">#E8EBED</color>
+    <color name="bon_jour_trans">#55E2E2E2</color>
+    <color name="storm_dust">#646362</color>
+    <color name="carmine_pink">#E64242</color>
+    <color name="carmine_pink_trans">#80E64242</color>
+    <color name="carmine_pink_trans_var">#97E64242</color>
+    <color name="charcoal">#424242</color>
+    <color name="mercury">#E6E6E6</color>
+    <color name="dove_gray">#757575</color>
+    <color name="dim_gray">#6A6A6A</color>
+    <color name="bokara_gray">#292827</color>
+
+
+    <!-- TODO: Old colors should be deleted after evaluating their usage -->
+    <color name="white">@android:color/white</color>
+    <color name="white_var">#EEEEEE</color>
+    <color name="black">@android:color/black</color>
+    <color name="transparent">@android:color/transparent</color>
+    <color name="alabaster">#FAFAFA</color>
+    <color name="stack">#8E8E8E</color>
+
+    <color name="white_lilac">#E8E8E8</color>
+    <color name="battleship_gray">#828282</color>
+    <color name="zircon">#E1E1E1</color>
+    <color name="cod_gray">#303030</color>
+    <color name="tuatara">#373737</color>
+    <color name="merino">#F8F1E5</color>
+    <color name="bison_hide">#B8A694</color>
+
+
+    <color name="scarpa_flow">#6B6B6E</color>
+    <color name="onyx">#121212</color>
+    <color name="gainsboro">#DCDCDC</color>
+    <color name="irish_coffee">#5F3E24</color>
+    <color name="silver">#C1C1C1</color>
+    <color name="iron">#D6D7D7</color>
+
+</resources>

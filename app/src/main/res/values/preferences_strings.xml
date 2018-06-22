@@ -1,0 +1,137 @@
+<resources>
+    <string name="general">General</string>
+    <string name="sync">Sync</string>
+    <string name="reading_ux">Reading</string>
+    <string name="about">About</string>
+
+    <string name="pref_full_screen_reading_title">Full screen reading</string>
+    <string name="pref_full_screen_reading_summary_on">System status bar and software navigation buttons will disappear upon scroll</string>
+    <string name="pref_full_screen_reading_summary_off">System status bar and software navigation buttons will always be visible</string>
+
+    <string name="pref_auto_dark_mode_title">Auto dark mode</string>
+    <string name="pref_auto_dark_mode_summary">Application theme will automatically switch between dark/light theme depending on sunset and sunrise times <b>requires location permission</b></string>
+
+
+    <string name="pref_day_reading_theme_title">Day time background color</string>
+    <string name="pref_day_reading_theme_summary">Day time background color is: %s</string>
+
+    <string name="pref_night_reading_theme_title">Night time background color</string>
+    <string name="pref_night_reading_theme_summary">Night time background color is: %s</string>
+
+    <string name="pref_enable_vol_button_feed_switching_title">Switch feeds using the volume buttons</string>
+    <string name="pref_enable_vol_button_feed_switching_summary">You can navigate feeds using volume button while reading</string>
+
+    <string name="pref_enable_double_tap_for_full_article_title">Double tap for full article</string>
+    <string name="pref_enable_double_tap_for_full_article_summary">Allows double tapping on the article to load full article</string>
+
+    <string name="pref_auto_sync_title">Automatic syncing</string>
+    <string name="pref_auto_sync_summary_on">Content will be updated automatically in the background</string>
+    <string name="pref_auto_sync_summary_off">Content will only be updated when you manually open the Readably</string>
+
+
+    <string name="pref_auto_sync_wifi_only_title">Automatic sync only on WI-FI</string>
+    <string name="pref_auto_sync_wifi_only_summary_on">Content will only be updated automatically when the device is connected to WI-FI</string>
+    <string name="pref_auto_sync_wifi_only_summary_off">Content will be automatically updated on any network including <b>mobile data</b></string>
+
+    <string name="pref_auto_sync_interval_title">Sync interval</string>
+    <string name="pref_auto_sync_interval_summary">Every %s</string>
+
+
+    <string name="pref_unread_items_to_keep_title">Unread items to keep</string>
+    <string name="pref_unread_items_to_keep_summary">Keep the last %s unread items per subscription</string>
+
+    <string name="pref_keep_read_items_for_title">Read items to keep</string>
+    <string name="pref_keep_read_items_for_summary">Keep the last %s read items per subscription</string>
+
+    <string name="pref_fav_items_to_keep_title">Favorites to keep</string>
+    <string name="pref_fav_items_to_keep_summary">Keep %s favorites</string>
+
+    <string name="pref_auto_cache_images_title">Automatically cache images</string>
+    <string name="pref_auto_cache_images_summary_on">Images will be automatically downloaded</string>
+    <string name="pref_auto_cache_images_summary_off">Images will only be downloaded when you open feed items</string>
+
+    <string name="pref_auto_cache_images_on_wifi_only_title">Automatically image caching on WI-FI only</string>
+    <string name="pref_auto_cache_images_on_wifi_only_summary_on">Images will be automatically cached only when the device is connected to a WI-Fi network</string>
+    <string name="pref_auto_cache_images_on_wifi_only_summary_off">Images will be automatically cached on any network including <b>mobile data</b></string>
+
+    <string name="pref_clear_image_cache_title">Clear image cache</string>
+    <string name="pref_clear_image_cache_summary">Delete all cached images</string>
+
+    <string name="pref_sync_subcategory_feed_syncing">Feed syncing</string>
+    <string name="pref_sync_subcategory_image_caching">Image caching</string>
+
+
+    <string-array name="theme_choice_names">
+        <item>@string/auto_switch</item>
+        <item>@string/light_theme</item>
+        <item>@string/dark_theme</item>
+    </string-array>
+
+    <string-array name="feed_item_amounts">
+        <item>50</item>
+        <item>100</item>
+        <item>150</item>
+    </string-array>
+
+    <string-array name="three_entry_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+
+    <string-array name="sync_interval_values_seconds">
+        <item>900</item>
+        <item>1800</item>
+        <item>3600</item>
+        <item>10800</item>
+    </string-array>
+
+    <!-- Image cache size limits in bytes-->
+
+
+    <string-array name="vol_button_func_choice_names">
+        <item>@string/none</item>
+        <item>@string/switch_feed</item>
+        <item>@string/scroll</item>
+    </string-array>
+
+    <string-array name="sync_interval_times">
+        <item>@string/quarter_hour</item>
+        <item>@string/half_hour</item>
+        <item>@string/hour</item>
+    </string-array>
+
+    <string-array name="day_colors">
+        <item>@string/white_bg_name</item>
+        <item>@string/sepia_bg_name</item>
+    </string-array>
+
+    <string-array name="night_colors">
+        <item>@string/gray_bg_name</item>
+        <item>@string/black_bg_name</item>
+    </string-array>
+
+
+    <string name="dark_theme">Dark</string>
+    <string name="light_theme">Light</string>
+    <string name="auto_switch">Auto</string>
+    <string name="scroll">Scroll</string>
+    <string name="switch_feed">Switch feeds</string>
+    <string name="none">None</string>
+    <string name="hour">hour</string>
+    <string name="half_hour">30 minutes</string>
+    <string name="quarter_hour">15 minutes</string>
+    <string name="white_bg_name">White</string>
+    <string name="sepia_bg_name">Sepia</string>
+    <string name="gray_bg_name">Gray</string>
+    <string name="black_bg_name">Black</string>
+
+    <string name="logout_from_account_title">Logout from %s</string>
+    <string name="logout_description">You will log out of your current account.\n\n<b>Note that this will delete all application data and exit the application</b></string>
+    <string name="select_another_service">Select another service</string>
+
+    <string name="updating">Updating…</string>
+
+
+</resources>

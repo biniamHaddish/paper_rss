@@ -1,0 +1,208 @@
+<resources>
+    <string name="app_name">Readably</string>
+    <string name="feed_source_feedbin">Feedbin</string>
+    <string name="inoreader_Oauth_login">InoReader</string>
+    <string name="readably_notification_name">Readably new notification</string>
+    <string name="readably_notification_body">Numbers of unread feed articles and newly synced feed items.</string>
+    <string name="share">share</string>
+    <string name="close">close</string>
+    <string name="ok">Ok</string>
+    <string name="share_using">share Using</string>
+    <string name="login_to_feedbin_text">Login with Feedbin</string>
+    <string name="feedbin_email_hint">E-mail</string>
+    <string name="feedbin_psswd_hint">Password</string>
+    <string name="feedbin_signin_button_text">Sign in</string>
+
+    <string name="subscribe">Subscribe</string>
+    <string name="edit_subscription">Edit subscription</string>
+    <string name="manage_tags">Manage tags</string>
+    <string name="logout">Logout</string>
+    <string name="markAllAsRead">Mark all as read</string>
+    <string name="new_subscription">New Subscription</string>
+
+    <string name="all_subscriptions">All Subscriptions</string>
+    <string name="all">All items</string>
+    <string name="unread">Unread</string>
+    <string name="favorites">Favorites</string>
+    <string name="add_to_favorites">@string/set_fav_description</string>
+
+
+    <string name="mark_as_unread">Mark as unread</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="unsubscribing">Unsubscribing…</string>
+    <string name="err_unsubscribing">Problem unsubscribing</string>
+    <string name="unsubscribe_dialog_message">Are you sure you want to unsubscribe from \"%s\"?</string>
+    <string name="today">Today</string>
+    <string name="retry">Retry</string>
+
+
+    <string name="new_subscription_search_hint">Search for a topic or website&#8230;</string>
+    <string name="no_description">No content</string>
+    <string name="results">Results</string>
+    <string name="search_connection_error">Could not get search results. Make sure you have Internet connectivity.</string>
+    <string name="no_search_results">No results are found for \"%s\"</string>
+
+    <string name="get_full_article">Get full article</string>
+    <string name="show_original">Show original</string>
+    <string name="reading_settings">Reading settings</string>
+    <string name="settings">Settings</string>
+    <string name="open_in_browser">Open in browser</string>
+    <string name="set_fav_description">Add to favorites</string>
+    <string name="share_article_description">Share article</string>
+    <string name="by">by</string>
+
+    <string name="share_to">Share to&#8230;</string>
+    <string name="justified">Justified</string>
+    <string name="left">Left</string>
+
+
+    <!-- Font names -->
+    <string name="bitter">Bitter</string>
+    <string name="merriweather">Merriweather</string>
+    <string name="ptserif">PT Serif</string>
+
+    <string name="sourcesanspro">Source Sans Pro</string>
+    <string name="vollkorn">Vollkorn</string>
+    <string name="opensans">Open Sans</string>
+    <string name="montserrat">Montserrat</string>
+
+    <!-- Font paths -->
+    <string name="montserrat_font_path" translatable="false">fonts/montserrat</string>
+    <string name="bitter_font_path" translatable="false">fonts/bitter</string>
+    <string name="merriweather_font_path" translatable="false">fonts/merriweather</string>
+    <string name="opensans_font_path" translatable="false">fonts/opensans</string>
+    <string name="ptserif_font_path" translatable="false">fonts/ptserif</string>
+    <string name="sourcesanspro_font_path" translatable="false">fonts/sourcesanspro</string>
+    <string name="vollkorn_font_path" translatable="false">fonts/vollkorn</string>
+
+    <!--Link long click options-->
+    <string name="open_link">Open link</string>
+    <string name="share_link">Share link</string>
+    <string name="copy_link">Copy link</string>
+
+    <!-- Background color names -->
+    <string name="white" translatable="false">#FFF</string>
+    <string name="merino" translatable="false">#F8F1E5</string>
+    <string name="scarpa_flow" translatable="false">#6B6B6E</string>
+    <string name="onyx" translatable="false">#121212</string>
+
+    <!-- Link/Text colors -->
+    <string name="merino_bg_text_color" translatable="false">#5F3E24</string>
+    <string name="merino_bg_link_color" translatable="false">#427EB1</string>
+    <string name="white_bg_text_color" translatable="false">#242424</string>
+    <string name="white_bg_link_color" translatable="false">#4382C3</string>
+    <string name="scarpa_flow_bg_text_color" translatable="false">@string/white</string>
+    <string name="scarpa_flow_bg_link_color" translatable="false">#68CBFD</string>
+    <string name="onyx_bg_text_color" translatable="false">#BEBEBE</string>
+    <string name="onyx_bg_link_color" translatable="false">@string/scarpa_flow_bg_link_color</string>
+
+    <string name="link_copied_message">Link copied to clipboard</string>
+    <string name="article_download_error">There was an error downloading full article for this page.</string>
+    <string name="double_tap_to_retry">Double tap to retry.</string>
+    <string name="article_downloading">Downloading full article</string>
+    <string name="at">at</string>
+    <string name="no_connection">No connection</string>
+    <string name="open_youtube_content">Watch YouTube video</string>
+    <string name="open_generic_content">Tap to see content</string>
+    <string name="subscription_title">Subscription title</string>
+    <string name="choose_tags">Choose tags</string>
+    <string name="create_new_tag">Create new tag</string>
+    <string name="tag_already_exists">Tag already exists</string>
+    <string name="update">Update</string>
+    <string name="local_account_name">Local</string>
+
+
+    <string-array name="link_options">
+        <item>@string/open_link</item>
+        <item>@string/share_link</item>
+        <item>@string/copy_link</item>
+    </string-array>
+
+    <string-array name="font_names">
+        <item>@string/montserrat</item>
+        <item>@string/bitter</item>
+        <item>@string/merriweather</item>
+        <item>@string/opensans</item>
+        <item>@string/ptserif</item>
+        <item>@string/sourcesanspro</item>
+        <item>@string/vollkorn</item>
+    </string-array>
+
+    <string-array name="font_paths">
+        <item>@string/montserrat_font_path</item>
+        <item>@string/bitter_font_path</item>
+        <item>@string/merriweather_font_path</item>
+        <item>@string/opensans_font_path</item>
+        <item>@string/ptserif_font_path</item>
+        <item>@string/sourcesanspro_font_path</item>
+        <item>@string/vollkorn_font_path</item>
+    </string-array>
+
+
+    <string name="title_activity_settings_sub_category">SettingsSubCategoryActivity</string>
+    <string name="loading_mercury_parser">Getting full article…</string>
+    <string name="mercury_parser_loaded">Full article loaded</string>
+    <string name="mercury_parser_failure">Failed to load full article</string>
+    <string name="empty_favs_message_var">You have no favorites in\n %s</string>
+    <string name="empty_favs_message">You have no favorites</string>
+
+    <string name="all_caught_up_message_var">You\'re all caught up with\n %s</string>
+    <string name="all_caught_up_message">You\'re all caught up</string>
+
+    <string name="no_items_message">It\'s empty here, pull to refresh</string>
+    <string name="no_sync_yet_message">It\'s empty here, pull to sync</string>
+    <string name="select_a_service">Select a service</string>
+    <string name="choose_no_service"><u>Continue without a service</u></string>
+
+
+    <string name="feedbin_description">Feedbin is a subscription RSS service, that delivers a great reading experience</string>
+    <string name="feedbin_dot_com">feedbin.com</string>
+    <string name="feedbin_url">https://feedbin.com</string>
+    <string name="pass_uname_err">Wrong username or password</string>
+    <string name="conn_err">A connection error has occurred</string>
+    <string name="feedbin_account_name">Feedbin</string>
+    <string name="InoReader_account_name">InoReader</string>
+    <string name="FeedWrangler_account_name">Feed Wrangler</string>
+    <string name="sync_start">Syncing…</string>
+    <string name="sync_subscriptions">Syncing subscriptions…</string>
+    <string name="sync_items">Syncing items…</string>
+    <string name="cache_images">Caching images…</string>
+    <string name="not_synced_yet">Not synced yet</string>
+    <string name="synced_at">Synced %s</string>
+    <string name="just_now">Just now</string>
+    <string name="mark_all_as_read">Mark as read</string>
+    <string name="mark_as_read_confirmation_msg">Are you sure you want to mark all items in \"%s\" as read?</string>
+    <string name="mark_as_read_all_confirmation_msg">Are you sure you want to mark all items as read?</string>
+
+    <string name="app_description">RSS reader</string>
+    <string name="expiry_explanation">This beta version of Readably has expired. You need to update the app.</string>
+    <string name="made_by_line">Made by</string>
+    <string name="biniam">Biniam</string>
+    <string name="libraries_title">Open source libraries</string>
+    <string name="send_feedback">Send feedback</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="feedback_message_body" formatted="false">Thank you for downloading Readably. Please leave the information below intact as it is helpful to track bugs:\n\n
+        Manufacturer: %s \n
+        Model: %s\n
+        Carrier: %s\n
+        Android SDK VERSION: %d\n
+        Version Name: %s\n
+        Version Code:: %d\n\n
+        ------- Type your message below -------\n</string>
+
+    <string name="email_support">biniam..devco@gmail.com</string>
+    <string name="feedback_subject">Readably Feedback</string>
+    <string name="biniam_h">Biniam</string>
+    <string name="drawer_open">op</string>
+    <string name="drawer_close">cl</string>
+    <string name="sort">Sort</string>
+    <string name="newer_to_older">Newest to oldest</string>
+    <string name="older_to_newer">Oldest to newest</string>
+    <string name="enjoying_readably">Enjoying Readably?</string>
+    <string name="rate_prompt_message">If you are enjoying Readably would you like to rate it on Google Play?</string>
+    <string name="yeah">Yeah</string>
+    <string name="feedback">Feedback</string>
+
+</resources>

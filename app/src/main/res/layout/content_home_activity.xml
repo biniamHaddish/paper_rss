@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.biniisu.leanrss.ui.base.HomeActivity">
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:theme="@style/AppTheme" />
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottomNavView"
+        android:layout_below="@id/toolbar"
+        android:background="@color/transparent"
+        android:elevation="0dp">
+
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="32dp">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/feedListRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <RelativeLayout
+            android:id="@+id/emptyView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/empty_view_icon"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_assignment_24px"
+                android:tint="@color/mercury_to_charcol" />
+
+            <TextView
+                android:id="@+id/empty_view_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/empty_view_icon"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="13dp"
+                android:lineSpacingMultiplier="1.2"
+                android:maxWidth="300dp"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textColor="@color/dim_gray_to_dove_gray"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height=".5dp"
+            android:background="@color/light_gray_to_bokara_gray" />
+
+        <TextView
+            android:id="@+id/sectionDate"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_marginTop=".5dp"
+            android:background="@color/white_to_cod_gray"
+            android:elevation="1.5dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="9dp"
+            android:text="Today"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/list_secondary_text_color"
+            android:textSize="12sp" />
+
+
+    </FrameLayout>
+
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@id/snackBarAnchor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottomNavView"
+        android:background="@color/transparent" />
+
+
+    <com.biniisu.leanrss.ui.utils.BottomNavigationViewEx
+        android:id="@+id/bottomNavView"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/windowBackground"
+        android:backgroundTint="@color/bottom_nav_bg_color"
+        app:elevation="10dp"
+        app:itemIconTint="@color/bottom_nav_color_state_list"
+        app:itemTextColor="@color/bottom_nav_color_state_list"
+        app:menu="@menu/bottom_nav_menu" />
+
+
+</RelativeLayout>

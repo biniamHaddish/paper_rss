@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/markAllAsRead"
+        android:icon="@drawable/ic_done_all_black_24dp"
+        android:orderInCategory="100"
+        android:title="@string/mark_all_as_read"
+        android:visible="false"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/edit"
+        android:orderInCategory="300"
+        android:title="@string/edit_subscription"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
+        android:icon="@drawable/ic_sort_black_24dp"
+        android:orderInCategory="200"
+        android:title="@string/sort"
+        app:showAsAction="ifRoom">
+
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/newToOld"
+                    android:checked="true"
+                    android:title="@string/newer_to_older" />
+                <item
+                    android:id="@+id/oldToNew"
+                    android:title="@string/older_to_newer" />
+            </group>
+        </menu>
+
+    </item>
+
+</menu>

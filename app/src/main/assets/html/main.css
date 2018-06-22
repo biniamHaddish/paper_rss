@@ -1,0 +1,354 @@
+@font-face {
+    font-family: "Bitter Regular";
+    src: url(../fonts/bitter/regular.ttf);
+}
+
+@font-face {
+    font-family: "Bitter Bold";
+    src: url(../fonts/bitter/bold.ttf);
+}
+
+@font-face {
+    font-family: "Bitter Italic";
+    src: url(../fonts/bitter/italic.ttf);
+}
+
+@font-face {
+    font-family: "Montserrat Regular";
+    src: url(../fonts/montserrat/regular.ttf);
+}
+
+@font-face {
+    font-family: "Montserrat Italic";
+    src: url(../fonts/montserrat/italic.ttf);
+}
+
+@font-face {
+    font-family: "Montserrat Bold";
+    src: url(../fonts/montserrat/bold.ttf);
+}
+
+
+@font-face {
+    font-family: "PT Serif Regular";
+    src: url(../fonts/ptserif/regular.ttf);
+}
+
+
+@font-face {
+    font-family: "PT Serif Bold";
+    src: url(../fonts/ptserif/bold.ttf);
+}
+
+@font-face {
+    font-family: "PT Serif Italic";
+    src: url(../fonts/ptserif/italic.ttf);
+}
+
+
+@font-face {
+    font-family: "Merriweather Regular";
+    src: url(../fonts/merriweather/regular.ttf);
+}
+
+@font-face {
+    font-family: "Merriweather Bold";
+    src: url(../fonts/merriweather/bold.ttf);
+}
+
+@font-face {
+    font-family: "Merriweather Italic";
+    src: url(../fonts/merriweather/italic.ttf);
+}
+
+@font-face {
+    font-family: "Open Sans Regular";
+    src: url(../fonts/opensans/regular.ttf);
+}
+
+@font-face {
+    font-family: "Open Sans Bold";
+    src: url(../fonts/opensans/bold.ttf);
+}
+
+@font-face {
+    font-family: "Open Sans Italic";
+    src: url(../fonts/opensans/italic.ttf);
+}
+
+
+ @font-face {
+     font-family: "Source Sans Pro Regular";
+     src: url(../fonts/sourcesanspro/regular.ttf);
+ }
+
+ @font-face {
+     font-family: "Source Sans Pro Bold";
+     src: url(../fonts/sourcesanspro/bold.ttf);
+ }
+
+ @font-face {
+     font-family: "Source Sans Pro Italic";
+     src: url(../fonts/sourcesanspro/italic.ttf);
+ }
+
+  @font-face {
+      font-family: "Vollkorn Regular";
+      src: url(../fonts/vollkorn/regular.ttf);
+  }
+
+  @font-face {
+      font-family: "Vollkorn Bold";
+      src: url(../fonts/vollkorn/bold.ttf);
+  }
+
+  @font-face {
+      font-family: "Vollkorn Italic";
+      src: url(../fonts/vollkorn/italic.ttf);
+  }
+
+body {
+    background-color: {LEAN.BACKGROUND_COLOR};
+    padding-top: 80px;
+    padding-bottom: 120px;
+    margin: 0;
+}
+
+ html, #main {
+    width: auto;
+    max-width: 100%;
+ 	margin: 0;
+ }
+
+
+ .image, figure, picture, .img-placeholder {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    margin: 1px auto;
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+ }
+
+ figcaption {
+    margin-top: 8px;
+    font-size: 14px;
+    text-align: center;
+ }
+
+ #title {
+ 	font-family: {LEAN.BOLD_FONT};
+ 	font-size: {LEAN.TITLE_FONT_SIZE};
+ 	line-height: {LEAN.LINE_HEIGHT};
+ 	margin-top: 16px;
+ 	margin-bottom: 3px;
+ 	margin-left: 20px;
+ 	margin-right: 20px;
+ 	padding-bottom: 8px;
+ 	border-bottom-width: 250px;
+ 	border-bottom: 1px solid;
+
+ 	border-bottom-color: {LEAN.TEXT_COLOR};
+ 	color: {LEAN.TEXT_COLOR};
+ }
+
+ #main {
+    line-height: {LEAN.LINE_HEIGHT};
+ 	font-family: {LEAN.REGULAR_FONT};
+ 	font-size: {LEAN.CONTENT_FONT_SIZE};
+ 	margin-top: 10px;
+ 	margin-left: 20px;
+ 	margin-right: 20px;
+ 	text-align: {LEAN.JUSTIFICATION};
+ 	color: {LEAN.TEXT_COLOR};
+ }
+
+
+
+ #sourceinfo {
+    font-family: {LEAN.REGULAR_FONT};
+    color: {LEAN.TEXT_COLOR};
+    font-size: {LEAN.ARTICLE_INFO_FONT_SIZE};
+    margin-top: 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    font-weight: 100;
+ }
+
+ #timeinfo {
+    font-family: {LEAN.REGULAR_FONT};
+    color: {LEAN.TEXT_COLOR};
+    font-size: {LEAN.ARTICLE_INFO_FONT_SIZE};
+    margin-top: -9px;
+    margin-left: 20px;
+    font-weight: 100;
+ }
+
+
+ @media (orientation: landscape) {
+
+     #title {
+         margin-left: 60px;
+         margin-right: 60px;
+     }
+
+     #main {
+         margin-left: 60px;
+         margin-right: 60px;
+     }
+
+     #sourceinfo, #timeinfo {
+         margin-left: 60px;
+     }
+ }
+
+ @media (min-width: 500px) {
+    #title {
+             margin-left: 13%;
+             margin-right: 13%;
+         }
+
+         #main {
+             margin-left: 13%;
+             margin-right: 13%;
+         }
+
+         #sourceinfo, #timeinfo {
+             margin-left: 13%;
+         }
+ }
+
+a {
+    text-decoration: none;
+    color: {LEAN.LINK_COLOR};
+}
+
+strong, h1, h2, h3, h4, h5 {
+ 	font-family: {LEAN.BOLD_FONT};
+}
+
+i, em, abbr {
+    font-family: {LEAN.ITALIC_FONT};
+}
+
+
+pre.prettyprint {
+    width: 93%;
+    padding: 13px;
+    background-color: #F0F0F0;
+    overflow: auto;
+    display: block;
+    border: 1px solid #CCC;
+}
+
+.ext_content {
+    height: auto;
+    padding: 3px;
+    display: block;
+    width: 250px;
+    background-color: #4FB5F7;
+    margin: 1px auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+}
+
+.ext_content p {
+    color: white;
+    display: block
+    margin: 1px auto;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 16px;
+}
+
+.ext_youtube_icon, .ext_generic_icon {
+    margin-top: 18px;
+    margin-left: 20px;
+    width: 24px;
+    height: 24px;
+    display: block;
+    float: left;
+    margin-right: 5px;
+}
+
+.utube {
+   background-color: #E5322F;
+}
+
+ /* Article downloading style */
+
+
+#loader {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    margin: 1px auto;
+    display: block;
+    margin-top: 50px;
+}
+
+#message {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    margin: 1px auto;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-top: 5px;
+    text-align: center;
+}
+
+#message p {
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 18px;
+}
+
+.header {
+    font-weight: bold;
+    font-weight: 20px;
+}
+
+.second {
+
+}
+
+
+.btn {
+    position: relative;
+    display: block;
+    margin: 20px auto;
+    overflow: hidden;
+    border-width: 0;
+    outline: none;
+    border-radius: 0.8px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+    background-color: #ECECEC;
+    color: #252525;
+    transition: background-color .3s;
+	width: auto;
+	height: 40px;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+
+
+.btn > * {
+  position: relative;
+}
+
+.btn span {
+  display: block;
+  padding: 8px 12px;
+  font-weight: bold;
+}
+
+

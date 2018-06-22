@@ -1,0 +1,6 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="line"
+    android:thickness="0dp">
+    <solid android:color="@color/merino" />
+    <stroke android:color="@android:color/transparent" />
+</shape>

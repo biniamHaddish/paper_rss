@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/showAppearanceSettings"
+        android:icon="@drawable/ic_font_settings_24dp"
+        android:orderInCategory="100"
+        android:title="@string/reading_settings"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/downloadFullArticle"
+        android:icon="@drawable/ic_full_article"
+        android:orderInCategory="200"
+        android:title="@string/get_full_article"
+        app:showAsAction="always" />
+
+</menu>

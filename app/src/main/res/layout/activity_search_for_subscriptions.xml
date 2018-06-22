@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.biniisu.leanrss.ui.base.SearchForSubscriptionsActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="2dp" />
+
+    <RelativeLayout
+        android:id="@+id/resultTitleContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:background="@color/button_bg_color"
+        android:padding="8dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:text="@string/results"
+            android:textAllCaps="true"
+            android:textColor="@color/button_text_color"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="14sp" />
+
+
+        <TextView
+            android:id="@+id/resultCountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:text="20"
+            android:textColor="@color/button_text_color"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/errorMessageContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/errorIcon"
+            android:tint="@color/icon_color"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/errorMessageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/errorIcon"
+            android:textColor="@color/info_text_color"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="@dimen/regular_padding"
+            android:text="@string/search_connection_error"
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/retryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/errorMessageTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/button_bg_color"
+            android:text="@string/retry"
+            android:textColor="@color/button_text_color"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/feedSearchResultList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/resultTitleContainer"
+        android:elevation="1dp"
+        android:overScrollMode="never"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/searchingProgressBar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:progressTint="@color/colorAccent" />
+
+</RelativeLayout>

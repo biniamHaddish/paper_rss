@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <color name="feed_list_item_bg_color">@color/cod_gray</color>
+
+    <color name="navigation_item_ripple_color">@color/stack</color>
+    <color name="navigation_view_bg_color">@color/cod_gray</color>
+
+    <color name="bottom_nav_bg_color">@color/tuatara</color>
+
+    <color name="feed_title_color">@android:color/white</color>
+    <color name="feed_subscription_title_color">@color/silver_sand</color>
+    <color name="feed_item_excerpt_color">@color/silver_sand</color>
+
+    <color name="generic_icon_color">@color/white_lilac</color>
+
+    <color name="day_dovegray_night_silver">@color/silver</color>
+
+    <color name="day_stack_night_alabaster">@color/alabaster</color>
+
+</resources>

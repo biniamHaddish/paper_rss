@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="@string/sync"
+    android:title="@string/sync">
+
+    <PreferenceCategory android:title="@string/pref_sync_subcategory_feed_syncing">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_auto_sync_title"
+            android:summaryOff="@string/pref_auto_sync_summary_off"
+            android:summaryOn="@string/pref_auto_sync_summary_on"
+            android:title="@string/pref_auto_sync_title" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="@string/pref_auto_sync_title"
+            android:key="@string/pref_auto_sync_wifi_only_title"
+            android:summaryOff="@string/pref_auto_sync_wifi_only_summary_off"
+            android:summaryOn="@string/pref_auto_sync_wifi_only_summary_on"
+            android:title="@string/pref_auto_sync_wifi_only_title" />
+
+
+        <ListPreference
+            android:defaultValue="3600"
+            android:dependency="@string/pref_auto_sync_title"
+            android:entries="@array/sync_interval_times"
+            android:entryValues="@array/sync_interval_values_seconds"
+            android:key="@string/pref_auto_sync_interval_title"
+            android:summary="@string/pref_auto_sync_interval_summary"
+            android:title="@string/pref_auto_sync_interval_title" />
+
+
+        <ListPreference
+            android:defaultValue="100"
+            android:entries="@array/feed_item_amounts"
+            android:entryValues="@array/feed_item_amounts"
+            android:key="@string/pref_unread_items_to_keep_title"
+            android:summary="@string/pref_unread_items_to_keep_summary"
+            android:title="@string/pref_unread_items_to_keep_title" />
+
+        <ListPreference
+            android:defaultValue="50"
+            android:entries="@array/feed_item_amounts"
+            android:entryValues="@array/feed_item_amounts"
+            android:key="@string/pref_keep_read_items_for_title"
+            android:summary="@string/pref_keep_read_items_for_summary"
+            android:title="@string/pref_keep_read_items_for_title" />
+
+        <ListPreference
+            android:defaultValue="50"
+            android:entries="@array/feed_item_amounts"
+            android:entryValues="@array/feed_item_amounts"
+            android:key="@string/pref_fav_items_to_keep_title"
+            android:summary="@string/pref_fav_items_to_keep_summary"
+            android:title="@string/pref_fav_items_to_keep_title" />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_sync_subcategory_image_caching">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_auto_cache_images_title"
+            android:summaryOff="@string/pref_auto_cache_images_summary_off"
+            android:summaryOn="@string/pref_auto_cache_images_summary_on"
+            android:title="@string/pref_auto_cache_images_title" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_auto_cache_images_on_wifi_only_title"
+            android:summaryOff="@string/pref_auto_cache_images_on_wifi_only_summary_off"
+            android:summaryOn="@string/pref_auto_cache_images_on_wifi_only_summary_on"
+            android:title="@string/pref_auto_cache_images_on_wifi_only_title" />
+
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

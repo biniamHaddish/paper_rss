@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context="com.biniisu.leanrss.ui.base.SelectFeedServiceActivity">
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+
+        <ImageView
+            android:id="@+id/appIcon"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_readably_icon_minimal" />
+
+        <TextView
+            android:id="@+id/appName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appIcon"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="@dimen/regular_padding"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Header"
+            android:textSize="18sp" />
+
+        <View
+            android:id="@+id/sep"
+            android:layout_width="128dp"
+            android:layout_height="0.5dp"
+            android:layout_below="@id/appName"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/regular_padding"
+            android:background="@drawable/list_divider" />
+
+
+        <TextView
+            android:id="@+id/chooseTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sep"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/regular_padding"
+            android:text="@string/select_a_service"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Header"
+            android:textSize="@dimen/regular_font_size" />
+
+
+        <Button
+            android:id="@+id/loginWithFeedbin"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chooseTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/extra_large_padding"
+            android:backgroundTint="@color/white_var"
+            android:drawableStart="@drawable/ic_feed_bin_logo"
+            android:padding="@dimen/small_padding"
+            android:paddingBottom="@dimen/small_padding"
+            android:paddingEnd="@dimen/extra_large_padding"
+            android:paddingStart="@dimen/extra_large_padding"
+            android:paddingTop="@dimen/small_padding"
+            android:text="@string/feed_source_feedbin"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/cod_gray"
+            android:textSize="@dimen/smaller_font_size" />
+
+        <Button
+            android:id="@+id/loginWithInoReader"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/loginWithFeedbin"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/feed_source_buttons_margin"
+            android:layout_marginTop="@dimen/small_padding"
+            android:backgroundTint="@color/white_var"
+            android:drawableStart="@drawable/ic_inoreader_logo"
+            android:padding="@dimen/small_padding"
+            android:paddingBottom="@dimen/small_padding"
+            android:paddingEnd="@dimen/extra_large_padding"
+            android:paddingStart="@dimen/extra_large_padding"
+            android:paddingTop="@dimen/small_padding"
+            android:text="@string/inoreader_Oauth_login"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/cod_gray"
+            android:textSize="@dimen/smaller_font_size" />
+
+
+    </RelativeLayout>
+
+
+    <Button
+        android:id="@+id/setupLocalFeedSourceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/small_padding"
+        android:background="@color/transparent"
+        android:text="@string/choose_no_service"
+        android:textAllCaps="false"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/cod_gray"
+        android:textSize="@dimen/smaller_font_size" />
+
+
+</RelativeLayout>

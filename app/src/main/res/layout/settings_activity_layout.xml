@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:id="@+id/reading"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="?android:attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/readingIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/medium_padding"
+            android:src="@drawable/ic_chrome_reader_mode_black_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/readingIcon"
+            android:paddingStart="@dimen/regular_padding"
+            android:text="@string/reading_ux"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/list_primary_text_color"
+            android:textSize="@dimen/regular_padding" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/sepOne"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/reading"
+        android:background="@color/aluminum_trans" />
+
+    <RelativeLayout
+        android:id="@+id/sync"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_below="@id/sepOne"
+        android:background="?android:attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/syncIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/medium_padding"
+            android:src="@drawable/ic_sync_black_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/syncIcon"
+            android:paddingStart="@dimen/regular_padding"
+            android:text="@string/sync"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/list_primary_text_color"
+            android:textSize="@dimen/regular_padding" />
+
+    </RelativeLayout>
+
+
+    <View
+        android:id="@+id/sepTwo"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/sync"
+        android:background="@color/aluminum_trans" />
+
+    <RelativeLayout
+        android:id="@+id/logOut"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_below="@id/sepTwo">
+
+        <ImageView
+            android:id="@+id/accountLogo"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/medium_padding"
+            android:src="@drawable/ic_exit_to_app_black_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/accountLogo"
+            android:paddingStart="@dimen/regular_padding"
+            android:text="@string/select_another_service"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/list_primary_text_color"
+            android:textSize="@dimen/regular_padding" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/sepThree"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/logOut"
+        android:background="@color/aluminum_trans" />
+
+    <RelativeLayout
+        android:id="@+id/about"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_below="@id/sepThree">
+
+        <ImageView
+            android:id="@+id/aboutIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/medium_padding"
+            android:src="@drawable/ic_info_black_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/aboutIcon"
+            android:paddingStart="@dimen/regular_padding"
+            android:text="@string/about"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/list_primary_text_color"
+            android:textSize="@dimen/regular_padding" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

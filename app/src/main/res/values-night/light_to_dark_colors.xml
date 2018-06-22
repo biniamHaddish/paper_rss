@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dark-light color pairs the first color name is the light theme color while the second one is the dark theme color -->
+
+
+    <color name="white_to_cod_gray">@color/cod_gray</color>
+    <color name="monsoon_to_jumbo">@color/jumbo</color>
+    <color name="gunsmoke_to_silver_sand">@color/silver_sand</color>
+    <color name="bastille_to_bon_jour">@color/bon_jour</color>
+    <color name="bastille_to_silver_sand">@color/silver_sand</color>
+    <color name="white_gray_to_mine_shaft">@color/mine_shaft</color>
+    <color name="nero_to_silver_sand">@color/silver_sand</color>
+    <color name="aluminum_to_silver_sand">@color/silver_sand</color>
+    <color name="ship_gray_to_silver_land">@color/silver_sand</color>
+    <color name="lily_white_to_bon_jour">@color/bon_jour_trans</color>
+    <color name="battleship_gray_to_light_gray">@color/light_gray</color>
+    <color name="light_gray_to_storm_dust">@color/storm_dust</color>
+    <color name="light_gray_to_cod_gray">@color/cod_gray</color>
+    <color name="light_gray_to_black">@color/black</color>
+    <color name="light_gray_to_bokara_gray">@color/bokara_gray</color>
+    <color name="white_var_to_tuatara">@color/tuatara</color>
+    <color name="carmine_pink_trans_to_carmine_pink">@color/carmine_pink_trans_var</color>
+    <color name="mercury_to_charcol">@color/charcoal</color>
+    <color name="dim_gray_to_dove_gray">@color/dove_gray</color>
+
+</resources>

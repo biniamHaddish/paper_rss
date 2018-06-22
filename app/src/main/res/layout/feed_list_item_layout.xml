@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent">
+
+
+    <TextView
+        android:id="@+id/listSection"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:background="@color/white_var_to_tuatara"
+        android:elevation="0dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="9dp"
+        android:text="None other "
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/day_dovegray_night_silver"
+        android:textSize="12sp" />
+
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/listSection"
+        android:background="@drawable/feed_item_drawable"
+        android:elevation="4dp">
+
+        <TextView
+            android:id="@+id/feedItemTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="@dimen/regular_padding"
+            android:layout_marginStart="@dimen/regular_padding"
+            android:layout_marginTop="@dimen/regular_padding"
+            android:layout_toStartOf="@+id/leadImg"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text="Title of some feed item"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.PopupMenu.Header"
+            android:textColor="@color/bastille_to_silver_sand"
+            android:textSize="@dimen/regular_font_size" />
+
+
+        <ImageView
+            android:id="@+id/subscriptionIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignBottom="@+id/subscriptionTitle"
+            android:layout_below="@id/feedItemTitle"
+            android:layout_marginStart="@dimen/regular_padding"
+            android:src="@drawable/ic_rss_logo" />
+
+        <TextView
+            android:id="@id/subscriptionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/feedItemTitle"
+            android:layout_marginEnd="75dp"
+            android:layout_marginStart="@dimen/small_padding"
+            android:layout_toEndOf="@id/subscriptionIcon"
+            android:layout_toStartOf="@+id/leadImg"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Wired"
+            android:textSize="@dimen/smaller_font_size" />
+
+
+        <TextView
+            android:id="@+id/feedItemExcerpt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/subscriptionTitle"
+            android:layout_marginEnd="@dimen/regular_padding"
+            android:layout_marginStart="@dimen/regular_padding"
+            android:layout_marginTop="@dimen/small_padding"
+            android:layout_toStartOf="@+id/leadImg"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text="Some Useless text to fill this up Some Useless text to fill this up Some Useless text to fill this up"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+            android:textColor="@color/feed_item_excerpt_color"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/feedItemDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/feedItemExcerpt"
+            android:layout_marginStart="@dimen/regular_padding"
+            android:layout_marginTop="@dimen/small_padding"
+            android:paddingBottom="@dimen/regular_padding"
+            android:text="12:00"
+            android:textColor="@color/feed_subscription_title_color"
+            android:textSize="12sp" />
+
+
+        <ImageView
+            android:id="@+id/leadImg"
+            android:layout_width="82dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/feedItemDate"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/toggleFav"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/toggleRead"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:padding="10dp"
+        android:src="@drawable/ic_favorite_border_black_24dp"
+        android:tint="@color/carmine_pink" />
+
+    <ImageView
+        android:id="@id/toggleRead"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/share"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:padding="10dp"
+        android:src="@drawable/ic_read_24dp"
+        android:tint="@color/carmine_pink" />
+
+    <ImageView
+        android:id="@id/share"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:padding="10dp"
+        android:src="@drawable/ic_share"
+        android:tint="@color/carmine_pink" />
+
+
+</RelativeLayout>

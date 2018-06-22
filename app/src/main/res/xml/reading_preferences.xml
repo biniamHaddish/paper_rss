@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="@string/reading_ux"
+    android:title="@string/reading_ux">
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_full_screen_reading_title"
+        android:summaryOff="@string/pref_full_screen_reading_summary_off"
+        android:summaryOn="@string/pref_full_screen_reading_summary_on"
+        android:title="@string/pref_full_screen_reading_title" />
+
+    <CheckBoxPreference
+        android:defaultValue="0"
+        android:entries="@array/theme_choice_names"
+        android:entryValues="@array/three_entry_values"
+        android:key="@string/pref_auto_dark_mode_title"
+        android:summary="@string/pref_auto_dark_mode_summary"
+        android:title="@string/pref_auto_dark_mode_title" />
+
+
+    <ListPreference
+        android:defaultValue="@string/white_bg_name"
+        android:dependency="@string/pref_auto_dark_mode_title"
+        android:entries="@array/day_colors"
+        android:entryValues="@array/day_colors"
+        android:key="@string/pref_day_reading_theme_title"
+        android:summary="@string/pref_day_reading_theme_summary"
+        android:title="@string/pref_day_reading_theme_title" />
+
+    <ListPreference
+        android:defaultValue="@string/black_bg_name"
+        android:dependency="@string/pref_auto_dark_mode_title"
+        android:entries="@array/night_colors"
+        android:entryValues="@array/night_colors"
+        android:key="@string/pref_night_reading_theme_title"
+        android:summary="@string/pref_night_reading_theme_summary"
+        android:title="@string/pref_night_reading_theme_title" />
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/pref_enable_double_tap_for_full_article_title"
+        android:summary="@string/pref_enable_double_tap_for_full_article_summary"
+        android:title="@string/pref_enable_double_tap_for_full_article_title" />
+
+    <CheckBoxPreference
+        android:defaultValue="0"
+        android:entries="@array/vol_button_func_choice_names"
+        android:entryValues="@array/three_entry_values"
+        android:key="@string/pref_enable_vol_button_feed_switching_title"
+        android:summary="@string/pref_enable_vol_button_feed_switching_summary"
+        android:title="@string/pref_enable_vol_button_feed_switching_title" />
+
+
+</PreferenceScreen>

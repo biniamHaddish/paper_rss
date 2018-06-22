@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/appearanceSettings"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginBottom="10dp"
+    android:alpha="0.96"
+    android:background="@color/merino"
+    android:elevation="4dp">
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fontChooser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:focusable="false" />
+
+
+    <TextView
+        android:id="@+id/autoDarkModeDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fontChooser"
+        android:layout_marginStart="@dimen/regular_padding"
+        android:layout_marginTop="24dp"
+        android:text="@string/pref_auto_dark_mode_title"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.PopupMenu.Header"
+        android:textColor="@color/list_primary_text_color" />
+
+
+    <Switch
+        android:id="@+id/autoDarkModeSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fontChooser"
+        android:layout_marginEnd="@dimen/small_padding"
+        android:layout_marginTop="20dp"
+        android:layout_toStartOf="@+id/openReadingPrefs" />
+
+    <ImageView
+        android:id="@id/openReadingPrefs"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/fontChooser"
+        android:layout_marginEnd="@dimen/regular_padding"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_settings_24dp" />
+
+    <LinearLayout
+        android:id="@+id/backgroundColorContainer"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_below="@id/autoDarkModeDescription"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/bgWhiteColor"
+            style="@style/Base.Widget.AppCompat.ButtonBar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/white_bg_color_chooser_shape"
+            android:scaleType="centerInside"
+            android:tint="@color/stack" />
+
+        <ImageView
+            android:id="@+id/bgMerinoColor"
+            style="@style/Base.Widget.AppCompat.ButtonBar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/merino_bg_color_chooser_shape"
+            android:scaleType="centerInside"
+            android:tint="@color/stack" />
+
+        <ImageView
+            android:id="@+id/bgScarpaColor"
+            style="@style/Base.Widget.AppCompat.ButtonBar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/scarpa_bg_color_chooser_shape"
+            android:scaleType="centerInside"
+            android:tint="@color/white_var" />
+
+        <ImageView
+            android:id="@+id/bgOnyxColor"
+            style="@style/Base.Widget.AppCompat.ButtonBar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/onyx_bg_color_chooser_shape"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_check_black_24dp"
+            android:tint="@color/white_var" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fontPropertiesController"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@id/backgroundColorContainer"
+        android:layout_marginTop="24dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/decreaseFontSize"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1.2"
+                android:background="@drawable/reading_appearance_justification_opts_bg"
+                android:padding="8dp"
+                android:src="@drawable/ic_small_a"
+                android:tint="@color/day_dovegray_night_silver" />
+
+
+            <TextView
+                android:id="@+id/currentFontSize"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:layout_weight=".7"
+                android:gravity="center_vertical"
+                android:text="16"
+                android:textAlignment="center"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.PopupMenu.Header" />
+
+
+            <ImageButton
+                android:id="@+id/increaseFontSize"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1.2"
+                android:background="@drawable/reading_appearance_justification_opts_bg"
+                android:scaleType="center"
+                android:src="@drawable/ic_big_a"
+                android:theme="@style/Widget.AppCompat.ImageButton"
+                android:tint="@color/day_dovegray_night_silver" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/decreaseLineHeight"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1.2"
+                android:background="@drawable/reading_appearance_justification_opts_bg"
+                android:padding="8dp"
+                android:src="@drawable/ic_format_decrease_line_spacing_24px"
+                android:textSize="12sp"
+                android:tint="@color/day_dovegray_night_silver" />
+
+
+            <TextView
+                android:id="@+id/currentLineHeight"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:layout_weight=".7"
+                android:gravity="center_vertical"
+                android:text="1.1"
+                android:textAlignment="center"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.PopupMenu.Header" />
+
+
+            <ImageButton
+                android:id="@+id/increaseLineHeight"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1.2"
+                android:background="@drawable/reading_appearance_justification_opts_bg"
+                android:padding="8dp"
+                android:src="@drawable/ic_format_increase_line_spacing_24dp"
+                android:tint="@color/day_dovegray_night_silver" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@id/fontPropertiesController"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="3">
+
+
+        <ImageButton
+            android:id="@+id/justifyText"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/reading_appearance_justification_opts_bg"
+            android:src="@drawable/ic_format_align_justify_24dp"
+            android:text="@string/justified"
+            android:tint="@color/active_inactive_icon_state_list" />
+
+
+        <ImageButton
+            android:id="@+id/alingLeftText"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/reading_appearance_justification_opts_bg"
+            android:src="@drawable/ic_format_align_left_24dp"
+            android:text="@string/left"
+            android:tint="@color/active_inactive_icon_state_list" />
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

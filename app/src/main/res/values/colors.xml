@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <color name="navigation_item_ripple_color">@color/zircon</color>
+    <color name="navigation_view_bg_color">@color/alabaster</color>
+
+    <color name="feed_list_item_bg_color">@color/white</color>
+
+    <color name="bottom_nav_bg_color">@android:color/white</color>
+
+    <color name="feed_title_color">#000000</color>
+    <color name="feed_subscription_title_color">@color/stack</color>
+    <color name="feed_item_excerpt_color">@color/stack</color>
+
+    <color name="generic_icon_color">@color/dove_gray</color>
+
+    <color name="day_dovegray_night_silver">@color/dove_gray</color>
+
+    <color name="day_stack_night_alabaster">@color/stack</color>
+
+
+</resources>

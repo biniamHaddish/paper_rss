@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Theme colors -->
+    <color name="colorPrimary">@color/white_to_cod_gray</color>
+    <color name="colorPrimaryDark">@color/light_gray_to_black</color>
+    <color name="colorAccent">@color/monsoon_to_jumbo</color>
+
+
+    <!-- UI Element colors -->
+    <color name="icon_color">@color/gunsmoke_to_silver_sand</color>
+    <color name="editable_text_color">@color/bastille_to_bon_jour</color>
+
+    <color name="button_bg_color">@color/white_gray_to_mine_shaft</color>
+    <color name="button_text_color">@color/nero_to_silver_sand</color>
+
+    <color name="info_text_color">@color/ship_gray_to_silver_land</color>
+
+    <color name="list_primary_text_color">@color/bastille_to_silver_sand</color>
+    <color name="list_secondary_text_color">@color/aluminum_to_silver_sand</color>
+
+</resources>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context="com.biniisu.leanrss.ui.base.AboutActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageView
+            android:id="@+id/appIcon"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="70dp"
+            android:background="@drawable/circle_bg"
+            android:src="@drawable/ic_readably_icon_minimal" />
+
+        <TextView
+            android:id="@+id/appName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appIcon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/regular_padding"
+            android:text="@string/app_name"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.PopupMenu.Header"
+            android:textColor="@color/icon_color"
+            android:textSize="22dp" />
+
+        <TextView
+            android:id="@+id/versionInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appName"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="2dp"
+            android:text="1.0.0 (1)"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/icon_color"
+            android:textSize="@dimen/very_small_font_size" />
+
+
+        <TextView
+            android:id="@+id/madeBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/versionInfo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/regular_padding"
+            android:text="@string/made_by_line"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/icon_color"
+            android:textSize="@dimen/regular_font_size" />
+
+        <TextView
+            android:id="@+id/biniamAnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/madeBy"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="6dp"
+            android:text="@string/biniam"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.PopupMenu.Header"
+            android:textColor="@color/icon_color"
+            android:textSize="20dp" />
+
+
+        <Button
+            android:id="@+id/sendFeedback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/biniamAnd"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/small_padding"
+            android:layout_marginTop="@dimen/small_padding"
+            android:background="@color/transparent"
+            android:text="@string/send_feedback"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/cod_gray"
+            android:textSize="@dimen/smaller_font_size" />
+
+
+        <View
+            android:id="@+id/sep"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/sendFeedback"
+            android:layout_marginEnd="@dimen/extra_large_padding"
+            android:layout_marginStart="@dimen/extra_large_padding"
+            android:layout_marginTop="@dimen/small_padding"
+            android:background="@drawable/list_divider_drawable" />
+
+
+        <TextView
+            android:id="@+id/librariesTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sep"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="@dimen/extra_large_padding"
+            android:layout_marginStart="@dimen/extra_large_padding"
+            android:layout_marginTop="@dimen/extra_large_padding"
+            android:text="@string/libraries_title"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.PopupMenu.Header"
+            android:textSize="@dimen/smaller_font_size" />
+
+        <FrameLayout
+            android:id="@+id/libs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/librariesTitle"
+            android:layout_centerHorizontal="true" />
+
+
+    </RelativeLayout>
+
+
+</ScrollView>

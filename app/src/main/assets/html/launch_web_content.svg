@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg height="36px" version="1.1" viewBox="0 0 36 36" width="36px"
+    xmlns="http://www.w3.org/2000/svg">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>ic_launch_48px</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g fill="none" fill-rule="evenodd" id="Page-1" stroke="none" stroke-width="1">
+        <g id="ic_launch_48px" transform="translate(-6.000000, -6.000000)">
+            <polygon id="Shape" points="0 0 48 0 48 48 0 48"></polygon>
+            <path
+                d="M38,38 L10,38 L10,10 L24,10 L24,6 L10,6 C7.79,6 6,7.79 6,10 L6,38 C6,40.21 7.79,42 10,42 L38,42 C40.21,42 42,40.21 42,38 L42,24 L38,24 L38,38 Z M28,6 L28,10 L35.17,10 L15.51,29.66 L18.34,32.49 L38,12.83 L38,20 L42,20 L42,6 L28,6 Z"
+                fill="#FFFFFF" fill-rule="nonzero" id="Shape"></path>
+        </g>
+    </g>
+</svg>

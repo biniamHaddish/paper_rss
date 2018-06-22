@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.biniisu.leanrss.ui.base.BetaExpiredActivity">
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:id="@+id/appIcon"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/readably_icon_minimal" />
+
+
+        <TextView
+            android:id="@+id/expiryDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appIcon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="@dimen/extra_large_padding"
+            android:layout_marginStart="@dimen/extra_large_padding"
+            android:layout_marginTop="@dimen/regular_padding"
+            android:text="@string/expiry_explanation"
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.PopupMenu.Header"
+            android:textSize="18sp" />
+
+
+        <Button
+            android:id="@+id/updateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/expiryDescription"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/regular_padding"
+            android:text="@string/update" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

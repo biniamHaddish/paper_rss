@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:background="@color/white_to_cod_gray"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+
+    <ImageView
+        android:id="@+id/accountLogo"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/medium_padding"
+        android:paddingTop="2dp"
+        android:tint="@color/icon_color" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="27dp"
+        android:layout_toEndOf="@id/accountLogo">
+
+        <TextView
+            android:id="@+id/accountName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Header"
+            android:textColor="@color/list_primary_text_color"
+            android:textSize="@dimen/regular_padding" />
+
+        <TextView
+            android:id="@+id/lastUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/accountName"
+            android:layout_below="@id/accountName"
+            android:text="Updated 5 mins ago"
+            android:textColor="@color/list_secondary_text_color"
+            android:textSize="@dimen/very_small_font_size" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

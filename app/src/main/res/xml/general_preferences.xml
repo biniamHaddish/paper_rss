@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/general"
+    android:icon="@drawable/ic_arrow_back"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference android:title="Just a test" />
+
+
+</PreferenceScreen>
