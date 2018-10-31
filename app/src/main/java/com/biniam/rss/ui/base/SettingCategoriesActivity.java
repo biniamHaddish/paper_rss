@@ -13,10 +13,10 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.biniam.rss.R;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.preferences.InternalStatePrefs;
 import com.biniam.rss.utils.AccountBroker;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 
 import java.io.File;
 
@@ -105,10 +105,10 @@ public class SettingCategoriesActivity extends AppCompatActivity {
                 new Observable<Void>() {
                     @Override
                     protected void subscribeActual(Observer<? super Void> observer) {
-                        ReadablyDatabase readablyDatabase = ReadablyApp.getInstance().getDatabase();
-                        readablyDatabase.dao().deleteAllFeedItems();
-                        readablyDatabase.dao().deleteAllSubscriptions();
-                        readablyDatabase.dao().deleteAllTags();
+                        PaperDatabase paperDatabase = PaperApp.getInstance().getDatabase();
+                        paperDatabase.dao().deleteAllFeedItems();
+                        paperDatabase.dao().deleteAllSubscriptions();
+                        paperDatabase.dao().deleteAllTags();
 
                         // Delete all caches
                         File[] caches = cacheDir.listFiles();

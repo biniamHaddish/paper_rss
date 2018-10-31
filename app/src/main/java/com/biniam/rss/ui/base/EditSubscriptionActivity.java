@@ -1,5 +1,6 @@
 package com.biniam.rss.ui.base;
 
+import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,12 +31,12 @@ import com.biniam.rss.connectivity.feedbin.feedbinApi.FeedbinAPI;
 import com.biniam.rss.connectivity.feedbin.retrofitClient.RetrofitFeedbinClient;
 import com.biniam.rss.connectivity.inoreader.InoApiFactory;
 import com.biniam.rss.models.feedbin.FeedBinSubscriptionsItem;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
 import com.biniam.rss.persistence.db.roomentities.TagEntity;
 import com.biniam.rss.utils.AccountBroker;
 import com.biniam.rss.utils.FavIconFetcher;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 import com.biniam.rss.utils.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -90,7 +91,7 @@ public class EditSubscriptionActivity extends AppCompatActivity {
     private RecyclerView folderList;
 
 
-    private ReadablyDatabase rssDatabase; // Room database
+    private PaperDatabase rssDatabase; // Room database
     private TagChooserAdapter tagChooserAdapter = new TagChooserAdapter(new ArrayList<>());
     private SparseBooleanArray tagSelectionTracker = new SparseBooleanArray();
 
@@ -106,7 +107,7 @@ public class EditSubscriptionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_subscription);
         feedSearchResultItem = (SearchForSubscriptionsActivity.FeedSearchResultItem) getIntent().getSerializableExtra(FEEDLY_SEARCH_RESULT_ITEM_KEY);
         subscriptionEntity = (SubscriptionEntity) getIntent().getSerializableExtra(SAVED_SUBSCRIPTION_ITEM_KEY);
-        rssDatabase = ReadablyApp.getInstance().getDatabase();
+        rssDatabase = PaperApp.getInstance().getDatabase();
         accountBroker = AccountBroker.getInstance(getApplicationContext());
         inoApiFactory = InoApiFactory.getInstance(getApplicationContext());
 
@@ -234,6 +235,7 @@ public class EditSubscriptionActivity extends AppCompatActivity {
             dialogArgs.putSerializable(UnsubscribeDialog.SUBSCRIPTION, subscriptionEntity);
             UnsubscribeDialog unsubscribeDialog = new UnsubscribeDialog();
             unsubscribeDialog.setUnsubscribeListener(new UnsubscribeDialog.UnsubscribeListener() {
+                @SuppressLint("CheckResult")
                 @Override
                 public void onUnsubscribed() {
 
@@ -241,7 +243,7 @@ public class EditSubscriptionActivity extends AppCompatActivity {
                         new Observable<Void>() {
                             @Override
                             protected void subscribeActual(Observer<? super Void> observer) {
-                                ReadablyApp.getInstance().getDatabase().dao().deleteSubscription(subscriptionEntity);
+                                PaperApp.getInstance().getDatabase().dao().deleteSubscription(subscriptionEntity);
                                 observer.onComplete();
                             }
                         }.subscribeOn(Schedulers.io()).subscribeWith(new DisposableObserver<Void>() {
@@ -310,12 +312,12 @@ public class EditSubscriptionActivity extends AppCompatActivity {
                         updateSubscribeMenuItem.setActionView(updateProgressBar);
                         showSnackBarMessage(getString(R.string.unsubscribing), true);
 
-                        inoApiFactory.editInoSubscription(
-                                "unsubscribe",
-                                subscriptionEntity.id,
-                                null,
-                                null,
-                                null);
+//                        inoApiFactory.editInoSubscription(
+//                                "unsubscribe",
+//                                subscriptionEntity.id,
+//                                null,
+//                                null,
+//                                null);
                     }
 
                 }
@@ -436,10 +438,10 @@ public class EditSubscriptionActivity extends AppCompatActivity {
             for (int i = 0; i < tagSelectionTracker.size(); i++) {
                 int key = tagSelectionTracker.keyAt(i);
                 TagEntity tagEntity = new TagEntity(feedSearchResultItem.getFeedId(), tagChooserAdapter.getTagAt(key));
-                inoApiFactory.subscribeFeed(
-                        feedSearchResultItem.getTitle(),
-                        feedSearchResultItem.getFeedId(),
-                        tagEntity.name);
+//                inoApiFactory.subscribeFeed(
+//                        feedSearchResultItem.getTitle(),
+//                        feedSearchResultItem.getFeedId(),
+//                        tagEntity.name);
             }
 
         }

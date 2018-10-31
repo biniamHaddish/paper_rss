@@ -257,7 +257,7 @@ pre.prettyprint {
 }
 
 .ext_content p {
-    color: white;
+    color: #ffffff;
     display: block
     margin: 1px auto;
     text-align: center;
@@ -266,7 +266,7 @@ pre.prettyprint {
 }
 
 .ext_youtube_icon, .ext_generic_icon {
-    margin-top: 18px;
+    margin-top: 15px;
     margin-left: 20px;
     width: 24px;
     height: 24px;
@@ -276,12 +276,10 @@ pre.prettyprint {
 }
 
 .utube {
-   background-color: #E5322F;
+   background-color: #ff0000;
 }
 
  /* Article downloading style */
-
-
 #loader {
     width: auto;
     height: auto;

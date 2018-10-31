@@ -39,8 +39,8 @@ import okhttp3.Response;
 
 public class InoOAuthAuthenticatorActivity extends AppCompatActivity implements InoReaderAccountPreferences.PreferenceChangeListener, ConnectivityState.ConnectivityReceiverListener {
 
-    public static final String TAG = InoOAuthAuthenticatorActivity.class.getSimpleName();
-    private static final String RDIRECT_URL = "readably://oauth";
+    public static final  String  TAG = InoOAuthAuthenticatorActivity.class.getSimpleName();
+   // private static final String RDIRECT_URL = "paper://oauth";
     private static String OPTIONAL_SCOPES = "read write";
     private final Gson gson = new Gson();
     public InoReaderAccountPreferences inoReaderAccountPreferences;
@@ -106,13 +106,13 @@ public class InoOAuthAuthenticatorActivity extends AppCompatActivity implements 
         Response response = null;
         final Uri uri = mIntent.getData();
         Log.d("UriData Code:\t", uri.getQueryParameter("code"));
-        if (uri != null && (uri.toString().startsWith(RDIRECT_URL)))
+        if (uri != null && (uri.toString().startsWith(InoReaderConstants.REDIRECT_URI)))
 
             if (uri.getQueryParameter("state").matches(Constants.CSRF_STRING)) {
 
                 final FormBody formBody = new FormBody.Builder()
                         .addEncoded("code", uri.getQueryParameter("code"))
-                        .addEncoded("redirect_uri", RDIRECT_URL)
+                        .addEncoded("redirect_uri", InoReaderConstants.REDIRECT_URI)
                         .addEncoded("client_id", Constants.InoReader_APP_ID)
                         .addEncoded("client_secret", Constants.CLIENT_SECRET)
                         .addEncoded("scope", OPTIONAL_SCOPES)

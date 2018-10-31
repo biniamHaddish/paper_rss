@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.biniam.rss.R;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.preferences.InternalStatePrefs;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -32,7 +32,7 @@ public class MarkAsReadConfirmationDialog extends DialogFragment {
         String tag = getArguments().getString(TAG_EXTRA);
         String subscriptionName = getArguments().getString(SUB_NAME_EXTRA);
         String subscriptionId = getArguments().getString(SUB_ID_EXTRA);
-        internalStatePrefs = InternalStatePrefs.getInstance(ReadablyApp.getInstance());//singleton
+        internalStatePrefs = InternalStatePrefs.getInstance(PaperApp.getInstance());//singleton
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity(), getTheme());
         dialogBuilder.setTitle(getString(R.string.mark_all_as_read));
@@ -48,34 +48,36 @@ public class MarkAsReadConfirmationDialog extends DialogFragment {
         dialogBuilder.setNegativeButton(getString(R.string.no), null);
         dialogBuilder.setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
 
-            ReadablyDatabase readablyDatabase = ReadablyApp.getInstance().getDatabase();
+            PaperDatabase paperDatabase = PaperApp.getInstance().getDatabase();
             new Completable() {
                 @Override
                 protected void subscribeActual(CompletableObserver s) {
                     if (isAllSubscriptions) {
-                        readablyDatabase.dao().markEverythingAsRead(System.currentTimeMillis());
+                        paperDatabase.dao().markEverythingAsRead(System.currentTimeMillis());
 
                     } else if (tag != null) {
-                        for (String subscriptionId : readablyDatabase.dao().getSubscriptionIdsForTag(tag)) {
-                            readablyDatabase.dao().markSubscriptionRead(subscriptionId, System.currentTimeMillis());
+                        for (String subscriptionId : paperDatabase.dao().getSubscriptionIdsForTag(tag)) {
+                            paperDatabase.dao().markSubscriptionRead(subscriptionId, System.currentTimeMillis());
                         }
                     } else if (subscriptionId != null) {
-                        readablyDatabase.dao().markSubscriptionRead(subscriptionId, System.currentTimeMillis());
+                        paperDatabase.dao().markSubscriptionRead(subscriptionId, System.currentTimeMillis());
                     }
                     dismiss();
                 }
-            }.subscribeOn(Schedulers.io()).subscribeWith(new DisposableCompletableObserver() {
-                @Override
-                public void onComplete() {
-                    Log.d(TAG, "onComplete: ");
-                }
-                @Override
-                public void onError(Throwable e) {
-                    e.printStackTrace();
-                    Log.d(TAG, "onError: " + e.getMessage());
-                }
+            }.subscribeOn(Schedulers.io())
+                    .subscribeWith(new DisposableCompletableObserver() {
+                        @Override
+                        public void onComplete() {
+                            Log.d(TAG, "onComplete: ");
+                        }
 
-            });
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            Log.d(TAG, "onError: " + e.getMessage());
+                        }
+
+                    });
         });
         return dialogBuilder.create();
 

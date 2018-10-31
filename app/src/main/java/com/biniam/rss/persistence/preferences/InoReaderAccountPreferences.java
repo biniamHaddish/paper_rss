@@ -22,6 +22,7 @@ public class InoReaderAccountPreferences implements SharedPreferences.OnSharedPr
     private Context context;
     private SharedPreferences InoreaderSharedPreferences;
     private PreferenceChangeListener preferenceChangeListener;
+    private static InoReaderAccountPreferences inoReaderAccountPreferences ;
 
 
     public InoReaderAccountPreferences(Context context) {
@@ -30,6 +31,15 @@ public class InoReaderAccountPreferences implements SharedPreferences.OnSharedPr
         this.InoreaderSharedPreferences = context.getSharedPreferences(inoReaderPrefernceName, 0);
         this.InoreaderSharedPreferences.registerOnSharedPreferenceChangeListener(this);
         updateInoPrefs();
+    }
+
+
+    public static InoReaderAccountPreferences getInstance(Context context) {
+        if (inoReaderAccountPreferences == null) {
+            inoReaderAccountPreferences = new InoReaderAccountPreferences(context);
+        }
+
+        return inoReaderAccountPreferences;
     }
 
     public void setPreferenceChangeListener(PreferenceChangeListener preferenceChangeListener) {

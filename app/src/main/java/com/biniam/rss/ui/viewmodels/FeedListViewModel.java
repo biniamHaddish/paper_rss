@@ -6,17 +6,17 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
 import com.biniam.rss.persistence.db.roomentities.TagEntity;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 
 import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by  on 11/27/17.
+ * Created by biniam_haddish on 11/27/17.
  * <p>
  * A view model responsible for updateFeedListDateSections ui components in {@link com.biniam.rss.ui.base.HomeActivity}
  */
@@ -31,19 +31,19 @@ public class FeedListViewModel extends ViewModel {
     public static final int ALL = 2;
 
     private String subscriptionId = null;
-    private ReadablyDatabase readablyDatabase;
+    private PaperDatabase paperDatabase;
     private MutableLiveData<FeedListItemModel[]> feedItemsMutableLiveData = new MediatorLiveData<>();
     private MediatorLiveData tagSubscriptionAggregateMediatorLiveData = new MediatorLiveData<>();
 
 
     public FeedListViewModel() {
-        readablyDatabase = ReadablyApp.getInstance().getDatabase();
+        paperDatabase = PaperApp.getInstance().getDatabase();
     }
 
     public void init() {
         // Setup an aggregate live data mediator to listen on tags an subscriptions at one
-        LiveData<SubscriptionEntity[]> subscriptionEntityLiveData = readablyDatabase.dao().getAllSubscriptionsLiveData();
-        LiveData<TagEntity[]> tagEntitiesLiveData = readablyDatabase.dao().getDistinctTagsLiveData();
+        LiveData<SubscriptionEntity[]> subscriptionEntityLiveData = paperDatabase.dao().getAllSubscriptionsLiveData();
+        LiveData<TagEntity[]> tagEntitiesLiveData = paperDatabase.dao().getDistinctTagsLiveData();
         tagSubscriptionAggregateMediatorLiveData.addSource(subscriptionEntityLiveData, o -> tagSubscriptionAggregateMediatorLiveData.postValue(o));
         tagSubscriptionAggregateMediatorLiveData.addSource(tagEntitiesLiveData, o -> tagSubscriptionAggregateMediatorLiveData.postValue(o));
     }
@@ -57,35 +57,35 @@ public class FeedListViewModel extends ViewModel {
             case UNREAD:
                 if (subscriptionId != null) {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getUnreadItemsForSubscriptionFeedListModels(subscriptionId) :
-                            readablyDatabase.dao().getUnreadItemsForSubscriptionFeedListModelsOlderToNewer(subscriptionId);
+                            paperDatabase.dao().getUnreadItemsForSubscriptionFeedListModels(subscriptionId) :
+                            paperDatabase.dao().getUnreadItemsForSubscriptionFeedListModelsOlderToNewer(subscriptionId);
                 } else {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getAllUnreadFeedListModels() :
-                            readablyDatabase.dao().getAllUnreadFeedListModelsOlderToNewer();
+                            paperDatabase.dao().getAllUnreadFeedListModels() :
+                            paperDatabase.dao().getAllUnreadFeedListModelsOlderToNewer();
                 }
 
             case ALL:
                 if (subscriptionId != null) {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getAllFeedItemsForSubscriptionFeedListModels(subscriptionId) :
-                            readablyDatabase.dao().getAllFeedItemsForSubscriptionFeedListModelsOlderToNewer(subscriptionId);
+                            paperDatabase.dao().getAllFeedItemsForSubscriptionFeedListModels(subscriptionId) :
+                            paperDatabase.dao().getAllFeedItemsForSubscriptionFeedListModelsOlderToNewer(subscriptionId);
                 } else {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getAllFeedListModels() :
-                            readablyDatabase.dao().getAllFeedListModelsOlderToNewer();
+                            paperDatabase.dao().getAllFeedListModels() :
+                            paperDatabase.dao().getAllFeedListModelsOlderToNewer();
                 }
 
             case FAV:
                 if (subscriptionId != null) {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getFavoriteFeedListModelsForSubscription(subscriptionId) :
-                            readablyDatabase.dao().getFavoriteFeedListModelsForSubscriptionOlderToNewer(subscriptionId);
+                            paperDatabase.dao().getFavoriteFeedListModelsForSubscription(subscriptionId) :
+                            paperDatabase.dao().getFavoriteFeedListModelsForSubscriptionOlderToNewer(subscriptionId);
 
                 } else {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getAllFavoriteFeedListModels() :
-                            readablyDatabase.dao().getAllFavoriteFeedListModelsOlderToNewer();
+                            paperDatabase.dao().getAllFavoriteFeedListModels() :
+                            paperDatabase.dao().getAllFavoriteFeedListModelsOlderToNewer();
                 }
         }
 
@@ -94,20 +94,20 @@ public class FeedListViewModel extends ViewModel {
 
 
     private FeedListItemModel[] getFeedItemsForCategoryAndTag(int category, String tagName, boolean sortNewerToOlder) {
-        //List<String> subscriptionIds = readablyDatabase.dao().getSubscriptionIdsForTag(tagName);
+        //List<String> subscriptionIds = paperDatabase.dao().getSubscriptionIdsForTag(tagName);
         switch (category) {
             case UNREAD:
                 return sortNewerToOlder ?
-                        readablyDatabase.dao().getUnreadFeedListModelsForTag(tagName) :
-                        readablyDatabase.dao().getUnreadFeedListModelsForTagOlderToNewer(tagName);
+                        paperDatabase.dao().getUnreadFeedListModelsForTag(tagName) :
+                        paperDatabase.dao().getUnreadFeedListModelsForTagOlderToNewer(tagName);
             case ALL:
                 return sortNewerToOlder ?
-                        readablyDatabase.dao().getAllFeedListModelsForTag(tagName) :
-                        readablyDatabase.dao().getAllFeedListModelsForTagOlderToNewer(tagName);
+                        paperDatabase.dao().getAllFeedListModelsForTag(tagName) :
+                        paperDatabase.dao().getAllFeedListModelsForTagOlderToNewer(tagName);
             case FAV:
                 return sortNewerToOlder ?
-                        readablyDatabase.dao().getFavFeedListModelsForTag(tagName) :
-                        readablyDatabase.dao().getFavFeedListModelsForTagOlderToNewer(tagName);
+                        paperDatabase.dao().getFavFeedListModelsForTag(tagName) :
+                        paperDatabase.dao().getFavFeedListModelsForTagOlderToNewer(tagName);
         }
         return null;
     }

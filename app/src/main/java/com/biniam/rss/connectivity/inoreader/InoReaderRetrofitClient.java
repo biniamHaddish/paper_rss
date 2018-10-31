@@ -1,7 +1,7 @@
 package com.biniam.rss.connectivity.inoreader;
 
 import com.biniam.rss.connectivity.inoreader.inoReaderApi.HeaderInterceptor;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -22,7 +22,7 @@ public class InoReaderRetrofitClient {
 
     //OkHttpClient  with interceptor
     private static OkHttpClient client = new OkHttpClient.Builder()
-            .addInterceptor(new HeaderInterceptor(ReadablyApp.getInstance()))
+            .addInterceptor(new HeaderInterceptor(PaperApp.getInstance()))
             .build();
 
     public static Retrofit getRetrofit() {

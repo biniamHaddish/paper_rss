@@ -1,5 +1,6 @@
 package com.biniam.rss.ui.controllers;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.support.v4.view.PagerAdapter;
@@ -16,7 +17,7 @@ import android.widget.RelativeLayout;
 
 import com.biniam.rss.R;
 import com.biniam.rss.persistence.db.roomentities.FeedItemEntity;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 import com.biniam.rss.utils.TemplateExtractor;
 
 import org.jsoup.Jsoup;
@@ -229,13 +230,14 @@ public class FeedItemsPagerAdapter extends PagerAdapter {
             return pageDOM;
         }
 
+        @SuppressLint("CheckResult")
         public void updateFeedItem(boolean updateModifiedTime) {
             Log.d(TAG, String.format("updateFeedItem: updating feed %s", feedItem.title));
             new Observable<Void>() {
                 @Override
                 protected void subscribeActual(Observer<? super Void> observer) {
                     if (updateModifiedTime) feedItem.modifiedAt = System.currentTimeMillis();
-                    ReadablyApp.getInstance().getDatabase().dao().updateFeedItem(feedItem);
+                    PaperApp.getInstance().getDatabase().dao().updateFeedItem(feedItem);
                     observer.onComplete();
                 }
             }.subscribeOn(Schedulers.io())

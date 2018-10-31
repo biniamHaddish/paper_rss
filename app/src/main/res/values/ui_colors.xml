@@ -4,7 +4,7 @@
     <!-- Theme colors -->
     <color name="colorPrimary">@color/white_to_cod_gray</color>
     <color name="colorPrimaryDark">@color/light_gray_to_black</color>
-    <color name="colorAccent">@color/monsoon_to_jumbo</color>
+    <color name="colorAccent">@color/button_orange</color>
 
 
     <!-- UI Element colors -->

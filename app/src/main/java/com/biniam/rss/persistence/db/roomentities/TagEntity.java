@@ -7,18 +7,18 @@ import android.arch.persistence.room.Index;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 
 import java.io.Serializable;
 
 /**
- * Created by  on 2/20/17.
+ * Created by biniam_haddish on 2/20/17.
  * <p>
  * This a room entity to represent a subscriptions folder
  */
 
 @Keep
-@Entity(tableName = ReadablyDatabase.TAGS_TABLE,
+@Entity(tableName = PaperDatabase.TAGS_TABLE,
         foreignKeys = @ForeignKey(entity = SubscriptionEntity.class, parentColumns = "id", childColumns = "subscriptionId", onDelete = ForeignKey.CASCADE),
         primaryKeys = {"subscriptionId", "name"},
         indices = @Index("subscriptionId"))

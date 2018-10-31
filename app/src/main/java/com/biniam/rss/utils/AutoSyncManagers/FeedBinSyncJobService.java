@@ -1,5 +1,6 @@
 package com.biniam.rss.utils.AutoSyncManagers;
 
+import android.annotation.SuppressLint;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
@@ -12,12 +13,12 @@ import com.biniam.rss.connectivity.feedbin.retrofitClient.RetrofitFeedbinClient;
 import com.biniam.rss.models.feedbin.FeedBinEntriesItem;
 import com.biniam.rss.models.feedbin.FeedBinSubscriptionsItem;
 import com.biniam.rss.models.feedbin.FeedBinTaggingsItem;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.db.roomentities.FeedItemEntity;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
 import com.biniam.rss.persistence.db.roomentities.TagEntity;
 import com.biniam.rss.persistence.preferences.InternalStatePrefs;
-import com.biniam.rss.persistence.preferences.ReadablyPrefs;
+import com.biniam.rss.persistence.preferences.PaperPrefs;
 import com.biniam.rss.ui.controllers.FeedParser;
 import com.biniam.rss.utils.AccountBroker;
 import com.biniam.rss.utils.AutoImageCache;
@@ -25,7 +26,7 @@ import com.biniam.rss.utils.ConnectivityState;
 import com.biniam.rss.utils.DateUtils;
 import com.biniam.rss.utils.FavIconFetcher;
 import com.biniam.rss.utils.HouseKeeper;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -64,9 +65,9 @@ public class FeedBinSyncJobService extends JobService {
     public static final int JOB_ID = 332702;
 
     Context context;
-    private ReadablyDatabase readablyDatabase;
+    private PaperDatabase paperDatabase;
     private long syncStartTime;
-    private ReadablyPrefs readablyPrefs;
+    private PaperPrefs paperPrefs;
     private AutoImageCache autoImageCache;
     private InternalStatePrefs internalStatePrefs;
     private HouseKeeper houseKeeper;
@@ -124,7 +125,7 @@ public class FeedBinSyncJobService extends JobService {
                 sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_FINISHED));
 
 
-                houseKeeper.deleteOldCaches();
+                //houseKeeper.deleteOldCaches();
 
                 s.onComplete();
 
@@ -153,8 +154,8 @@ public class FeedBinSyncJobService extends JobService {
     public void onCreate() {
         super.onCreate();
         context = this;
-        readablyDatabase = ReadablyApp.getInstance().getDatabase();
-        readablyPrefs = ReadablyPrefs.getInstance(getApplicationContext());
+        paperDatabase = PaperApp.getInstance().getDatabase();
+        paperPrefs = PaperPrefs.getInstance(getApplicationContext());
         autoImageCache = AutoImageCache.getInstance(getApplicationContext());
         internalStatePrefs = InternalStatePrefs.getInstance(getApplicationContext());
         houseKeeper = HouseKeeper.getInstance(getApplicationContext());
@@ -195,16 +196,16 @@ public class FeedBinSyncJobService extends JobService {
                         Log.d(TAG, "onNext: subscriptions synced");
                         List<SubscriptionEntity> allSyncedSubscriptionEntities = convertFeedBinSubscriptions(subscriptionsItems);
                         List<String> syncedSubscriptionIds = getSyncedSubscriptionIds(subscriptionsItems);
-                        readablyDatabase.dao().insertSubscriptions(allSyncedSubscriptionEntities);
+                        paperDatabase.dao().insertSubscriptions(allSyncedSubscriptionEntities);
 
                         // Check if we have subscription items without remote equivalents and delete them
-                        for (String savedSubscriptionId : readablyDatabase.dao().getAllSubscriptionIds()) {
+                        for (String savedSubscriptionId : paperDatabase.dao().getAllSubscriptionIds()) {
                             if (!syncedSubscriptionIds.contains(savedSubscriptionId)) {
                                 // This subscription is not contained in the subscription ids retrieved from feedbin
                                 // so it must have been
                                 if (isFeedbinSelectedAccount()) {
-                                    readablyDatabase.dao().deleteSubscription(
-                                            readablyDatabase.dao().getSubscription(savedSubscriptionId)
+                                    paperDatabase.dao().deleteSubscription(
+                                            paperDatabase.dao().getSubscription(savedSubscriptionId)
                                     );
                                 }
                             }
@@ -215,10 +216,10 @@ public class FeedBinSyncJobService extends JobService {
                         syncTags();
 
                         // Mark items as unread
-                        boolean markingItemsAsUnreadSuccessful = markItemsAsUnRead(readablyDatabase.dao().getModifiedFeedItemsSinceLastSync(false));
+                        boolean markingItemsAsUnreadSuccessful = markItemsAsUnRead(paperDatabase.dao().getModifiedFeedItemsSinceLastSync(false));
 
                         // Mark items as read
-                        markItemsAsRead(readablyDatabase.dao().getModifiedFeedItemsSinceLastSync(true));
+                        markItemsAsRead(paperDatabase.dao().getModifiedFeedItemsSinceLastSync(true));
 
                         // Get unread items
                         if (markingItemsAsUnreadSuccessful) syncUnreadItems();
@@ -230,7 +231,7 @@ public class FeedBinSyncJobService extends JobService {
                         syncFavEntries();
 
                         // Get high-res fav icons
-                        for (SubscriptionEntity subscriptionEntity : readablyDatabase.dao().getAllSubscriptions()) {
+                        for (SubscriptionEntity subscriptionEntity : paperDatabase.dao().getAllSubscriptions()) {
 
 
                             if (subscriptionEntity.iconUrl == null) {
@@ -241,17 +242,17 @@ public class FeedBinSyncJobService extends JobService {
                                     subscriptionEntity.iconUrl = favIconUrl;
                                 }
 
-                                readablyDatabase.dao().updateSubscription(subscriptionEntity);
+                                paperDatabase.dao().updateSubscription(subscriptionEntity);
                             }
                         }
 
 
                         // Cache lead images of new unread items
-                        if (!readablyPrefs.autoCacheImages) {
+                        if (!paperPrefs.autoCacheImages) {
                             return;
-                        } else if (readablyPrefs.automaticSyncWiFiOnly && ConnectivityState.isOnWiFi()) {
+                        } else if (paperPrefs.automaticSyncWiFiOnly && ConnectivityState.isOnWiFi()) {
                             autoImageCache.startCaching(syncStartTime);
-                        } else if (readablyPrefs.autoCacheImages && !readablyPrefs.automaticSyncWiFiOnly && ConnectivityState.hasDataConnection()) {
+                        } else if (paperPrefs.autoCacheImages && !paperPrefs.automaticSyncWiFiOnly && ConnectivityState.hasDataConnection()) {
                             autoImageCache.startCaching(syncStartTime);
                         }
 
@@ -292,13 +293,13 @@ public class FeedBinSyncJobService extends JobService {
                         List<String> syncedTagIds = getSyncedTagIds(tagEntities);
 
                         // Lets cleanup removed tags
-                        for (TagEntity savedTagEntity : readablyDatabase.dao().getAllTags()) {
+                        for (TagEntity savedTagEntity : paperDatabase.dao().getAllTags()) {
                             if (!syncedTagIds.contains(savedTagEntity.serverId) && isFeedbinSelectedAccount()) {
-                                readablyDatabase.dao().deleteTagByServerId(savedTagEntity.subscriptionId, savedTagEntity.name);
+                                paperDatabase.dao().deleteTagByServerId(savedTagEntity.subscriptionId, savedTagEntity.name);
                             }
                         }
 
-                        readablyDatabase.dao().addTags(tagEntities);
+                        paperDatabase.dao().addTags(tagEntities);
                     }
 
                     @Override
@@ -316,6 +317,7 @@ public class FeedBinSyncJobService extends JobService {
     }
 
 
+    @SuppressLint("CheckResult")
     private void syncUnreadItems() {
 
         sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_STAGE_ITEMS));
@@ -332,12 +334,12 @@ public class FeedBinSyncJobService extends JobService {
 
                             // Remove already saved ids, this makes syncing very efficient
                             // It also marks unread items in db that doesnt exist here as read
-                            for (FeedItemEntity feedItemEntity : readablyDatabase.dao().getAllUnreadFeedItems()) {
+                            for (FeedItemEntity feedItemEntity : paperDatabase.dao().getAllUnreadFeedItems()) {
                                 if (integers.contains(Integer.valueOf(feedItemEntity.id))) {
                                     integers.remove(Integer.valueOf(feedItemEntity.id));
                                 } else {
                                     feedItemEntity.read = true;
-                                    readablyDatabase.dao().updateFeedItem(feedItemEntity);
+                                    paperDatabase.dao().updateFeedItem(feedItemEntity);
                                 }
                             }
 
@@ -360,7 +362,7 @@ public class FeedBinSyncJobService extends JobService {
                                                 Log.w(TAG, "onNext: got unread items");
                                                 successfulAtLeastOnce[0] = true;
                                                 if (isFeedbinSelectedAccount())
-                                                    readablyDatabase.dao().insertFeedItems(convertFeedBinEntries(feedBinEntriesItems, false));
+                                                    paperDatabase.dao().insertFeedItems(convertFeedBinEntries(feedBinEntriesItems, false));
                                             }
 
                                             @Override
@@ -393,6 +395,7 @@ public class FeedBinSyncJobService extends JobService {
                 });
     }
 
+    @SuppressLint("CheckResult")
     private void syncReadItems() {
 
         Log.w(TAG, "syncReadItems: getting read items");
@@ -401,11 +404,12 @@ public class FeedBinSyncJobService extends JobService {
 
         RetrofitFeedbinClient.getRetrofit()
                 .create(FeedbinAPI.class)
-                .getEntriesForSubscription(true).filter(feedBinEntriesItems -> feedBinEntriesItems != null)
+                .getEntriesForSubscription(true)
+                .filter(feedBinEntriesItems -> feedBinEntriesItems != null)
                 .subscribeWith(new DisposableObserver<List<FeedBinEntriesItem>>() {
                     @Override
                     public void onNext(List<FeedBinEntriesItem> feedBinEntriesItems) {
-                        readablyDatabase.dao().insertFeedItems(convertFeedBinEntries(feedBinEntriesItems, true));
+                        paperDatabase.dao().insertFeedItems(convertFeedBinEntries(feedBinEntriesItems, true));
                         Log.w(TAG, String.format("onNext: sync success for read items, got %d items", feedBinEntriesItems.size()));
                     }
 
@@ -445,7 +449,7 @@ public class FeedBinSyncJobService extends JobService {
                                     public void onNext(List<FeedBinEntriesItem> feedBinEntriesItems) {
                                         Log.w(TAG, "onNext: got starred items and saving them");
                                         if (isFeedbinSelectedAccount()) {
-                                            readablyDatabase.dao().insertFeedItems(convertFavFeedBinEntries(feedBinEntriesItems));
+                                            paperDatabase.dao().insertFeedItems(convertFavFeedBinEntries(feedBinEntriesItems));
                                             updateUnStarredItems(integers);
                                         }
                                     }
@@ -580,12 +584,12 @@ public class FeedBinSyncJobService extends JobService {
 
         for (FeedBinSubscriptionsItem feedBinSubscriptionsItem : feedBinSubscriptionsItems) {
 
-            SubscriptionEntity savedSubscriptionEntity = readablyDatabase.dao().getSubscription(String.valueOf(feedBinSubscriptionsItem.getFeed_id()));
+            SubscriptionEntity savedSubscriptionEntity = paperDatabase.dao().getSubscription(String.valueOf(feedBinSubscriptionsItem.getFeed_id()));
 
             if (savedSubscriptionEntity != null) {
                 if (!savedSubscriptionEntity.title.equals(feedBinSubscriptionsItem.getTitle())) {
                     savedSubscriptionEntity.title = feedBinSubscriptionsItem.getTitle();
-                    readablyDatabase.dao().updateSubscription(savedSubscriptionEntity);
+                    paperDatabase.dao().updateSubscription(savedSubscriptionEntity);
                 }
 
             } else {
@@ -639,14 +643,15 @@ public class FeedBinSyncJobService extends JobService {
     }
 
     private List<FeedItemEntity> convertFeedBinEntries(List<FeedBinEntriesItem> feedBinEntriesItems, boolean read) {
+
         List<FeedItemEntity> feedItemEntities = new ArrayList<>();
         FeedParser feedParser = FeedParser.getInstance(getApplicationContext());
 
 
         for (FeedBinEntriesItem feedBinEntriesItem : feedBinEntriesItems) {
 
-            FeedItemEntity existing = readablyDatabase.dao().getFeedItem(feedBinEntriesItem.getId());
-            SubscriptionEntity subscriptionEntity = readablyDatabase.dao().getSubscription(feedBinEntriesItem.getSubscriptionId());
+            FeedItemEntity existing = paperDatabase.dao().getFeedItem(feedBinEntriesItem.getId());
+            SubscriptionEntity subscriptionEntity = paperDatabase.dao().getSubscription(feedBinEntriesItem.getSubscriptionId());
 
             if (existing == null && subscriptionEntity != null) {
                 FeedItemEntity feedItemEntity = new FeedItemEntity(
@@ -669,7 +674,7 @@ public class FeedBinSyncJobService extends JobService {
                 feedItemEntities.add(feedItemEntity);
             } else if (existing != null) {
                 if (existing.modifiedAt == 0) existing.read = read;
-                readablyDatabase.dao().updateFeedItem(existing);
+                paperDatabase.dao().updateFeedItem(existing);
             }
         }
 
@@ -678,17 +683,18 @@ public class FeedBinSyncJobService extends JobService {
 
 
     private List<FeedItemEntity> convertFavFeedBinEntries(List<FeedBinEntriesItem> feedBinEntriesItems) {
+
         List<FeedItemEntity> feedItemEntities = new ArrayList<>();
         FeedParser feedParser = FeedParser.getInstance(getApplicationContext());
         for (FeedBinEntriesItem feedBinEntriesItem : feedBinEntriesItems) {
 
-            FeedItemEntity existing = readablyDatabase.dao().getFeedItem(feedBinEntriesItem.getId());
+            FeedItemEntity existing = paperDatabase.dao().getFeedItem(feedBinEntriesItem.getId());
 
             if (existing != null) {
                 existing.favorite = true;
-                readablyDatabase.dao().updateFeedItem(existing);
+                paperDatabase.dao().updateFeedItem(existing);
             } else {
-                SubscriptionEntity subscriptionEntity = readablyDatabase.dao().getSubscription(feedBinEntriesItem.getSubscriptionId());
+                SubscriptionEntity subscriptionEntity = paperDatabase.dao().getSubscription(feedBinEntriesItem.getSubscriptionId());
 
                 if (subscriptionEntity == null) continue;
 
@@ -720,15 +726,15 @@ public class FeedBinSyncJobService extends JobService {
 
 
     private void updateUnStarredItems(List<Integer> ids) {
-        int[] starredIds = readablyDatabase.dao().getFavItemsIds();
+        int[] starredIds = paperDatabase.dao().getFavItemsIds();
 
         for (int i = 0; i < starredIds.length; i++) {
             if (!ids.contains(starredIds[i])) {
-                FeedItemEntity feedItemEntity = readablyDatabase.dao().getFeedItem(String.valueOf(starredIds[i]));
+                FeedItemEntity feedItemEntity = paperDatabase.dao().getFeedItem(String.valueOf(starredIds[i]));
                 if (feedItemEntity != null) {
                     feedItemEntity.favorite = false;
                     Log.e(TAG, String.format("updateUnStarredItems: un-starring %s", feedItemEntity.title));
-                    readablyDatabase.dao().updateFeedItem(feedItemEntity);
+                    paperDatabase.dao().updateFeedItem(feedItemEntity);
                 }
             }
         }
@@ -754,12 +760,12 @@ public class FeedBinSyncJobService extends JobService {
             ids.add((jsonArray.get(i).getAsInt()));
         }
 
-        FeedItemEntity[] feedItemEntities = readablyDatabase.dao().getFeedItemsForIds(ids);
+        FeedItemEntity[] feedItemEntities = paperDatabase.dao().getFeedItemsForIds(ids);
         for (FeedItemEntity feedItemEntity : feedItemEntities) {
             feedItemEntity.modifiedAt = 0;
         }
 
-        readablyDatabase.dao().updateFeedItems(feedItemEntities);
+        paperDatabase.dao().updateFeedItems(feedItemEntities);
     }
 
     private String makeStringForIdsRequest(List<Integer> ids) {

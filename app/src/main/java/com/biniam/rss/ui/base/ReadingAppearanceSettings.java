@@ -19,7 +19,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.biniam.rss.R;
-import com.biniam.rss.persistence.preferences.ReadablyPrefs;
+import com.biniam.rss.persistence.preferences.PaperPrefs;
 import com.biniam.rss.persistence.preferences.ReadingPrefs;
 import com.biniam.rss.ui.controllers.FontChooserAdapter;
 
@@ -53,7 +53,7 @@ public class ReadingAppearanceSettings extends PopupWindow implements FontChoose
     private TextView currentFontSize;
     private TextView currentLineHeight;
     private FontChooserAdapter fontChooserAdapter;
-    private ReadablyPrefs readablyPrefs;
+    private PaperPrefs paperPrefs;
     private LinearLayout backgroundColorContainer;
     private Switch autoDarkModeSwitch;
     private TextView autoDarkModeDescriptionTextView;
@@ -64,7 +64,7 @@ public class ReadingAppearanceSettings extends PopupWindow implements FontChoose
         super(context);
         this.context = context;
 
-        readablyPrefs = ReadablyPrefs.getInstance(context);
+        paperPrefs = PaperPrefs.getInstance(context);
         readingPrefs = ReadingPrefs.getInstance(context);
         View popupView = LayoutInflater.from(context).inflate(R.layout.reading_appearance_layout, null);
 
@@ -103,7 +103,7 @@ public class ReadingAppearanceSettings extends PopupWindow implements FontChoose
             }
         });
 
-        autoDarkModeSwitch.setChecked(readablyPrefs.autoDarkMode);
+        autoDarkModeSwitch.setChecked(paperPrefs.autoDarkMode);
 
         setContentView(popupView);
         setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
@@ -140,7 +140,7 @@ public class ReadingAppearanceSettings extends PopupWindow implements FontChoose
         final ImageView scarpaBgColor = popUpView.findViewById(R.id.bgScarpaColor);
         final ImageView onyxBgColor = popUpView.findViewById(R.id.bgOnyxColor);
 
-        if (readablyPrefs.autoDarkMode) {
+        if (paperPrefs.autoDarkMode) {
             backgroundColorContainer.setVisibility(View.GONE);
         } else {
             backgroundColorContainer.setVisibility(View.VISIBLE);

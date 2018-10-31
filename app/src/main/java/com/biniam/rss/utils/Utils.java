@@ -13,7 +13,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.biniam.rss.R;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
 
 import java.io.UnsupportedEncodingException;
@@ -29,20 +29,15 @@ import java.util.Date;
  */
 
 public class Utils {
-
-    public static final String TAG = Utils.class.getSimpleName();
+    public  static final String TAG = Utils.class.getSimpleName();
     private static final String GOOGLE_CHROME_PACKAGE_ID = "com.android.chrome";
-
     /**
      * This code below will run before any of the constructors and will be helpful
      * if we accidentally forgot to initialize the constructor for this class
      */
-
     public Utils() {
 
     }
-
-
     /**
      * Get SHA-1 digest for the given string, largely used to make unique ids
      *
@@ -50,9 +45,7 @@ public class Utils {
      * @return SHA-1 string or null if error occurs
      */
     public static String getSHA1Digest(String string) {
-
         final String HEX = "0123456789abcdef";
-
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
             messageDigest.update(string.getBytes("UTF-8"), 0, string.length());
@@ -164,7 +157,7 @@ public class Utils {
     /**
      * @param rssDatabase
      */
-    public static void getSubscriptionFavIcon(ReadablyDatabase rssDatabase) {
+    public static void getSubscriptionFavIcon(PaperDatabase rssDatabase) {
         for (SubscriptionEntity subscriptionEntity : rssDatabase.dao().getAllSubscriptions()) {
             if (subscriptionEntity.iconUrl == null) {
                 String favIconUrl = FavIconFetcher.getFavIconUrl(subscriptionEntity.siteLink);

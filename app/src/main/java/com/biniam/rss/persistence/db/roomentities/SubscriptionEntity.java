@@ -9,7 +9,7 @@ import android.os.Parcelable;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 
 import java.io.Serializable;
 
@@ -20,7 +20,7 @@ import java.io.Serializable;
  */
 
 @Keep
-@Entity(tableName = ReadablyDatabase.SUBSCRIPTIONS_TABLE, indices = @Index("id"))
+@Entity(tableName = PaperDatabase.SUBSCRIPTIONS_TABLE, indices = @Index("id"))
 public class SubscriptionEntity implements Serializable, Parcelable {
 
     public static final Creator<SubscriptionEntity> CREATOR = new Creator<SubscriptionEntity>() {
@@ -34,6 +34,7 @@ public class SubscriptionEntity implements Serializable, Parcelable {
             return new SubscriptionEntity[size];
         }
     };
+
     @PrimaryKey
     @NonNull
     public String id;

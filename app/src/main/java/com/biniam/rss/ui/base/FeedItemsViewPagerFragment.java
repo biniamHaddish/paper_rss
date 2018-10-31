@@ -11,13 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.biniam.rss.R;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.db.roomentities.FeedItemEntity;
 import com.biniam.rss.persistence.preferences.InternalStatePrefs;
 import com.biniam.rss.persistence.preferences.ReadingPrefs;
 import com.biniam.rss.ui.controllers.FeedItemsPagerAdapter;
 import com.biniam.rss.ui.controllers.WebViewInterceptor;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -26,7 +26,7 @@ import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by  on 8/28/17.
+ * Created by biniam_haddish on 8/28/17.
  */
 
 public class FeedItemsViewPagerFragment extends Fragment {
@@ -45,7 +45,7 @@ public class FeedItemsViewPagerFragment extends Fragment {
     private WebViewInterceptor webViewInterceptor;
     private ViewPager feedItemsViewPager;
     private InternalStatePrefs internalStatePrefs;
-    private ReadablyDatabase readablyDatabase;
+    private PaperDatabase paperDatabase;
     private FeedItemEntity lastUnreadFeedItemEntity;
     private ReadingPrefs readingPrefs;
 
@@ -68,7 +68,7 @@ public class FeedItemsViewPagerFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        readablyDatabase = ReadablyApp.getInstance().getDatabase();
+        paperDatabase = PaperApp.getInstance().getDatabase();
         internalStatePrefs = InternalStatePrefs.getInstance(getContext());
         readingPrefs = ReadingPrefs.getInstance(getContext());
         feedItemsViewPager = (ViewPager) inflater.inflate(R.layout.feed_items_viewpager_layout, container, false);
@@ -154,35 +154,35 @@ public class FeedItemsViewPagerFragment extends Fragment {
             case InternalStatePrefs.UNREAD:
                 if (subscriptionId != null) {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getUnreadItemsForSubscription(subscriptionId) :
-                            readablyDatabase.dao().getUnreadItemsForSubscriptionOlderToNewer(subscriptionId);
+                            paperDatabase.dao().getUnreadItemsForSubscription(subscriptionId) :
+                            paperDatabase.dao().getUnreadItemsForSubscriptionOlderToNewer(subscriptionId);
                 } else {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getAllUnreadFeedItems() :
-                            readablyDatabase.dao().getAllUnreadFeedItemsOlderToNewer();
+                            paperDatabase.dao().getAllUnreadFeedItems() :
+                            paperDatabase.dao().getAllUnreadFeedItemsOlderToNewer();
                 }
 
             case InternalStatePrefs.EVERYTHING:
                 if (subscriptionId != null) {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getAllFeedItemsForSubscription(subscriptionId) :
-                            readablyDatabase.dao().getAllFeedItemsForSubscriptionOlderToNewer(subscriptionId);
+                            paperDatabase.dao().getAllFeedItemsForSubscription(subscriptionId) :
+                            paperDatabase.dao().getAllFeedItemsForSubscriptionOlderToNewer(subscriptionId);
 
                 } else {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getAllFeedItems() :
-                            readablyDatabase.dao().getAllFeedItemsOlderToNewer();
+                            paperDatabase.dao().getAllFeedItems() :
+                            paperDatabase.dao().getAllFeedItemsOlderToNewer();
                 }
 
             case InternalStatePrefs.FAVORITES:
                 if (subscriptionId != null) {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getFavoriteFeedItemsForSubscription(subscriptionId) :
-                            readablyDatabase.dao().getFavoriteFeedItemsForSubscriptionOlderToNewer(subscriptionId);
+                            paperDatabase.dao().getFavoriteFeedItemsForSubscription(subscriptionId) :
+                            paperDatabase.dao().getFavoriteFeedItemsForSubscriptionOlderToNewer(subscriptionId);
                 } else {
                     return sortNewerToOlder ?
-                            readablyDatabase.dao().getAllFavoriteFeedListItems() :
-                            readablyDatabase.dao().getAllFavoriteFeedListItemsOlderToNewer();
+                            paperDatabase.dao().getAllFavoriteFeedListItems() :
+                            paperDatabase.dao().getAllFavoriteFeedListItemsOlderToNewer();
                 }
         }
 
@@ -192,11 +192,11 @@ public class FeedItemsViewPagerFragment extends Fragment {
     public FeedItemEntity[] getFeedItemsForCategoryAndTag(int category, String tagName) {
         switch (category) {
             case InternalStatePrefs.UNREAD:
-                return readablyDatabase.dao().getUnreadFeedItemsForTag(tagName);
+                return paperDatabase.dao().getUnreadFeedItemsForTag(tagName);
             case InternalStatePrefs.EVERYTHING:
-                return readablyDatabase.dao().getAllFeedItemsForTag(tagName);
+                return paperDatabase.dao().getAllFeedItemsForTag(tagName);
             case InternalStatePrefs.FAVORITES:
-                return readablyDatabase.dao().getFavFeedItemsForTag(tagName);
+                return paperDatabase.dao().getFavFeedItemsForTag(tagName);
         }
         return null;
     }

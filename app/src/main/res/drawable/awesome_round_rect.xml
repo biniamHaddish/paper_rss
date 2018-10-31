@@ -2,7 +2,8 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <stroke
-        android:width="1dp"
-        android:color="@color/carmine_pink_trans_to_carmine_pink" />
-    <corners android:radius="2dp" />
+        android:width="2dp"
+        android:color="@color/lightCrayonA700"
+        />
+    <corners android:radius="2.7dp" />
 </shape>

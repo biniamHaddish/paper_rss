@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/battleship_gray_to_light_gray" android:state_activated="false" android:state_checked="false" />
-    <item android:color="@color/carmine_pink" android:state_checked="true" android:state_enabled="true" />
+    <item android:color="@color/battleship_gray_to_light_gray"
+        android:state_activated="false"
+        android:state_checked="false" />
+    <item android:color="@color/orange500"
+        android:state_checked="true"
+        android:state_enabled="true" />
 </selector>

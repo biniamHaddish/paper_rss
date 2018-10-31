@@ -1,6 +1,6 @@
 package com.biniam.rss.utils.AutoSyncManagers;
 
-import android.app.Notification;
+import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
@@ -8,14 +8,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.biniam.rss.R;
 import com.biniam.rss.connectivity.inoreader.InoApiFactory;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.connectivity.inoreader.inoReaderApi.InoSyncFactory;
+import com.biniam.rss.persistence.db.PaperDatabase;
+import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
 import com.biniam.rss.persistence.preferences.InternalStatePrefs;
+import com.biniam.rss.persistence.preferences.PaperPrefs;
 import com.biniam.rss.utils.AccountBroker;
+import com.biniam.rss.utils.DateUtils;
 import com.biniam.rss.utils.FeedSyncNotificationManager;
 import com.biniam.rss.utils.HouseKeeper;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
+
+import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -33,13 +38,17 @@ public class InoReaderSyncService extends JobService {
     private static final String EXTRA_STARTED_FROM_NOTIFICATION = ".started_from_notification";
     private Context mContext;
     private long syncStartTime;
-    private HouseKeeper houseKeeper;
+
+    // private HouseKeeper houseKeeper;
     private AccountBroker accountBroker;
     private InoApiFactory inoApiFactory;
+    private InoSyncFactory inoSyncFactory;
     private FeedSyncNotificationManager feedSyncNotificationManager;
     private NotificationManager notificationManager;
     private InternalStatePrefs internalStatePrefs;
-    private ReadablyDatabase rssDatabase;
+    private PaperDatabase rssDatabase;
+    private PaperPrefs paperPrefs;
+    private HouseKeeper houseKeeper;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -55,12 +64,13 @@ public class InoReaderSyncService extends JobService {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        houseKeeper = HouseKeeper.getInstance(getApplicationContext());
         accountBroker = AccountBroker.getInstance(getApplicationContext());
         inoApiFactory = InoApiFactory.getInstance(getApplicationContext());
+        inoSyncFactory = InoSyncFactory.getInstance(getApplicationContext());
         internalStatePrefs = InternalStatePrefs.getInstance(getApplicationContext());
-        rssDatabase = ReadablyApp.getInstance().getDatabase();
-
+        rssDatabase = PaperApp.getInstance().getDatabase();
+        paperPrefs = PaperPrefs.getInstance(getApplicationContext());
+        houseKeeper = HouseKeeper.getInstance(getApplicationContext());
     }
 
     /**
@@ -68,7 +78,7 @@ public class InoReaderSyncService extends JobService {
      */
     @Override
     public void onDestroy() {
-        //  unregisterReceiver(notificationBroadcastReceiver);
+
         super.onDestroy();
         Log.e(TAG, "onDestroy: stopping service");
     }
@@ -79,7 +89,7 @@ public class InoReaderSyncService extends JobService {
         if (!accountBroker.isCurrentAccountInoreader()) {
             jobFinished(jobParameters, false);
             sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_FINISHED));
-            return false;
+            return true;// this is changed from false to true
         }
         startSync(jobParameters);
         return true;
@@ -89,11 +99,13 @@ public class InoReaderSyncService extends JobService {
     public boolean onStopJob(JobParameters jobParameters) {
         return true;
     }
+
     /**
      * Here is where the syncing of the Account starts .
      *
      * @param jobParameters
      */
+    @SuppressLint("CheckResult")
     private void startSync(JobParameters jobParameters) {
         //init the sync here
         sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_STARTED));
@@ -103,15 +115,27 @@ public class InoReaderSyncService extends JobService {
         new Completable() {
             @Override
             protected void subscribeActual(CompletableObserver completableObserver) {
+
+                //Delete Dir and Files inside if the Time limit is due
+                long keepTime = DateUtils.numDaysToMiliSec(paperPrefs.unreadItemsToKeep);
+                Log.d(TAG, "keepTime \t: " + keepTime);
+                long finalTime = System.currentTimeMillis() - keepTime;
+                List<String> listOfIds = houseKeeper.getImagesCacheIds(finalTime);
+                SubscriptionEntity[] subscriptionEntities = rssDatabase.dao().getAllSubscriptions();
+                for (SubscriptionEntity subscriptionEntity : subscriptionEntities) {
+                    houseKeeper.imagesCacheDirStr(subscriptionEntity, listOfIds);
+                }
+                houseKeeper.deleteOldEntries(finalTime);
+
                 // Sync subscriptions
-                inoApiFactory.getSubscriptionList();// will sync the subscription
+                //inoApiFactory.userInfo();// will sync the subscription
+                inoApiFactory.getSubscriptionList();
 
                 if (jobParameters != null) {
                     jobFinished(jobParameters, false);
                 }
 
                 sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_FINISHED));
-                houseKeeper.deleteOldCaches();
 
             }
         }.subscribeOn(Schedulers.single())
@@ -132,4 +156,6 @@ public class InoReaderSyncService extends JobService {
                     }
                 });
     }
+
+
 }

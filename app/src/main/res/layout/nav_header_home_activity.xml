@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
+    android:layout_height="96dp"
     android:background="@color/white_to_cod_gray"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
 
     <ImageView
         android:id="@+id/accountLogo"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/medium_padding"
         android:paddingTop="2dp"
-        android:tint="@color/icon_color" />
+         />
 
     <RelativeLayout
         android:layout_width="wrap_content"

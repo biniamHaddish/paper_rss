@@ -13,13 +13,16 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:name=".utils.ReadablyApp"
-        android:allowBackup="true"
-        android:fullBackupContent="true"
+        android:name=".utils.PaperApp"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:appCategory="news"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar"
+        android:largeHeap="true">
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.biniam.rss.fileprovider"
@@ -73,13 +76,12 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
                     android:host="oauth"
-                    android:scheme="readably" />
+                    android:scheme="paper"/>
             </intent-filter>
 
         </activity>
@@ -120,7 +122,7 @@
         <activity
             android:name=".ui.base.SettingCategoriesActivity"
             android:parentActivityName=".ui.base.HomeActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.biniam.rss.ui.base.HomeActivity" />
@@ -129,13 +131,13 @@
             android:name=".ui.base.SettingsSubCategoryActivity"
             android:label="@string/title_activity_settings_sub_category"
             android:parentActivityName=".ui.base.SettingsSubCategoryActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.biniam.rss.ui.base.SettingsSubCategoryActivity" />
         </activity>
         <activity
-            android:name=".readablyYouTubePlayer.PlayYouTubeActivity"
+            android:name=".flareYouTubePlayer.PlayYouTubeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.base.SplashActivity"
@@ -145,10 +147,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.base.AboutActivity" />
+        <activity
+            android:name=".ui.base.AboutActivity"
+            android:theme="@style/AppTheme.MaterialAboutActivity"
+            />
         <activity android:name=".ui.base.BetaExpiredActivity"></activity>
-
-
     </application>
 
 </manifest>

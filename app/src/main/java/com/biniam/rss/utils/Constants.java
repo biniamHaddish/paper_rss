@@ -10,13 +10,13 @@ public class Constants {
 
     /*API KEYS*/
 
-    public static final String MERCURY_API_KEY = BuildConfig.MERCURY_API_KEY;
-    public static final String YOUTUBE_API_KEY = BuildConfig.YOUTUBE_API_KEY;
+    public static final String MERCURY_API_KEY  = BuildConfig.MERCURY_API_KEY;
+    public static final String YOUTUBE_API_KEY  = BuildConfig.YOUTUBE_API_KEY;
     public static final String FEEDWRANGLER_CLIENT_KEY = BuildConfig.FEEDWRANGLER_CLIENT_KEY;
 
     public static final String InoReader_APP_ID = BuildConfig.InoReader_APP_ID;
-    public static final String CLIENT_SECRET = BuildConfig.CLIENT_SECRET;
-    public static final String CSRF_STRING = BuildConfig.CSRF_STRING;
+    public static final String CLIENT_SECRET    = BuildConfig.CLIENT_SECRET;
+    public static final String CSRF_STRING      = BuildConfig.CSRF_STRING;
 
 
 

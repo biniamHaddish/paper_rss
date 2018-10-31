@@ -32,7 +32,7 @@ public class ConnectivityState extends BroadcastReceiver {
      * @return boolean whether active data connection exists
      */
     public static boolean hasDataConnection() {
-        ConnectivityManager cm = (ConnectivityManager) ReadablyApp.getInstance()
+        ConnectivityManager cm = (ConnectivityManager) PaperApp.getInstance()
                 .getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -48,7 +48,7 @@ public class ConnectivityState extends BroadcastReceiver {
      * @return whether we are on Wi-Fi and it's has internet
      */
     public static boolean isOnWiFi() {
-        ConnectivityManager cm = (ConnectivityManager) ReadablyApp.getInstance()
+        ConnectivityManager cm = (ConnectivityManager) PaperApp.getInstance()
                 .getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -63,7 +63,7 @@ public class ConnectivityState extends BroadcastReceiver {
      * @return whether we have a functioning mobile data connection
      */
     public static boolean hasMobileDataConnection() {
-        ConnectivityManager connMgr = (ConnectivityManager) ReadablyApp.getInstance().getApplicationContext()
+        ConnectivityManager connMgr = (ConnectivityManager) PaperApp.getInstance().getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         activeNetwork = connMgr.getActiveNetworkInfo();
 

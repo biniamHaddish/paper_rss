@@ -10,7 +10,7 @@ import android.content.Context;
 import com.biniam.rss.R;
 import com.biniam.rss.connectivity.local.LocalSyncJobService;
 import com.biniam.rss.persistence.preferences.InternalStatePrefs;
-import com.biniam.rss.persistence.preferences.ReadablyPrefs;
+import com.biniam.rss.persistence.preferences.PaperPrefs;
 import com.biniam.rss.utils.AutoSyncManagers.FeedBinSyncJobService;
 import com.biniam.rss.utils.AutoSyncManagers.FeedWranglerSyncJobService;
 import com.biniam.rss.utils.AutoSyncManagers.InoReaderSyncService;
@@ -32,12 +32,12 @@ public class AccountBroker {
 
     public static AccountBroker accountBroker;
     private Context context;
-    private ReadablyPrefs readablySettings;
+    private PaperPrefs readablySettings;
     private InternalStatePrefs internalStatePrefs;
 
     private AccountBroker(Context context) {
         this.context = context;
-        readablySettings = ReadablyPrefs.getInstance(context);
+        readablySettings = PaperPrefs.getInstance(context);
         internalStatePrefs = InternalStatePrefs.getInstance(context);
     }
 
@@ -93,7 +93,7 @@ public class AccountBroker {
             case InternalStatePrefs.FEED_BIN_ACCOUNT:
                 return R.drawable.ic_feedbin_logo;
             case InternalStatePrefs.INOREADER_ACCOUNT:
-                return R.drawable.inoreader_logo;
+                return R.drawable.inoreader_symbolic;
             case InternalStatePrefs.FEED_WRANGLER_ACCOUNT:
                 return R.drawable.ic_feed_wrangler_logo;
         }

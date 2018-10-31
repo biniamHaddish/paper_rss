@@ -21,6 +21,7 @@ public class InoSubscriptionList {
     }
 @Keep
     public static class SubscriptionsBean {
+
         /**
          * id : feed/http://www.theanimationblog.com/feed/
          * title : The Animation Blog.com | Est. 2007
@@ -108,6 +109,7 @@ public class InoSubscriptionList {
         public void setCategories(List<CategoriesBean> categories) {
             this.categories = categories;
         }
+
         @Keep
         public static class CategoriesBean {
             /**

@@ -20,7 +20,8 @@
             android:layout_height="24dp"
             android:layout_centerInParent="true"
             android:background="@drawable/circle_bg"
-            android:src="@drawable/ic_keyboard_arrow_right_black_24dp" />
+            android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+            />
 
     </RelativeLayout>
 
@@ -49,11 +50,12 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/regular_padding"
-        android:background="@drawable/awesome_round_rect"
         android:paddingTop="2dp"
         android:text="16"
+        android:backgroundTint="@color/white_gray_to_mine_shaft"
+        android:background="@drawable/awesome_round_rect"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Header"
-        android:textColor="@color/carmine_pink_trans_to_carmine_pink" />
+        android:textColor="@color/orange500" />
 
 </RelativeLayout>

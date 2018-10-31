@@ -197,13 +197,12 @@ public class RxSecureStorage {
     public Single<String> decryptString(String encryptedText) {
         byte[] textBytes = Base64.decode(encryptedText, Base64.DEFAULT);
         return decrypt(textBytes)
-                .map(
-                        new Function<byte[], String>() {
-                            @Override
-                            public String apply(byte[] encryptedData) throws Exception {
-                                return new String(encryptedData, 0, encryptedData.length);
-                            }
-                        })
+                .map(new Function<byte[], String>() {
+                    @Override
+                    public String apply(byte[] encryptedData) throws Exception {
+                        return new String(encryptedData, 0, encryptedData.length);
+                    }
+                })
                 .observeOn(Schedulers.computation());
     }
 
@@ -211,14 +210,13 @@ public class RxSecureStorage {
         return sharedPreferences
                 .getString(name)
                 .asObservable()
-                .map(
-                        new Function<String, byte[]>() {
-                            @Override
-                            public byte[] apply(String base64Value) throws Exception {
-                                byte[] encryptedValue = Base64.decode(base64Value, Base64.DEFAULT);
-                                return decrypt(encryptedValue).blockingGet();
-                            }
-                        });
+                .map(new Function<String, byte[]>() {
+                    @Override
+                    public byte[] apply(String base64Value) throws Exception {
+                        byte[] encryptedValue = Base64.decode(base64Value, Base64.DEFAULT);
+                        return decrypt(encryptedValue).blockingGet();
+                    }
+                });
     }
 
     public Single<Boolean> putBytes(final String name, @Nullable byte[] value) {
@@ -227,31 +225,29 @@ public class RxSecureStorage {
             return Single.just(false);
         }
         return encrypt(value)
-                .map(
-                        new Function<byte[], Boolean>() {
-                            @Override
-                            public Boolean apply(byte[] encryptedData) throws Exception {
-                                String encryptedString = Base64.encodeToString(encryptedData, Base64.DEFAULT);
-                                sharedPreferences.getString(name).set(encryptedString);
-                                return true;
-                            }
-                        });
+                .map(new Function<byte[], Boolean>() {
+                    @Override
+                    public Boolean apply(byte[] encryptedData) throws Exception {
+                        String encryptedString = Base64.encodeToString(encryptedData, Base64.DEFAULT);
+                        sharedPreferences.getString(name).set(encryptedString);
+                        return true;
+                    }
+                });
     }
 
     public Observable<String> getString(String name) {
         return sharedPreferences
                 .getString(name)
                 .asObservable()
-                .map(
-                        new Function<String, String>() {
-                            @Override
-                            public String apply(String encryptedValue) throws Exception {
-                                if (encryptedValue == null || encryptedValue.trim().isEmpty()) {
-                                    return null;
-                                }
-                                return decryptString(encryptedValue).blockingGet();
-                            }
-                        });
+                .map(new Function<String, String>() {
+                    @Override
+                    public String apply(String encryptedValue) throws Exception {
+                        if (encryptedValue == null || encryptedValue.trim().isEmpty()) {
+                            return null;
+                        }
+                        return decryptString(encryptedValue).blockingGet();
+                    }
+                });
     }
 
     public Single<Boolean> putString(final String name, @Nullable String value) {
@@ -260,14 +256,13 @@ public class RxSecureStorage {
             return Single.just(false);
         }
         return encryptString(value)
-                .map(
-                        new Function<String, Boolean>() {
-                            @Override
-                            public Boolean apply(String encryptedValue) throws Exception {
-                                sharedPreferences.getString(name).set(encryptedValue);
-                                return true;
-                            }
-                        });
+                .map(new Function<String, Boolean>() {
+                    @Override
+                    public Boolean apply(String encryptedValue) throws Exception {
+                        sharedPreferences.getString(name).set(encryptedValue);
+                        return true;
+                    }
+                });
     }
 
     public void dispose() {

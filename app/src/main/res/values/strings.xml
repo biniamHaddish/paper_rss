@@ -1,13 +1,15 @@
 <resources>
-    <string name="app_name">Readably</string>
+    <string name="app_name">Paper</string>
+    <string name="about_name">About Paper</string>
     <string name="feed_source_feedbin">Feedbin</string>
-    <string name="inoreader_Oauth_login">InoReader</string>
-    <string name="readably_notification_name">Readably new notification</string>
-    <string name="readably_notification_body">Numbers of unread feed articles and newly synced feed items.</string>
+    <string name="inoreader_Oauth_login">Inoreader</string>
+    <string name="Flare_notification_name">Paper new notification</string>
+    <string name="Flare_notification_body">Numbers of unread feed articles and newly synced feed items.</string>
     <string name="share">share</string>
     <string name="close">close</string>
     <string name="ok">Ok</string>
     <string name="share_using">share Using</string>
+    <string name="welcome">Welcome to Paper Intuitive Rss Reader.</string>
     <string name="login_to_feedbin_text">Login with Feedbin</string>
     <string name="feedbin_email_hint">E-mail</string>
     <string name="feedbin_psswd_hint">Password</string>
@@ -56,24 +58,7 @@
     <string name="left">Left</string>
 
 
-    <!-- Font names -->
-    <string name="bitter">Bitter</string>
-    <string name="merriweather">Merriweather</string>
-    <string name="ptserif">PT Serif</string>
 
-    <string name="sourcesanspro">Source Sans Pro</string>
-    <string name="vollkorn">Vollkorn</string>
-    <string name="opensans">Open Sans</string>
-    <string name="montserrat">Montserrat</string>
-
-    <!-- Font paths -->
-    <string name="montserrat_font_path" translatable="false">fonts/montserrat</string>
-    <string name="bitter_font_path" translatable="false">fonts/bitter</string>
-    <string name="merriweather_font_path" translatable="false">fonts/merriweather</string>
-    <string name="opensans_font_path" translatable="false">fonts/opensans</string>
-    <string name="ptserif_font_path" translatable="false">fonts/ptserif</string>
-    <string name="sourcesanspro_font_path" translatable="false">fonts/sourcesanspro</string>
-    <string name="vollkorn_font_path" translatable="false">fonts/vollkorn</string>
 
     <!--Link long click options-->
     <string name="open_link">Open link</string>
@@ -101,47 +86,68 @@
     <string name="double_tap_to_retry">Double tap to retry.</string>
     <string name="article_downloading">Downloading full article</string>
     <string name="at">at</string>
-    <string name="no_connection">No connection</string>
-    <string name="open_youtube_content">Watch YouTube video</string>
-    <string name="open_generic_content">Tap to see content</string>
+    <string name="no_connection">No internet connection</string>
+    <string name="open_youtube_content">Click for YouTube video</string>
+    <string name="open_generic_content">Tap here to see content  </string>
     <string name="subscription_title">Subscription title</string>
     <string name="choose_tags">Choose tags</string>
     <string name="create_new_tag">Create new tag</string>
     <string name="tag_already_exists">Tag already exists</string>
     <string name="update">Update</string>
-    <string name="local_account_name">Local</string>
+    <string name="local_account_name">Paper Reader</string>
 
 
     <string-array name="link_options">
         <item>@string/open_link</item>
         <item>@string/share_link</item>
         <item>@string/copy_link</item>
-    </string-array>
 
+    </string-array>
+    <!-- Font names -->
+    <string name="lato">Lato</string>
+    <string name="merriweather">Merriweather</string>
+    <string name="ptserif">PT Serif</string>
+    <string name="playfair">Playfair</string>
+    <string name="sourcesanspro">Source Sans Pro</string>
+    <string name="opensans">Open Sans</string>
+    <string name="montserrat">Montserrat</string>
+
+    <!-- Font paths -->
+    <string name="montserrat_font_path" translatable="false">fonts/montserrat</string>
+    <string name="merriweather_font_path" translatable="false">fonts/merriweather</string>
+    <string name="opensans_font_path" translatable="false">fonts/opensans</string>
+    <string name="ptserif_font_path" translatable="false">fonts/ptserif</string>
+    <string name="sourcesanspro_font_path" translatable="false">fonts/sourcesanspro</string>
+    <string name="lato_font_path" translatable="false">fonts/lato</string>
+    <string name="playfair_font_path" translatable="false">fonts/playfair</string>
+
+    <!--font names -->
     <string-array name="font_names">
         <item>@string/montserrat</item>
-        <item>@string/bitter</item>
+        <item>@string/lato</item>
+        <item>@string/playfair</item>
         <item>@string/merriweather</item>
         <item>@string/opensans</item>
         <item>@string/ptserif</item>
         <item>@string/sourcesanspro</item>
-        <item>@string/vollkorn</item>
     </string-array>
 
+<!--font Path-->
     <string-array name="font_paths">
         <item>@string/montserrat_font_path</item>
-        <item>@string/bitter_font_path</item>
+        <item>@string/playfair_font_path</item>
+        <item>@string/lato_font_path</item>
         <item>@string/merriweather_font_path</item>
         <item>@string/opensans_font_path</item>
         <item>@string/ptserif_font_path</item>
         <item>@string/sourcesanspro_font_path</item>
-        <item>@string/vollkorn_font_path</item>
+
     </string-array>
 
 
     <string name="title_activity_settings_sub_category">SettingsSubCategoryActivity</string>
-    <string name="loading_mercury_parser">Getting full article…</string>
-    <string name="mercury_parser_loaded">Full article loaded</string>
+    <string name="loading_mercury_parser">Loading full article....</string>
+    <string name="mercury_parser_loaded">Article loaded </string>
     <string name="mercury_parser_failure">Failed to load full article</string>
     <string name="empty_favs_message_var">You have no favorites in\n %s</string>
     <string name="empty_favs_message">You have no favorites</string>
@@ -151,8 +157,9 @@
 
     <string name="no_items_message">It\'s empty here, pull to refresh</string>
     <string name="no_sync_yet_message">It\'s empty here, pull to sync</string>
-    <string name="select_a_service">Select a service</string>
+    <string name="select_a_service">Choose a service</string>
     <string name="choose_no_service"><u>Continue without a service</u></string>
+    <string name="problem_with_full_Article">Article already loaded.</string>
 
 
     <string name="feedbin_description">Feedbin is a subscription RSS service, that delivers a great reading experience</string>
@@ -161,11 +168,11 @@
     <string name="pass_uname_err">Wrong username or password</string>
     <string name="conn_err">A connection error has occurred</string>
     <string name="feedbin_account_name">Feedbin</string>
-    <string name="InoReader_account_name">InoReader</string>
+    <string name="InoReader_account_name">Inoreader</string>
     <string name="FeedWrangler_account_name">Feed Wrangler</string>
     <string name="sync_start">Syncing…</string>
     <string name="sync_subscriptions">Syncing subscriptions…</string>
-    <string name="sync_items">Syncing items…</string>
+    <string name="sync_items">Syncing feeds…</string>
     <string name="cache_images">Caching images…</string>
     <string name="not_synced_yet">Not synced yet</string>
     <string name="synced_at">Synced %s</string>
@@ -175,15 +182,17 @@
     <string name="mark_as_read_all_confirmation_msg">Are you sure you want to mark all items as read?</string>
 
     <string name="app_description">RSS reader</string>
-    <string name="expiry_explanation">This beta version of Readably has expired. You need to update the app.</string>
-    <string name="made_by_line">Made by</string>
-    <string name="biniam">Biniam</string>
+    <string name="expiry_explanation">This beta version of Paper has expired. You need to update the app.</string>
+    <string name="made_by_line">Developer</string>
+    <string name="biniam">Biniam-Haddish</string>
     <string name="libraries_title">Open source libraries</string>
     <string name="send_feedback">Send feedback</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
-    <string name="feedback_message_body" formatted="false">Thank you for downloading Readably. Please leave the information below intact as it is helpful to track bugs:\n\n
+    <string name="feedback_message_body" formatted="false">
+        Thank you for downloading Paper.
+        Please leave the information below intact as it is helpful to track bugs:\n\n
         Manufacturer: %s \n
         Model: %s\n
         Carrier: %s\n
@@ -192,17 +201,17 @@
         Version Code:: %d\n\n
         ------- Type your message below -------\n</string>
 
-    <string name="email_support">biniam..devco@gmail.com</string>
-    <string name="feedback_subject">Readably Feedback</string>
-    <string name="biniam_h">Biniam</string>
+    <string name="email_support">benhaddish@gmail.com</string>
+    <string name="feedback_subject">Paper Feedback</string>
+    <string name="biniam_h">Biniam Haddish</string>
     <string name="drawer_open">op</string>
     <string name="drawer_close">cl</string>
     <string name="sort">Sort</string>
-    <string name="newer_to_older">Newest to oldest</string>
-    <string name="older_to_newer">Oldest to newest</string>
-    <string name="enjoying_readably">Enjoying Readably?</string>
-    <string name="rate_prompt_message">If you are enjoying Readably would you like to rate it on Google Play?</string>
-    <string name="yeah">Yeah</string>
+    <string name="newer_to_older">Newest first</string>
+    <string name="older_to_newer">Oldest first</string>
+    <string name="enjoying_Flare">Enjoying Paper?</string>
+    <string name="rate_prompt_message">If you are enjoying Paper would you like to rate it on Google Play?</string>
+    <string name="yeah">Yes</string>
     <string name="feedback">Feedback</string>
 
 </resources>

@@ -3,16 +3,22 @@ package com.biniam.rss.connectivity.inoreader.inoReaderApi;
 import android.support.annotation.Keep;
 
 import com.biniam.rss.models.inoreader.InoFoldersTagsList;
+import com.biniam.rss.models.inoreader.InoIteamId;
 import com.biniam.rss.models.inoreader.InoReaderSubscriptionItems;
 import com.biniam.rss.models.inoreader.InoReaderUserInfo;
 import com.biniam.rss.models.inoreader.InoStreamContentList;
 import com.biniam.rss.models.inoreader.InoSubscriptionList;
 import com.biniam.rss.models.inoreader.InoUnreadCount;
 
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FieldMap;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -23,11 +29,11 @@ import retrofit2.http.QueryMap;
  */
 @Keep
 public interface InoReaderAPI {
-
     @GET("/reader/api/0/user-info")
     Observable<InoReaderUserInfo> userInfo();
 
     @GET("/reader/api/0/subscription/list")
+// will change the get method to Post to see the Difference
     Observable<InoSubscriptionList> getSubscriptionList();
 
     @POST("/reader/api/0/subscription/quickadd")
@@ -43,13 +49,16 @@ public interface InoReaderAPI {
     Observable<InoUnreadCount> getInoUnreadCount();
 
     @POST("/reader/api/0/stream/contents/{streamId}")
-    Observable<InoStreamContentList> getFeedItems(@Path("streamId") String streamId, @QueryMap Map<String, String> options);
+    Observable<InoStreamContentList> getFeedItems(@Path("streamId") String streamId);
 
     @POST("/reader/api/0/stream/contents/{streamId}")
     Observable<InoStreamContentList> getStreamContent(@Path("streamId") String streamId, @QueryMap Map<String, String> options);
 
     @POST("/reader/api/0/stream/contents/")
     Observable<InoStreamContentList> getStreamContent(@QueryMap Map<String, String> options);
+
+    @POST("/reader/api/0/stream/contents/{streamId}")
+    Observable<InoStreamContentList> syncStreamContentBySub(@Path("streamId") String streamId);
 
     @POST("/reader/api/0/stream/contents")
     Observable<InoStreamContentList> getStarred(@QueryMap Map<String, String> starred);
@@ -64,6 +73,10 @@ public interface InoReaderAPI {
     Observable<ResponseBody> markAllAsRead(@QueryMap Map<String, String> options);
 
     @POST("/reader/api/0/edit-tag")
-    Observable<ResponseBody> editFeedItem(@QueryMap Map<String, String> options);
+    Observable<ResponseBody> editFeedItems(@Body String string);
+
+    @POST("/reader/api/0/edit-tag")
+    Observable<ResponseBody> editTag(@QueryMap Map<String, String> options);
+
 
 }

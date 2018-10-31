@@ -3,12 +3,14 @@
     android:layout_width="80dp"
     android:layout_height="wrap_content"
     android:layout_marginLeft="16dp"
-    android:background="?selectableItemBackground">
+    android:background="?selectableItemBackground"
+    >
+
 
     <RelativeLayout
         android:id="@+id/fontShowCaseContainer"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:layout_width="56dp"
+        android:layout_height="51dp"
         android:layout_centerHorizontal="true"
         android:background="@drawable/reading_appearance_font_chooser_bg">
 
@@ -18,12 +20,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Aa"
+            android:text="aA"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="30sp" />
-
-
     </RelativeLayout>
 
 

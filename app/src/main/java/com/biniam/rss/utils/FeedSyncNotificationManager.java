@@ -40,9 +40,9 @@ public class FeedSyncNotificationManager extends ContextWrapper {
     public void createChannel() {
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // The user-visible name of the channel.
-        CharSequence name = getString(R.string.readably_notification_name);
+        CharSequence name = getString(R.string.Flare_notification_name);
         // The user-visible description of the channel.
-        String description = getString(R.string.readably_notification_body);
+        String description = getString(R.string.Flare_notification_body);
         int importance = NotificationManager.IMPORTANCE_HIGH;
         NotificationChannel mChannel = new NotificationChannel(notification_id, name, importance);
         // Configure the notification channel.
@@ -86,9 +86,8 @@ public class FeedSyncNotificationManager extends ContextWrapper {
      * @return The small icon resource id
      */
     private int getSmallIcon() {
-        return R.drawable.readably_icon_minimal;
+        return R.drawable.ic_paper;
     }
-
     /**
      * @return The system service NotificationManager
      */

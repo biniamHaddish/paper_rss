@@ -9,11 +9,11 @@
         android:title="@string/reading_settings"
         app:showAsAction="ifRoom|collapseActionView" />
 
-    <item
+    <!--<item
         android:id="@+id/downloadFullArticle"
         android:icon="@drawable/ic_full_article"
         android:orderInCategory="200"
         android:title="@string/get_full_article"
-        app:showAsAction="always" />
+        app:showAsAction="always" />-->
 
 </menu>

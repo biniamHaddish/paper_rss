@@ -9,10 +9,10 @@ import android.util.Log;
 import com.biniam.rss.connectivity.feedWangler.retrofit.FeedWranglerAPI;
 import com.biniam.rss.connectivity.feedWangler.retrofit.FeedWranglerClient;
 import com.biniam.rss.models.feedWragler.FeedItemsList;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
-import com.biniam.rss.persistence.preferences.ReadablyPrefs;
+import com.biniam.rss.persistence.db.PaperDatabase;
+import com.biniam.rss.persistence.preferences.PaperPrefs;
 import com.biniam.rss.utils.AutoImageCache;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -27,17 +27,17 @@ public class FeedWranglerSyncJobService extends JobService {
     public static final String TAG = FeedWranglerSyncJobService.class.getSimpleName();
     public static int JOB_ID = 332703;
     private Context mContext;
-    private ReadablyDatabase rssDatabase;
+    private PaperDatabase rssDatabase;
     private long syncStartTime;
-    private ReadablyPrefs readablyPrefs;
+    private PaperPrefs paperPrefs;
     private AutoImageCache autoImageCache;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        rssDatabase = ReadablyApp.getInstance().getDatabase();
-        readablyPrefs = ReadablyPrefs.getInstance(getApplicationContext());
+        rssDatabase = PaperApp.getInstance().getDatabase();
+        paperPrefs = PaperPrefs.getInstance(getApplicationContext());
         autoImageCache = AutoImageCache.getInstance(getApplicationContext());
     }
 

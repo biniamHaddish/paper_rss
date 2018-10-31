@@ -3,18 +3,18 @@
 
     <item
         android:id="@+id/favorites"
-        android:icon="@drawable/ic_favorite_feeds_24dp"
+        android:icon="@drawable/ic_star_white_24dp"
         android:title="@string/favorites" />
 
     <item
         android:id="@+id/unread"
-        android:icon="@drawable/ic_unread_24dp"
+        android:icon="@drawable/ic_unread_white_24dp"
         android:title="@string/unread" />
 
 
     <item
         android:id="@+id/all"
-        android:icon="@drawable/all_items_ic"
+        android:icon="@drawable/ic_all_feed_item_white_24dp"
         android:title="@string/all" />
 
 

@@ -34,7 +34,7 @@ import android.widget.TextView;
 
 import com.biniam.rss.R;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 import com.biniam.rss.utils.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -472,7 +472,7 @@ public class SearchForSubscriptionsActivity extends AppCompatActivity {
             Observable<SubscriptionEntity> subscriptionEntityObservable = new Observable<SubscriptionEntity>() {
                 @Override
                 protected void subscribeActual(Observer<? super SubscriptionEntity> observer) {
-                    observer.onNext(ReadablyApp.getInstance().getDatabase().dao().getSubscription(subscriptionId));
+                    observer.onNext(PaperApp.getInstance().getDatabase().dao().getSubscription(subscriptionId));
                 }
             };
 

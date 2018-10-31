@@ -13,8 +13,8 @@ import com.biniam.rss.connectivity.feedWangler.retrofit.FeedWranglerAPI;
 import com.biniam.rss.connectivity.feedWangler.retrofit.FeedWranglerClient;
 import com.biniam.rss.models.feedWragler.FeedWranglerAccess;
 import com.biniam.rss.utils.Constants;
+import com.biniam.rss.utils.PaperApp;
 import com.biniam.rss.utils.PreferencesUtil;
-import com.biniam.rss.utils.ReadablyApp;
 import com.biniam.rss.utils.Utils;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class FeedWranglerLogin extends AppCompatActivity {
                     @Override
                     public void onNext(FeedWranglerAccess feedWranglerAccess) {
                         if (feedWranglerAccess.getAccess_token() != null) {
-//                            SecureAccountManager secureAccountManager = new SecureAccountManager.Builder(ReadablyApp.getInstance()).build();
+//                            SecureAccountManager secureAccountManager = new SecureAccountManager.Builder(PaperApp.getInstance()).build();
 //                            secureAccountManager.obfuscateAcessToken(feedWranglerAccess.getAccess_token())
 //                                    .subscribe(new Consumer<String>() {
 //                                        @Override
@@ -67,7 +67,7 @@ public class FeedWranglerLogin extends AppCompatActivity {
 //
 //                                        }
 //                                    });
-//                            Utils.showToast(ReadablyApp.getInstance(), feedWranglerAccess.getAccess_token());
+//                            Utils.showToast(PaperApp.getInstance(), feedWranglerAccess.getAccess_token());
                         }
                     }
 
@@ -75,7 +75,7 @@ public class FeedWranglerLogin extends AppCompatActivity {
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         Log.d(TAG, "onError: Login" + e.getMessage());
-                        Utils.showToast(ReadablyApp.getInstance(), "Login Failed please try later." + e.getMessage());
+                        Utils.showToast(PaperApp.getInstance(), "Login Failed please try later." + e.getMessage());
                     }
 
                     @Override

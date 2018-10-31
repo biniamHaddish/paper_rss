@@ -13,7 +13,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.biniam.rss.R;
-import com.biniam.rss.persistence.preferences.ReadablyPrefs;
+import com.biniam.rss.persistence.preferences.PaperPrefs;
 
 public class ReadingPreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -21,7 +21,7 @@ public class ReadingPreferencesFragment extends PreferenceFragment implements Sh
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_LOCATION = 11;
 
     private SharedPreferences sharedPreferences;
-    private ReadablyPrefs readablyPrefs;
+    private PaperPrefs paperPrefs;
     private CheckBoxPreference autoDarkModeCheckBoxPreference;
 
     @Override
@@ -31,7 +31,7 @@ public class ReadingPreferencesFragment extends PreferenceFragment implements Sh
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        readablyPrefs = ReadablyPrefs.getInstance(getActivity().getApplicationContext());
+        paperPrefs = PaperPrefs.getInstance(getActivity().getApplicationContext());
 
         autoDarkModeCheckBoxPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_auto_dark_mode_title));
 
@@ -39,7 +39,7 @@ public class ReadingPreferencesFragment extends PreferenceFragment implements Sh
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED
-                        && !readablyPrefs.autoDarkMode) {
+                        && !paperPrefs.autoDarkMode) {
                     // Request for location permission
                     requestPermissions(
                             new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -68,12 +68,12 @@ public class ReadingPreferencesFragment extends PreferenceFragment implements Sh
                 Log.d(TAG, "onRequestPermissionsResult: location permission granted");
 
                 autoDarkModeCheckBoxPreference.setChecked(true);
-                readablyPrefs.updateBooleanPref(getString(R.string.pref_auto_dark_mode_title), true);
+                paperPrefs.updateBooleanPref(getString(R.string.pref_auto_dark_mode_title), true);
 
             } else {
                 Log.d(TAG, "onRequestPermissionsResult: location permission denied");
                 autoDarkModeCheckBoxPreference.setChecked(false);
-                readablyPrefs.updateBooleanPref(getString(R.string.pref_auto_dark_mode_title), false);
+                paperPrefs.updateBooleanPref(getString(R.string.pref_auto_dark_mode_title), false);
             }
         }
     }

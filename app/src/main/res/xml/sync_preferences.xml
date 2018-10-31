@@ -32,29 +32,14 @@
 
 
         <ListPreference
-            android:defaultValue="100"
-            android:entries="@array/feed_item_amounts"
-            android:entryValues="@array/feed_item_amounts"
-            android:key="@string/pref_unread_items_to_keep_title"
+            android:defaultValue="2"
+            android:entries="@array/settings_keep_times"
+            android:entryValues="@array/number_of_days_read_feed_to_keep"
+            android:key="@string/pref_read_Items_keep_key"
+            android:inputType="number"
             android:summary="@string/pref_unread_items_to_keep_summary"
-            android:title="@string/pref_unread_items_to_keep_title" />
-
-        <ListPreference
-            android:defaultValue="50"
-            android:entries="@array/feed_item_amounts"
-            android:entryValues="@array/feed_item_amounts"
-            android:key="@string/pref_keep_read_items_for_title"
-            android:summary="@string/pref_keep_read_items_for_summary"
-            android:title="@string/pref_keep_read_items_for_title" />
-
-        <ListPreference
-            android:defaultValue="50"
-            android:entries="@array/feed_item_amounts"
-            android:entryValues="@array/feed_item_amounts"
-            android:key="@string/pref_fav_items_to_keep_title"
-            android:summary="@string/pref_fav_items_to_keep_summary"
-            android:title="@string/pref_fav_items_to_keep_title" />
-
+            android:title="@string/pref_time_to_keep_read_feeds_title"
+            />
 
     </PreferenceCategory>
 

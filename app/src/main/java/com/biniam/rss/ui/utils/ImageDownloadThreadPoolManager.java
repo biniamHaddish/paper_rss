@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ImageDownloadThreadPoolManager {
 
-    public static final String TAG = ImageDownloadThreadPoolManager.class.getSimpleName();
+    public  static final String TAG = ImageDownloadThreadPoolManager.class.getSimpleName();
     private static final int KEEP_ALIVE_TIME = 1;
     private static final TimeUnit KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;
     private static ImageDownloadThreadPoolManager sInstance = null;

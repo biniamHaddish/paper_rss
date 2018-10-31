@@ -9,7 +9,7 @@ import com.biniam.rss.R;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
 
 /**
- * Created by  on 3/9/17.
+ * Created by biniam_haddish on 3/9/17.
  */
 
 public class UnsubscribeDialog extends DialogFragment {

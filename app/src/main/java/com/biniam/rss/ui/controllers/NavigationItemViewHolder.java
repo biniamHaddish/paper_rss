@@ -28,6 +28,7 @@ public class NavigationItemViewHolder extends GroupViewHolder {
 
     private TextView navigationItemTitle;
     private ImageView navigationItemIcon;
+    private ImageView navigationItemArrow;
     private RelativeLayout expandTagRelativeLayout;
     private TextView navigationItemUnreadCount;
     private NavigationSelectionListener navigationSelectionListener;
@@ -39,6 +40,7 @@ public class NavigationItemViewHolder extends GroupViewHolder {
         super(itemView);
         navigationItemTitle = itemView.findViewById(R.id.navigationItemTitle);
         navigationItemIcon = itemView.findViewById(R.id.navigationItemIcon);
+        navigationItemArrow= itemView.findViewById(R.id.navigationItemIcon);
         navigationItemUnreadCount = itemView.findViewById(R.id.navigationItemUnreadCount);
         expandTagRelativeLayout = itemView.findViewById(R.id.expandTag);
 
@@ -60,17 +62,18 @@ public class NavigationItemViewHolder extends GroupViewHolder {
         this.navigationItem = navigationItem;
         itemView.setActivated(selected);
         Log.d(TAG, String.format("bind: setting tag title to %s", navigationItem.getTitle()));
+
         navigationItemTitle.setText(navigationItem.getTitle());
-        navigationItemIcon.setImageResource(R.drawable.ic_keyboard_arrow_right_black_24dp);
-        navigationItemIcon.setScaleType(ImageView.ScaleType.CENTER);
+        navigationItemArrow.setImageResource(R.drawable.ic_keyboard_arrow_right_black_24dp);
+        navigationItemArrow.setScaleType(ImageView.ScaleType.CENTER);
         navigationItemUnreadCount.setText(String.valueOf(navigationItem.getUnreadCount()));
 
 
         if (navigationItem.isSubscription()) {
             // Make the text style match that of regular subscriptions
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                navigationItemTitle.setTextAppearance(R.style.TextAppearance_AppCompat_Body1); // TODO: find a way to apply text appearance style on api level lower than 23
+                navigationItemTitle.setTextAppearance(R.style.TextAppearance_AppCompat_Body1);
+                // TODO: find a way to apply text appearance style on api level lower than 23
             }
 
             navigationItemTitle.setTextSize(16f);
@@ -99,13 +102,13 @@ public class NavigationItemViewHolder extends GroupViewHolder {
 
             if (internalStatePrefs.selectedFeedFilter == InternalStatePrefs.UNREAD) {
                 navigationItemTitle.setText(navigationItemTitle.getContext().getString(R.string.unread));
-                navigationItemIcon.setImageResource(R.drawable.ic_nav_unread);
+                navigationItemIcon.setImageResource(R.drawable.ic_nav_unread_orange500);
             } else if (internalStatePrefs.selectedFeedFilter == InternalStatePrefs.FAVORITES) {
                 navigationItemTitle.setText(navigationItemTitle.getContext().getString(R.string.favorites));
-                navigationItemIcon.setImageResource(R.drawable.ic_nav_fav);
+                navigationItemIcon.setImageResource(R.drawable.ic_star_orange500_24dp);
             } else {
                 navigationItemTitle.setText(navigationItemTitle.getContext().getString(R.string.all));
-                navigationItemIcon.setImageResource(R.drawable.ic_nav_all_alt);
+                navigationItemIcon.setImageResource(R.drawable.ic_all_items_orange500);
             }
 
 
@@ -133,7 +136,6 @@ public class NavigationItemViewHolder extends GroupViewHolder {
 
     @Override
     public void expand() {
-
         if (!navigationItem.isSubscription() && !navigationItem.isAllSubscriptions()) {
             adapter.addToExpandedGroups(navigationItem.getTitle());
             animateExpand();

@@ -46,9 +46,7 @@ public class HeaderInterceptor extends OkHttpClient implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request.Builder builder;
         Request request = chain.request();
-        builder = request.newBuilder()
-                .addHeader("Authorization",
-                        tokenType + " " + accessToken);
+        builder = request.newBuilder().addHeader("Authorization", tokenType + " " + accessToken);
         return chain.proceed(builder.build());
     }
 

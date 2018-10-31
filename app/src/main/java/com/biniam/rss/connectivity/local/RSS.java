@@ -1,7 +1,7 @@
 package com.biniam.rss.connectivity.local;
 
 /**
- * Created by  on 2/24/17.
+ * Created by biniam_haddish on 2/24/17.
  * <p>
  * A static class that defines RSS tags
  */

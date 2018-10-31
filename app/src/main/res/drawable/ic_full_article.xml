@@ -1,48 +1,6 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="14dp"
-    android:height="12dp"
-    android:viewportWidth="14.0"
-    android:viewportHeight="12.0">
-    <path
-        android:pathData="M0,0h8v2h-8z"
-        android:strokeColor="#00000000"
-        android:fillType="nonZero"
-        android:fillColor="#000000"
-        android:strokeWidth="1" />
-    <path
-        android:pathData="M10,0h4v2h-4z"
-        android:strokeColor="#00000000"
-        android:fillType="nonZero"
-        android:fillColor="#000000"
-        android:strokeWidth="1" />
-    <path
-        android:pathData="M0,10h8v2h-8z"
-        android:strokeColor="#00000000"
-        android:fillType="nonZero"
-        android:fillColor="#000000"
-        android:strokeWidth="1" />
-    <path
-        android:pathData="M10,10h4v2h-4z"
-        android:strokeColor="#00000000"
-        android:fillType="nonZero"
-        android:fillColor="#000000"
-        android:strokeWidth="1" />
-    <path
-        android:pathData="M0,3h5v2h-5z"
-        android:strokeColor="#00000000"
-        android:fillType="nonZero"
-        android:fillColor="#000000"
-        android:strokeWidth="1" />
-    <path
-        android:pathData="M7,3h7v2h-7z"
-        android:strokeColor="#00000000"
-        android:fillType="nonZero"
-        android:fillColor="#000000"
-        android:strokeWidth="1" />
-    <path
-        android:pathData="M0,7h14v2h-14z"
-        android:strokeColor="#00000000"
-        android:fillType="nonZero"
-        android:fillColor="#000000"
-        android:strokeWidth="1" />
+<vector android:height="24dp" android:viewportHeight="24"
+    android:viewportWidth="24"
+    android:width="24dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#FF000000" android:pathData="M0,0L0,18C0,19.1016 0.8984,20 2,20L14,20L20,14L20,0L18,2L16,0L14,2L12,0L10,2L8,0L6,2L4,0L2,2L0,0ZM4,2.5C4,2.5 5,4 6,4C6.9688,4 8,2.5 8,2.5C8,2.5 8.9688,4 10,4C10.9688,4 12,2.5 12,2.5C12,2.5 13.0313,4 14,4C14.9375,4 16,2.5 16,2.5C16,2.5 17.0313,4 18,4L18,14L11,14L11,15L14,15L14,16L11,16L11,17L14,17L14,18L2,18L2,4C2.9375,4 4,2.5 4,2.5ZM3,5L3,7L17,7L17,5L3,5ZM3,8L3,15L10,15L10,8L3,8ZM11,8L11,9L17,9L17,8L11,8ZM7,12L6,13L8,13L8,12L7,12ZM6,13L6,10L5,10L5,13L6,13ZM11,10L11,11L17,11L17,10L11,10ZM11,12L11,13L17,13L17,12L11,12ZM3,16L3,17L10,17L10,16L3,16Z"/>
 </vector>

@@ -3,6 +3,7 @@ package com.biniam.rss.ui.base;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
@@ -57,9 +58,9 @@ import com.biniam.rss.leanrssImageViewer.ImageViewerActivity;
 import com.biniam.rss.models.MercuryResult;
 import com.biniam.rss.persistence.db.roomentities.FeedItemEntity;
 import com.biniam.rss.persistence.preferences.InternalStatePrefs;
-import com.biniam.rss.persistence.preferences.ReadablyPrefs;
+import com.biniam.rss.persistence.preferences.PaperPrefs;
 import com.biniam.rss.persistence.preferences.ReadingPrefs;
-import com.biniam.rss.readablyYouTubePlayer.PlayYouTubeActivity;
+import com.biniam.rss.flareYouTubePlayer.PlayYouTubeActivity;
 import com.biniam.rss.ui.controllers.FeedItemsPagerAdapter;
 import com.biniam.rss.ui.controllers.FeedParser;
 import com.biniam.rss.ui.controllers.UiMessagesHandler;
@@ -116,6 +117,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
     private ImageView favFeedItemImageView;
     private ImageView setUnreadImageView;
     private ImageView shareImageView;
+    private ImageView loadFullArticle;
     private ImageView openInBrowserImageView;
     private ProgressBar feedReadingProgressBar;
     private CardView ratePromptCardView;
@@ -135,7 +137,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
     // A thread pool manager for downloading images
     private ImageDownloadThreadPoolManager imageDownloadThreadPoolManager;
     private CustomTabsIntent customTabsIntent;
-    private MenuItem downloadFullArticleMenu;
+   // private MenuItem downloadFullArticleMenu;
     private ActionMode actionMode = null;
     private boolean isLandScape;
 
@@ -147,12 +149,12 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
     private ClipboardManager clipboardManager;
     private FeedItemsPagerAdapter.FeedViewPagerObject currentFeedPagerObject;
     private InternalStatePrefs internalStatePrefs;
-    private ReadablyPrefs readablyPrefs;
+    private PaperPrefs paperPrefs;
     private final Runnable showControls = new Runnable() {
         @Override
         public void run() {
             if (!controlsVisible) {
-                if (readablyPrefs.fullScreenReading) {
+                if (paperPrefs.fullScreenReading) {
                     feedItemsViewPagerFragment.showControls(isLandScape);
                 }
                 getSupportActionBar().show();
@@ -171,7 +173,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                 feedReadingProgressBar.setVisibility(View.GONE);
                 controlsLinearLayout.setVisibility(View.GONE);
                 findViewById(R.id.snackBarAnchor).setVisibility(View.GONE);
-                if (readablyPrefs.fullScreenReading) {
+                if (paperPrefs.fullScreenReading) {
                     feedItemsViewPagerFragment.hideControls(isLandScape);
                 } else {
                     getSupportActionBar().hide();
@@ -204,6 +206,22 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                     }
                     break;
 
+                case R.id.downloadFullArticle:
+
+                    //here goes the full article download code here.
+                    if (currentFeedPagerObject != null && !currentFeedPagerObject.getFeedItem().hasFullArticle() && paperPrefs.doubleTapForFullArticle) {
+                        if (ConnectivityState.hasDataConnection()) {
+                            // Cancel all ongoing image downloads, if any
+                            imageDownloadThreadPoolManager.cancelAllTask();
+                            runMercuryParser(currentFeedPagerObject);
+                        } else {
+
+                            if (controlsVisible) showSnackBar(R.string.no_connection, false, null, null);
+                        }
+                    }else{
+                        if (controlsVisible) showSnackBar(R.string.problem_with_full_Article,false,null,null);
+                    }
+                    break;
                 case R.id.openInBrowser:
                     if (URLUtil.isValidUrl(url)) {
                         customTabsIntent.launchUrl(FeedItemsActivity.this, Uri.parse(url));
@@ -217,7 +235,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        readablyPrefs = ReadablyPrefs.getInstance(getApplicationContext());
+        paperPrefs = PaperPrefs.getInstance(getApplicationContext());
         readingPrefs = ReadingPrefs.getInstance(getApplicationContext());
         inoApiFactory = InoApiFactory.getInstance(getApplicationContext());
         // Apply selected theme
@@ -245,10 +263,12 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
         setUnreadImageView = findViewById(R.id.markAsUnRead);
         shareImageView = findViewById(R.id.share);
         openInBrowserImageView = findViewById(R.id.openInBrowser);
+        loadFullArticle = findViewById(R.id.downloadFullArticle);
         favFeedItemImageView.setOnClickListener(handleBottomControls);
         shareImageView.setOnClickListener(handleBottomControls);
         setUnreadImageView.setOnClickListener(handleBottomControls);
         openInBrowserImageView.setOnClickListener(handleBottomControls);
+        loadFullArticle.setOnClickListener(handleBottomControls);
         feedReadingProgressBar = findViewById(R.id.readingProgress);
         ratePromptCardView = findViewById(R.id.rateCard);
         dismissRateCardButton = findViewById(R.id.dontRate);
@@ -359,7 +379,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                 feedReadingProgressBar.setVisibility(View.GONE);
                 controlsLinearLayout.setVisibility(View.GONE);
                 updateAppearanceSettingsPopupWindowPosition();
-                appearanceSettingsPopupWindow.setAutoDarkModeSwitch(readablyPrefs.autoDarkMode);
+                appearanceSettingsPopupWindow.setAutoDarkModeSwitch(paperPrefs.autoDarkMode);
             }
 
             @Override
@@ -368,7 +388,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                 getSupportActionBar().show();
                 feedReadingProgressBar.setVisibility(View.VISIBLE);
                 controlsLinearLayout.setVisibility(View.VISIBLE);
-                appearanceSettingsPopupWindow.setAutoDarkModeSwitch(readablyPrefs.autoDarkMode);
+                appearanceSettingsPopupWindow.setAutoDarkModeSwitch(paperPrefs.autoDarkMode);
             }
         });
 
@@ -430,9 +450,9 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.feed_item_article_view_menu, menu);
-        downloadFullArticleMenu = menu.findItem(R.id.downloadFullArticle);
+        //downloadFullArticleMenu = menu.findItem(R.id.downloadFullArticle);
 
-        Drawable appearanceSettingsDrawable = getDrawable(R.drawable.ic_reading_settings);
+        Drawable appearanceSettingsDrawable = getDrawable(R.drawable.sharp_text_format_24px);
         Drawable fullArticleDrawable = getDrawable(R.drawable.ic_subject_black_24dp);
 
         if (readingPrefs.backgroundColor.equals(getString(R.string.white))) {
@@ -465,11 +485,8 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
             mercuryProgressBar.setIndeterminateTintList(ColorStateList.valueOf(getResources().getColor(R.color.jumbo)));
         }
 
-        downloadFullArticleMenu.setIcon(fullArticleDrawable);
         menu.findItem(R.id.showAppearanceSettings).setIcon(appearanceSettingsDrawable);
 
-        if (currentFeedPagerObject != null && currentFeedPagerObject.getFeedItem().hasFullArticle())
-            downloadFullArticleMenu.setVisible(false);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -489,10 +506,11 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
         FeedItemEntity feedItemEntity = currentFeedPagerObject.getFeedItem();
         if (feedItemEntity.favorite) {
             feedItemEntity.favorite = false;
-            favFeedItemImageView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+            favFeedItemImageView.setImageResource(R.drawable.ic_star_border_white_24dp);
+
         } else {
             feedItemEntity.favorite = true;
-            favFeedItemImageView.setImageResource(R.drawable.ic_favorite_feeds_24dp);
+            favFeedItemImageView.setImageResource(R.drawable.ic_star_orange500_24dp);
         }
 
         Log.d(TAG, "toggleCurrentFeedItemFavoriteStatus");
@@ -504,10 +522,10 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
 
         if (genericFeedItem.read) {
             genericFeedItem.read = false;
-            setUnreadImageView.setImageResource(R.drawable.ic_unread_24dp);
+            setUnreadImageView.setImageResource(R.drawable.ic_nav_unread_orange500);
         } else {
             genericFeedItem.read = true;
-            setUnreadImageView.setImageResource(R.drawable.ic_read_24dp);
+            setUnreadImageView.setImageResource(R.drawable.ic_read_black_24dp);
         }
         currentFeedPagerObject.updateFeedItem(true);
     }
@@ -521,9 +539,9 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
 
     public void setFavFeedItemImageView(boolean fav) {
         if (fav) {
-            favFeedItemImageView.setImageResource(R.drawable.ic_favorite_feeds_24dp);
+            favFeedItemImageView.setImageResource(R.drawable.ic_star_orange500_24dp);
         } else {
-            favFeedItemImageView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+            favFeedItemImageView.setImageResource(R.drawable.ic_star_border_white_24dp);
         }
     }
 
@@ -531,10 +549,10 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
     private void updateUIColors() {
 
 
-        if (readablyPrefs.autoDarkMode) {
+        if (paperPrefs.autoDarkMode) {
             if (isNight) {
                 Log.d(TAG, "updateUIColors: changing to night colors");
-                if (readablyPrefs.nightReadingBgColor.equals(getString(R.string.gray_bg_name))) {
+                if (paperPrefs.nightReadingBgColor.equals(getString(R.string.gray_bg_name))) {
                     readingPrefs.backgroundColor = getString(R.string.scarpa_flow);
                     readingPrefs.textColor = getString(R.string.scarpa_flow_bg_text_color);
                     readingPrefs.linkColor = getString(R.string.scarpa_flow_bg_link_color);
@@ -544,7 +562,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                     readingPrefs.setStringPref(ReadingPrefs.TEXT_COLOR_PREF_KEY, getString(R.string.scarpa_flow_bg_text_color));
 
 
-                } else if (readablyPrefs.nightReadingBgColor.equals(getString(R.string.black_bg_name))) {
+                } else if (paperPrefs.nightReadingBgColor.equals(getString(R.string.black_bg_name))) {
                     readingPrefs.backgroundColor = getString(R.string.onyx);
                     readingPrefs.textColor = getString(R.string.onyx_bg_text_color);
                     readingPrefs.linkColor = getString(R.string.onyx_bg_link_color);
@@ -555,7 +573,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                 }
             } else {
                 Log.d(TAG, "updateUIColors: changing to day colors");
-                if (readablyPrefs.dayReadingBgColor.equals(getString(R.string.sepia_bg_name))) {
+                if (paperPrefs.dayReadingBgColor.equals(getString(R.string.sepia_bg_name))) {
                     readingPrefs.backgroundColor = getString(R.string.merino);
                     readingPrefs.textColor = getString(R.string.merino_bg_text_color);
                     readingPrefs.linkColor = getString(R.string.merino_bg_link_color);
@@ -563,7 +581,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                     readingPrefs.setStringPref(ReadingPrefs.BACKGROUND_COLOR_PREF_KEY, getString(R.string.merino));
                     readingPrefs.setStringPref(ReadingPrefs.LINK_COLOR_PREF_KEY, getString(R.string.merino_bg_link_color));
                     readingPrefs.setStringPref(ReadingPrefs.TEXT_COLOR_PREF_KEY, getString(R.string.merino_bg_text_color));
-                } else if (readablyPrefs.dayReadingBgColor.equals(getString(R.string.white_bg_name))) {
+                } else if (paperPrefs.dayReadingBgColor.equals(getString(R.string.white_bg_name))) {
                     readingPrefs.backgroundColor = getString(R.string.white);
                     readingPrefs.textColor = getString(R.string.white_bg_text_color);
                     readingPrefs.linkColor = getString(R.string.white_bg_link_color);
@@ -591,6 +609,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
             setUnreadImageView.setColorFilter(getResources().getColor(R.color.mako));
             shareImageView.setColorFilter(getResources().getColor(R.color.mako));
             openInBrowserImageView.setColorFilter(getResources().getColor(R.color.mako));
+            loadFullArticle.setColorFilter(getResources().getColor(R.color.mako));
         } else if (readingPrefs.backgroundColor.equals(getString(R.string.merino))) {
             getWindow().setStatusBarColor(getResources().getColor(R.color.irish_coffee));
             setOverflowColor(getResources().getColor(R.color.irish_coffee));
@@ -605,6 +624,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
             setUnreadImageView.setColorFilter(getResources().getColor(R.color.irish_coffee));
             shareImageView.setColorFilter(getResources().getColor(R.color.irish_coffee));
             openInBrowserImageView.setColorFilter(getResources().getColor(R.color.irish_coffee));
+            loadFullArticle.setColorFilter(getResources().getColor(R.color.irish_coffee));
 
         } else if (readingPrefs.backgroundColor.equals(getString(R.string.scarpa_flow))) {
             getWindow().setStatusBarColor(getResources().getColor(R.color.tuatara));
@@ -621,6 +641,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
             setUnreadImageView.setColorFilter(getResources().getColor(R.color.white_var));
             shareImageView.setColorFilter(getResources().getColor(R.color.white_var));
             openInBrowserImageView.setColorFilter(getResources().getColor(R.color.white_var));
+            loadFullArticle.setColorFilter(getResources().getColor(R.color.white_var));
         } else {
             getWindow().setStatusBarColor(getResources().getColor(R.color.black));
 
@@ -638,6 +659,8 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
             setUnreadImageView.setColorFilter(getResources().getColor(R.color.jumbo));
             shareImageView.setColorFilter(getResources().getColor(R.color.jumbo));
             openInBrowserImageView.setColorFilter(getResources().getColor(R.color.jumbo));
+            loadFullArticle.setColorFilter(getResources().getColor(R.color.jumbo));
+
         }
 
         if (feedItemsViewPagerFragment.isAdded()) feedItemsViewPagerFragment.setViewPagerBg();
@@ -645,7 +668,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
         rebuildCustomTabs();
     }
 
-
+    /*Will download image on the path specified by FeedItem and subscriptionId*/
     public void downloadImagesForCurrentPage() {
         FeedItemsPagerAdapter.FeedViewPagerObject feedPagerObject = feedItemsViewPagerFragment.getCurrentPagerObject();
         Document currentPageDOM = feedPagerObject.getPageDOM();
@@ -697,7 +720,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (readablyPrefs.switchUsingVolButton) {
+        if (paperPrefs.switchUsingVolButton) {
             if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
                 feedItemsViewPagerFragment.goToNextFeed();
             } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
@@ -714,7 +737,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) &&
-                readablyPrefs.switchUsingVolButton) {
+                paperPrefs.switchUsingVolButton) {
             return true;
         }
 
@@ -732,20 +755,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.downloadFullArticle:
-                if (currentFeedPagerObject != null && !currentFeedPagerObject.getFeedItem().hasFullArticle()) {
-                    if (ConnectivityState.hasDataConnection()) {
-                        // Cancel all image downloads, if any
-                        downloadFullArticleMenu.setActionView(mercuryProgressBar);
-                        imageDownloadThreadPoolManager.cancelAllTask();
-                        runMercuryParser(currentFeedPagerObject);
-                    } else {
-                        if (controlsVisible)
-                            showSnackBar(R.string.no_connection, false, null, null);
-                    }
-                }
-                break;
-            case R.id.showAppearanceSettings:
+                case R.id.showAppearanceSettings:
                 int width = getResources().getDimensionPixelSize(R.dimen.font_chooser_width);
                 int x = Utils.getDeviceMetrics(this).widthPixels - (width + getResources().getDimensionPixelSize(R.dimen.regular_padding));
                 int y = ((getSupportActionBar().getHeight() / 2) + getResources().getDimensionPixelSize(R.dimen.regular_padding));
@@ -908,7 +918,12 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
 
             if (ConnectivityState.hasDataConnection()) {
                 // Cancel all ongoing image downloads, if any
-                mainThreadHandler.post(() -> downloadFullArticleMenu.setActionView(mercuryProgressBar));
+                mainThreadHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                      //  downloadFullArticleMenu.setActionView(mercuryProgressBar);
+                    }
+                });
                 imageDownloadThreadPoolManager.cancelAllTask();
                 runMercuryParser(currentFeedPagerObject);
             } else {
@@ -995,10 +1010,11 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
 
     @Override
     public void onWebViewDoubleTapped() {
-        if (currentFeedPagerObject != null && !currentFeedPagerObject.getFeedItem().hasFullArticle() && readablyPrefs.doubleTapForFullArticle) {
+
+        if (currentFeedPagerObject != null && !currentFeedPagerObject.getFeedItem().hasFullArticle() && paperPrefs.doubleTapForFullArticle) {
             if (ConnectivityState.hasDataConnection()) {
                 // Cancel all ongoing image downloads, if any
-                downloadFullArticleMenu.setActionView(mercuryProgressBar);
+                //downloadFullArticleMenu.setActionView(mercuryProgressBar);
                 imageDownloadThreadPoolManager.cancelAllTask();
                 runMercuryParser(currentFeedPagerObject);
             } else {
@@ -1144,7 +1160,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
     public void onAutoDarkModeSwitchClicked(boolean enabled) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED
-                    && !readablyPrefs.autoDarkMode) {
+                    && !paperPrefs.autoDarkMode) {
                 // Request for location permission
                 requestPermissions(
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -1154,20 +1170,20 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
             }
         }
 
-        readablyPrefs.updateBooleanPref(getString(R.string.pref_auto_dark_mode_title), enabled);
+        paperPrefs.updateBooleanPref(getString(R.string.pref_auto_dark_mode_title), enabled);
 
-        if (readablyPrefs.autoDarkMode) {
+        if (paperPrefs.autoDarkMode) {
             updateUIColors();
 
             if (isNight) {
-                if (readablyPrefs.nightReadingBgColor.equals(getString(R.string.gray_bg_name))) {
+                if (paperPrefs.nightReadingBgColor.equals(getString(R.string.gray_bg_name))) {
                     onBackgroundColorChanged(getString(R.string.scarpa_flow),
                             getString(R.string.scarpa_flow_bg_text_color),
                             getString(R.string.scarpa_flow_bg_link_color),
                             false,
                             R.color.scarpa_flow);
 
-                } else if (readablyPrefs.nightReadingBgColor.equals(getString(R.string.black_bg_name))) {
+                } else if (paperPrefs.nightReadingBgColor.equals(getString(R.string.black_bg_name))) {
 
                     onBackgroundColorChanged(getString(R.string.onyx),
                             getString(R.string.onyx_bg_text_color),
@@ -1177,7 +1193,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                 }
             } else {
 
-                if (readablyPrefs.dayReadingBgColor.equals(getString(R.string.sepia_bg_name))) {
+                if (paperPrefs.dayReadingBgColor.equals(getString(R.string.sepia_bg_name))) {
 
                     onBackgroundColorChanged(getString(R.string.merino),
                             getString(R.string.merino_bg_text_color),
@@ -1185,7 +1201,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                             false,
                             R.color.merino);
 
-                } else if (readablyPrefs.dayReadingBgColor.equals(getString(R.string.white_bg_name))) {
+                } else if (paperPrefs.dayReadingBgColor.equals(getString(R.string.white_bg_name))) {
 
                     onBackgroundColorChanged(getString(R.string.white),
                             getString(R.string.white_bg_text_color),
@@ -1274,7 +1290,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
     }
 
     private void applyTheme(boolean local) {
-        if (readablyPrefs.autoDarkMode) {
+        if (paperPrefs.autoDarkMode) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
             if (local) getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
         } else if (readingPrefs.backgroundColor.equals(getString(R.string.scarpa_flow))
@@ -1353,6 +1369,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
         }
     }
 
+    @SuppressLint("CheckResult")
     private void runMercuryParser(final FeedItemsPagerAdapter.FeedViewPagerObject feedViewPagerObject) {
         new Observable<FeedItemsPagerAdapter.FeedViewPagerObject>() {
             @Override
@@ -1428,7 +1445,7 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                                 public void onClick(View view) {
                                     if (ConnectivityState.hasDataConnection()) {
                                         // Cancel all image downloads, if any
-                                        downloadFullArticleMenu.setActionView(mercuryProgressBar);
+                                      //  downloadFullArticleMenu.setActionView(mercuryProgressBar);
                                         imageDownloadThreadPoolManager.cancelAllTask();
                                         runMercuryParser(currentFeedPagerObject);
                                     } else {
@@ -1456,12 +1473,11 @@ public class FeedItemsActivity extends AppCompatActivity implements ThreadPoolCa
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "onRequestPermissionsResult: location permission granted");
 
-                readablyPrefs.updateBooleanPref(getString(R.string.pref_auto_dark_mode_title), true);
+                paperPrefs.updateBooleanPref(getString(R.string.pref_auto_dark_mode_title), true);
 
             } else {
                 Log.d(TAG, "onRequestPermissionsResult: location permission denied");
-
-                readablyPrefs.updateBooleanPref(getString(R.string.pref_auto_dark_mode_title), false);
+                paperPrefs.updateBooleanPref(getString(R.string.pref_auto_dark_mode_title), false);
             }
         }
     }

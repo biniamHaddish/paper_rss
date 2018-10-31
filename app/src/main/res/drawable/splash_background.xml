@@ -2,7 +2,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Background color-->
-    <item android:drawable="@color/white_to_cod_gray" />
+    <item
+        android:drawable="@color/white_to_cod_gray"
+        />
 
 
 </layer-list>

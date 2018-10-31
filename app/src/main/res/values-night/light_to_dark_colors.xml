@@ -5,7 +5,7 @@
 
 
     <color name="white_to_cod_gray">@color/cod_gray</color>
-    <color name="monsoon_to_jumbo">@color/jumbo</color>
+    <color name="monsoon_to_jumbo">@color/button_orange</color>
     <color name="gunsmoke_to_silver_sand">@color/silver_sand</color>
     <color name="bastille_to_bon_jour">@color/bon_jour</color>
     <color name="bastille_to_silver_sand">@color/silver_sand</color>

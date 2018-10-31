@@ -1,7 +1,7 @@
 package com.biniam.rss.ui.utils;
 
 /**
- * Created by  on 8/1/17.
+ * Created by biniam_haddish on 8/1/17.
  */
 
 public class Utils {

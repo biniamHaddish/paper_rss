@@ -3,7 +3,9 @@
 
 
     <color name="light_gray">#AAAAAA</color>
+    <color name="weird_gray">#dee5e5</color>
     <color name="monsoon">#777777</color>
+    <color name="button_orange">#F9AA33</color>
     <color name="jumbo">#888888</color>
     <color name="gunsmoke">#808285</color>
     <color name="silver_sand">#BBBBBB</color>
@@ -28,7 +30,6 @@
     <color name="dim_gray">#6A6A6A</color>
     <color name="bokara_gray">#292827</color>
 
-
     <!-- TODO: Old colors should be deleted after evaluating their usage -->
     <color name="white">@android:color/white</color>
     <color name="white_var">#EEEEEE</color>
@@ -52,5 +53,6 @@
     <color name="irish_coffee">#5F3E24</color>
     <color name="silver">#C1C1C1</color>
     <color name="iron">#D6D7D7</color>
+
 
 </resources>

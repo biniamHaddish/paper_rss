@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.biniam.rss.utils.Constants;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 import com.biniam.rss.utils.SecureAccountUtil.RxSecureStorage;
 
 import java.io.IOException;
@@ -47,12 +47,12 @@ public class FeedbinAuthenticationInterceptor {
             Log.e(TAG, "Authorization header is added to the url....");
             return chain.proceed(authorisedRequest);
         }
-    }).cache(new Cache(ReadablyApp.getInstance().getApplicationContext().getCacheDir(), CACHE_SIZE_BYTES)).build();
+    }).cache(new Cache(PaperApp.getInstance().getApplicationContext().getCacheDir(), CACHE_SIZE_BYTES)).build();
 
     @NonNull
     private static void spitCredentials() {
 
-        RxSecureStorage rxsecur = RxSecureStorage.create(ReadablyApp.getInstance(), ReadablyApp.getInstance().getPackageName());
+        RxSecureStorage rxsecur = RxSecureStorage.create(PaperApp.getInstance(), PaperApp.getInstance().getPackageName());
         rxsecur.getString(Constants.ENCRYPTED_KEY)
                 .subscribe(s -> {
                     //Log.d(TAG, String.format("username decrypted: %s\t", s));

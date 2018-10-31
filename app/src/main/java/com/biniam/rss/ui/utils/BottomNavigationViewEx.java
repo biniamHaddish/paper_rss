@@ -1,5 +1,6 @@
 package com.biniam.rss.ui.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Paint;
@@ -400,6 +401,7 @@ public class BottomNavigationViewEx extends BottomNavigationView {
      *
      * @param enable It will has a shift animation if true. Otherwise all items are the same width.
      */
+    @SuppressLint("RestrictedApi")
     public void enableShiftingMode(boolean enable) {
         /*
         1. get field in this class
@@ -705,6 +707,7 @@ public class BottomNavigationViewEx extends BottomNavigationView {
      * @param width    in dp
      * @param height   in dp
      */
+   
     public void setIconSizeAt(int position, float width, float height) {
         ImageView icon = getIconAt(position);
         // update size

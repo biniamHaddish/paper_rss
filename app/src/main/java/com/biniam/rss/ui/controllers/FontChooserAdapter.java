@@ -18,7 +18,7 @@ import com.biniam.rss.utils.TemplateExtractor;
 import java.io.File;
 
 /**
- * Created by  on 8/5/17.
+ * Created by biniam_haddish on 8/5/17.
  */
 
 public class FontChooserAdapter extends RecyclerView.Adapter<FontChooserAdapter.FontChooserViewHolder> {
@@ -118,16 +118,14 @@ public class FontChooserAdapter extends RecyclerView.Adapter<FontChooserAdapter.
             if (readingPrefs.backgroundColor.equals(context.getString(R.string.white))) {
                 fontNameTextView.setTextColor(context.getResources().getColor(R.color.black));
                 fontShowCaseContainer.setBackground(context.getDrawable(R.drawable.reading_appearance_font_chooser_bg));
-                fontShowCaseTextView.setTextColor(
-                        isSelected ?
+                fontShowCaseTextView.setTextColor(isSelected ?
                                 context.getResources().getColor(R.color.white) :
                                 context.getResources().getColor(R.color.black)
                 );
             } else if (readingPrefs.backgroundColor.equals(context.getString(R.string.merino))) {
                 fontNameTextView.setTextColor(context.getResources().getColor(R.color.irish_coffee));
                 fontShowCaseContainer.setBackground(context.getDrawable(R.drawable.reading_appearance_font_chooser_bg));
-                fontShowCaseTextView.setTextColor(
-                        isSelected ?
+                fontShowCaseTextView.setTextColor(isSelected ?
                                 context.getResources().getColor(R.color.white) :
                                 context.getResources().getColor(R.color.irish_coffee)
                 );
@@ -135,8 +133,7 @@ public class FontChooserAdapter extends RecyclerView.Adapter<FontChooserAdapter.
             } else if (readingPrefs.backgroundColor.equals(context.getString(R.string.scarpa_flow))) {
                 fontNameTextView.setTextColor(context.getResources().getColor(R.color.white));
                 fontShowCaseContainer.setBackground(context.getDrawable(R.drawable.reading_appearance_font_chooser_bg_dark));
-                fontShowCaseTextView.setTextColor(
-                        isSelected ?
+                fontShowCaseTextView.setTextColor(isSelected ?
                                 context.getResources().getColor(R.color.white) :
                                 context.getResources().getColor(R.color.white)
                 );

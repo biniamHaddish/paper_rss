@@ -6,7 +6,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 
 import java.io.Serializable;
 
@@ -17,7 +17,7 @@ import java.io.Serializable;
  */
 
 @Keep
-@Entity(tableName = ReadablyDatabase.FEED_ITEMS_TABLE, foreignKeys = @ForeignKey(entity = SubscriptionEntity.class, parentColumns = "id", childColumns = "subscriptionId", onDelete = ForeignKey.CASCADE))
+@Entity(tableName = PaperDatabase.FEED_ITEMS_TABLE, foreignKeys = @ForeignKey(entity = SubscriptionEntity.class, parentColumns = "id", childColumns = "subscriptionId", onDelete = ForeignKey.CASCADE))
 public class FeedItemEntity implements Serializable {
 
     @PrimaryKey
@@ -39,8 +39,9 @@ public class FeedItemEntity implements Serializable {
     public boolean favorite;
     public long syncedAt;
     public long modifiedAt;
+    public long starredUnStarredmodified;
 
-
+        // I will add one property for starred items modifiedTimeChange
     public FeedItemEntity(String title, String subscriptionId, String id, long published, String content, String excerpt, String link, String subscriptionName) {
         this.title = title;
         this.subscriptionId = subscriptionId;

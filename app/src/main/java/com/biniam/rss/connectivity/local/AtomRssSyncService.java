@@ -6,10 +6,10 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.db.roomentities.FeedItemEntity;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 
 import java.util.List;
 
@@ -33,14 +33,14 @@ public class AtomRssSyncService extends Service {
 
     public static final String TAG = AtomRssSyncService.class.getSimpleName();
     public static final String SUBSCRIPTION_URLS = "SUBSCRIPTION_IDS";
-    private ReadablyDatabase readablyDatabase;
+    private PaperDatabase paperDatabase;
     private OkHttpClient client = new OkHttpClient.Builder().build();
     private AtomRssParser atomRssParser;
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        readablyDatabase = ReadablyApp.getInstance().getDatabase();
+        paperDatabase = PaperApp.getInstance().getDatabase();
         atomRssParser = AtomRssParser.getInstance(getApplicationContext());
 
         if (intent != null) {
@@ -50,7 +50,7 @@ public class AtomRssSyncService extends Service {
                 new Observable<SubscriptionEntity[]>() {
                     @Override
                     protected void subscribeActual(io.reactivex.Observer<? super SubscriptionEntity[]> observer) {
-                        observer.onNext(readablyDatabase.dao().getSubscriptions(subscriptionIds));
+                        observer.onNext(paperDatabase.dao().getSubscriptions(subscriptionIds));
                     }
                 }
                         .subscribeOn(Schedulers.io())
@@ -105,7 +105,7 @@ public class AtomRssSyncService extends Service {
                 .subscribeWith(new DisposableObserver<List<FeedItemEntity>>() {
                     @Override
                     public void onNext(List<FeedItemEntity> feedItemEntities) {
-                        readablyDatabase.dao()
+                        paperDatabase.dao()
                                 .insertFeedItems(feedItemEntities);
                     }
 

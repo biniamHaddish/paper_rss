@@ -1,5 +1,6 @@
 package com.biniam.rss.connectivity.local;
 
+import android.annotation.SuppressLint;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Intent;
@@ -7,17 +8,17 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.biniam.rss.BuildConfig;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.db.roomentities.FeedItemEntity;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
 import com.biniam.rss.persistence.preferences.InternalStatePrefs;
-import com.biniam.rss.persistence.preferences.ReadablyPrefs;
+import com.biniam.rss.persistence.preferences.PaperPrefs;
 import com.biniam.rss.utils.AccountBroker;
 import com.biniam.rss.utils.AutoImageCache;
 import com.biniam.rss.utils.ConnectivityState;
 import com.biniam.rss.utils.FavIconFetcher;
 import com.biniam.rss.utils.HouseKeeper;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class LocalSyncJobService extends JobService {
 
     private OkHttpClient client = new OkHttpClient.Builder().build();
     private long syncStartTime;
-    private ReadablyDatabase readablyDatabase;
+    private PaperDatabase paperDatabase;
     private AutoImageCache autoImageCache;
     private InternalStatePrefs internalStatePrefs;
     private HouseKeeper houseKeeper;
@@ -56,7 +57,7 @@ public class LocalSyncJobService extends JobService {
 
     @Override
     public void onCreate() {
-        readablyDatabase = ReadablyApp.getInstance().getDatabase();
+        paperDatabase = PaperApp.getInstance().getDatabase();
         autoImageCache = AutoImageCache.getInstance(getApplicationContext());
         internalStatePrefs = InternalStatePrefs.getInstance(getApplicationContext());
         houseKeeper = HouseKeeper.getInstance(getApplicationContext());
@@ -93,6 +94,7 @@ public class LocalSyncJobService extends JobService {
     }
 
 
+    @SuppressLint("CheckResult")
     private void startSync(JobParameters jobParameters, List<String> subscriptionIds) {
         new Completable() {
             @Override
@@ -112,16 +114,16 @@ public class LocalSyncJobService extends JobService {
 //                }
 
                 if (subscriptionIds == null) {
-                    sync(readablyDatabase.dao().getAllSubscriptions());
+                    sync(paperDatabase.dao().getAllSubscriptions());
                 } else {
-                    sync(readablyDatabase.dao().getSubscriptions(subscriptionIds));
+                    sync(paperDatabase.dao().getSubscriptions(subscriptionIds));
                 }
 
                 if (jobParameters != null) {
                     jobFinished(jobParameters, false);
                 }
 
-                houseKeeper.deleteOldCaches();
+               // houseKeeper.deleteOldCaches();
 
                 s.onComplete();
             }
@@ -148,7 +150,7 @@ public class LocalSyncJobService extends JobService {
     private void sync(SubscriptionEntity[] subscriptionEntities) {
 
         AtomRssParser atomRssParser = AtomRssParser.getInstance(getApplicationContext());
-        ReadablyPrefs readablyPrefs = ReadablyPrefs.getInstance(getApplicationContext());
+        PaperPrefs paperPrefs = PaperPrefs.getInstance(getApplicationContext());
 
         syncStartTime = System.currentTimeMillis();
 
@@ -166,7 +168,7 @@ public class LocalSyncJobService extends JobService {
 
 
                     for (FeedItemEntity parsedFeedItem : parsedFeedItemEntities) {
-                        FeedItemEntity existing = readablyDatabase.dao().getFeedItem(parsedFeedItem.id);
+                        FeedItemEntity existing = paperDatabase.dao().getFeedItem(parsedFeedItem.id);
 
                         if (existing == null) {
                             filteredFeedItemEntities.add(parsedFeedItem);
@@ -174,7 +176,7 @@ public class LocalSyncJobService extends JobService {
                     }
 
 
-                    readablyDatabase.dao().insertFeedItems(
+                    paperDatabase.dao().insertFeedItems(
                             filteredFeedItemEntities
                     );
 
@@ -183,7 +185,7 @@ public class LocalSyncJobService extends JobService {
                     Log.d(TAG, String.format("%s synced successfully", subscriptionEntity.title));
                     // Update updated timestamp
                     subscriptionEntity.lastUpdatedTimestamp = System.currentTimeMillis();
-                    readablyDatabase.dao().updateSubscription(subscriptionEntity);
+                    paperDatabase.dao().updateSubscription(subscriptionEntity);
 
 
                     // Get high-res fav icon
@@ -193,7 +195,7 @@ public class LocalSyncJobService extends JobService {
                         if (favIconUrl != null && !favIconUrl.isEmpty()) {
                             Log.w(TAG, String.format("onNext: favicon url is %s", favIconUrl));
                             subscriptionEntity.iconUrl = favIconUrl;
-                            readablyDatabase.dao().updateSubscription(subscriptionEntity);
+                            paperDatabase.dao().updateSubscription(subscriptionEntity);
                         }
                     }
 
@@ -206,11 +208,11 @@ public class LocalSyncJobService extends JobService {
             }
         }
 
-        if (!readablyPrefs.autoCacheImages) {
+        if (!paperPrefs.autoCacheImages) {
             return;
-        } else if (readablyPrefs.automaticSyncWiFiOnly && ConnectivityState.isOnWiFi()) {
+        } else if (paperPrefs.automaticSyncWiFiOnly && ConnectivityState.isOnWiFi()) {
             autoImageCache.startCaching(syncStartTime);
-        } else if (readablyPrefs.autoCacheImages && !readablyPrefs.automaticSyncWiFiOnly && ConnectivityState.hasDataConnection()) {
+        } else if (paperPrefs.autoCacheImages && !paperPrefs.automaticSyncWiFiOnly && ConnectivityState.hasDataConnection()) {
             autoImageCache.startCaching(syncStartTime);
         }
 

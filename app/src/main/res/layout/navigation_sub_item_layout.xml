@@ -13,7 +13,8 @@
         android:layout_height="24dp"
         android:layout_centerVertical="true"
         android:background="@drawable/circle_bg"
-        android:src="@drawable/ic_rss_feed_24px" />
+        android:src="@drawable/ic_rss_feed_24px"
+        />
 
 
     <TextView
@@ -41,8 +42,10 @@
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/regular_padding"
         android:text="16"
+        android:backgroundTint="@color/white_gray_to_mine_shaft"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Header"
-        android:textColor="@color/carmine_pink_trans_to_carmine_pink" />
+        android:textColor="@color/orange500"
+        />
 
 </RelativeLayout>

@@ -37,8 +37,9 @@
     <string name="pref_auto_sync_interval_summary">Every %s</string>
 
 
-    <string name="pref_unread_items_to_keep_title">Unread items to keep</string>
-    <string name="pref_unread_items_to_keep_summary">Keep the last %s unread items per subscription</string>
+    <string name="pref_time_to_keep_read_feeds_title">Days to Keep read feed items</string>
+    <string name="pref_read_Items_keep_key">Keep time</string>
+    <string name="pref_unread_items_to_keep_summary">Keep read feed items for %s </string>
 
     <string name="pref_keep_read_items_for_title">Read items to keep</string>
     <string name="pref_keep_read_items_for_summary">Keep the last %s read items per subscription</string>
@@ -67,12 +68,20 @@
         <item>@string/dark_theme</item>
     </string-array>
 
-    <string-array name="feed_item_amounts">
-        <item>50</item>
-        <item>100</item>
-        <item>150</item>
+    <string-array name="number_of_days_read_feed_to_keep">
+        <item>1</item>
+        <item>2</item>
+        <item>7</item>
+        <item>30</item>
+        <item>0</item>
     </string-array>
-
+    <string-array name="settings_keep_times">
+        <item>1 day</item>
+        <item>2 days</item>
+        <item>1 week</item>
+        <item>1 month</item>
+        <item>Forever</item>
+    </string-array>
     <string-array name="three_entry_values">
         <item>0</item>
         <item>1</item>

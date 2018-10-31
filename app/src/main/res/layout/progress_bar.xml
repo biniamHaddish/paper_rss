@@ -5,5 +5,5 @@
     android:paddingBottom="20dp"
 
     android:paddingTop="20dp"
-    android:progressTint="@color/irish_coffee"
+    android:progressTint="@color/orange500"
     android:theme="@style/AppTheme" />

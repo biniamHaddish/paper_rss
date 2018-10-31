@@ -36,6 +36,7 @@ public class ImageDownloadCallable implements Callable {
     public static final int IMG_DOWNLOAD_ERROR = 1111;
 
     public static final String FEED_BURNER = "feedburner.com";
+    public static final String INOREADER_COM = "inoreader.com";
 
     // Constant used for feed item id
     public static final String FEED_ITEM_ID = "FEED_ITEM_ID";

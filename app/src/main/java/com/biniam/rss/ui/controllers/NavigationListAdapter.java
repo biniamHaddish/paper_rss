@@ -33,16 +33,14 @@ public class NavigationListAdapter extends ExpandableRecyclerViewAdapter<Navigat
 
     @Override
     public NavigationItemViewHolder onCreateGroupViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.navigation_item_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.navigation_item_layout, parent, false);
         Log.d(TAG, "onCreateGroupViewHolder: creating group view holder");
         return new NavigationItemViewHolder(view, this, navigationSelectionListener);
     }
 
     @Override
     public NavigationSubItemViewHolder onCreateChildViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.navigation_sub_item_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.navigation_sub_item_layout, parent, false);
         Log.d(TAG, "onCreateChildViewHolder: creating child view holder");
         return new NavigationSubItemViewHolder(view, this, navigationSelectionListener);
     }

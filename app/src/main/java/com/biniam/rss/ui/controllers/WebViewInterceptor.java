@@ -21,7 +21,7 @@ import com.biniam.rss.R;
 import com.biniam.rss.persistence.db.roomentities.FeedItemEntity;
 import com.biniam.rss.persistence.preferences.ReadingPrefs;
 import com.biniam.rss.utils.CSSConstants;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 import com.biniam.rss.utils.TemplateExtractor;
 
 import java.io.ByteArrayInputStream;
@@ -109,8 +109,8 @@ public class WebViewInterceptor extends WebViewClient {
             //Log.d(TAG, String.format("shouldInterceptRequest: %s has full article %b and full article is %s", feedItem.title, feedItem.hasFullArticle(), feedItem.fullArticle));
 
             //Log.d(TAG, String.format("shouldInterceptRequest: content is %s", feedItem.content));
-            return new WebResourceResponse(MimeTypeMap.getSingleton().getMimeTypeFromExtension(ReadablyApp.HTML_EXT)
-                    , ReadablyApp.UTF8_ENCODING
+            return new WebResourceResponse(MimeTypeMap.getSingleton().getMimeTypeFromExtension(PaperApp.HTML_EXT)
+                    , PaperApp.UTF8_ENCODING
                     , new ByteArrayInputStream(buff));
         }
 

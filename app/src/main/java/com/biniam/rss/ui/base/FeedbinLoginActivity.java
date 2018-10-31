@@ -94,7 +94,6 @@ public class FeedbinLoginActivity extends AppCompatActivity {
     public void processLoginData(String username, String password) {
         if (username != null && password != null) {
             RxSecureStorage rxSecureStorage = RxSecureStorage.create(this, getPackageName());
-
             rxSecureStorage.putString(Constants.ENCRYPTED_KEY, username)
                     .observeOn(Schedulers.single())
                     .subscribe();

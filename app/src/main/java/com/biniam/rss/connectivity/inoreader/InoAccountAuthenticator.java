@@ -1,5 +1,6 @@
 package com.biniam.rss.connectivity.inoreader;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,7 +11,7 @@ import com.biniam.rss.connectivity.inoreader.inoReaderApi.OAuthApi;
 import com.biniam.rss.models.inoreader.TokenResponses;
 import com.biniam.rss.persistence.preferences.InoReaderAccountPreferences;
 import com.biniam.rss.utils.Constants;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -31,7 +32,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class InoAccountAuthenticator {
 
-    public static final String RDIRECT_URL = "readably://oauth";
     private static final String TAG = InoAccountAuthenticator.class.getSimpleName();
     private static final String InoReaderUrl = "https://www.inoreader.com/oauth2/auth";
     private static String OPTIONAL_SCOPES = "read write";
@@ -76,7 +76,7 @@ public class InoAccountAuthenticator {
         try {
             return InoReaderUrl +
                     "?client_id=" + URLEncoder.encode(Constants.InoReader_APP_ID, "UTF-8") +
-                    "&redirect_uri=" + URLEncoder.encode(RDIRECT_URL, "UTF-8") +
+                    "&redirect_uri=" + URLEncoder.encode(InoReaderConstants.REDIRECT_URI, "UTF-8") +
                     "&state=" + URLEncoder.encode(Constants.CSRF_STRING, "UTF-8") +
                     "&scope=" + URLEncoder.encode(OPTIONAL_SCOPES, "UTF-8") +
                     "&response_type=code";
@@ -95,12 +95,13 @@ public class InoAccountAuthenticator {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         CustomTabsIntent customTabsIntent = builder.build();
         customTabsIntent.intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        customTabsIntent.launchUrl(ReadablyApp.getInstance(), Uri.parse(url));
+        customTabsIntent.launchUrl(PaperApp.getInstance(), Uri.parse(url));
     }
 
     /**
      * It will renew the access Token when if expired
      */
+    @SuppressLint("CheckResult")
     public void renewToken() {
 
         new Completable() {

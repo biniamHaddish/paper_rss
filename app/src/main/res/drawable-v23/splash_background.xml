@@ -2,16 +2,21 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Background color-->
-    <item android:drawable="@color/white_to_cod_gray" />
+    <item android:drawable="@color/white" />
 
     <item
-        android:drawable="@drawable/ic_readably_icon_minimal"
-        android:gravity="center" />
+        android:drawable="@drawable/ic_paper"
+        android:gravity="center"
+        android:height="96dp"
+        android:width="96dp"
+        />
 
-    <item
+
+    <!--<item
         android:bottom="90dp"
-        android:drawable="@drawable/ic_readably_name"
-        android:gravity="bottom|center_horizontal" />
+        android:gravity="bottom|center_horizontal" />-->
+
+
 </layer-list>
 
 

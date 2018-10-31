@@ -8,7 +8,6 @@ import com.biniam.rss.persistence.preferences.InternalStatePrefs;
 
 public class SplashActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +20,6 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             startActivity(new Intent(this, HomeActivity.class));
         }
-
         finish();
     }
 

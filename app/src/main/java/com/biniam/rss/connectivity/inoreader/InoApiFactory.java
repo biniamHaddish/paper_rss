@@ -2,72 +2,105 @@ package com.biniam.rss.connectivity.inoreader;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.util.ArrayMap;
 import android.util.Log;
 
+import com.biniam.rss.BuildConfig;
+import com.biniam.rss.connectivity.feedly.FeedlyConstants;
+import com.biniam.rss.connectivity.inoreader.inoReaderApi.HeaderInterceptor;
 import com.biniam.rss.connectivity.inoreader.inoReaderApi.InoReaderAPI;
-import com.biniam.rss.models.inoreader.InoFoldersTagsList;
+import com.biniam.rss.models.feedly.FeedlyUserProfile;
 import com.biniam.rss.models.inoreader.InoReaderSubscriptionItems;
 import com.biniam.rss.models.inoreader.InoReaderUserInfo;
 import com.biniam.rss.models.inoreader.InoStreamContentList;
 import com.biniam.rss.models.inoreader.InoSubscriptionList;
 import com.biniam.rss.models.inoreader.InoUnreadCount;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.db.roomentities.FeedItemEntity;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
 import com.biniam.rss.persistence.db.roomentities.TagEntity;
+import com.biniam.rss.persistence.preferences.InoReaderAccountPreferences;
 import com.biniam.rss.persistence.preferences.InternalStatePrefs;
-import com.biniam.rss.persistence.preferences.ReadablyPrefs;
+import com.biniam.rss.persistence.preferences.PaperPrefs;
 import com.biniam.rss.ui.controllers.FeedParser;
 import com.biniam.rss.utils.AccountBroker;
 import com.biniam.rss.utils.AutoImageCache;
 import com.biniam.rss.utils.ConnectivityState;
-import com.biniam.rss.utils.HouseKeeper;
-import com.biniam.rss.utils.ReadablyApp;
-import com.biniam.rss.utils.Utils;
+import com.biniam.rss.utils.PaperApp;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Predicate;
 import io.reactivex.internal.schedulers.ComputationScheduler;
-import io.reactivex.internal.schedulers.NewThreadScheduler;
-import io.reactivex.schedulers.Schedulers;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
 
 /**
  * Created by biniam on 2/17/18.
  */
 
+
 public class InoApiFactory {
 
     public static final String TAG = InoApiFactory.class.getSimpleName();
-    public static final int MAX_LIMIT = 1000;
-    public static int ARTICLE_SYNC_COUNT = 500;
     private static InoApiFactory inoApiFactory;
     private Context mContext;
     private long syncStartTime;
-    private ReadablyDatabase rssDatabase;
-    private ReadablyPrefs readablyPrefs;
+    private PaperDatabase rssDatabase;
+    FeedParser feedParser;
+    private PaperPrefs paperPrefs;
     private AutoImageCache autoImageCache;
     private InternalStatePrefs internalStatePrefs;
-    private HouseKeeper houseKeeper;
     private AccountBroker accountBroker;
+    private InoReaderAccountPreferences inoReaderAccountPreferences;
+    private Map<String, String> subscriptionWithCount = new ArrayMap<>();
+    List<String> idsFromIno = new ArrayList<>();
+    //OkHttpClient  with interceptor
+    private static OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(new HeaderInterceptor(PaperApp.getInstance()))
+            .build();
+    private static final String API_BASE_URL = "https://www.inoreader.com/reader/api/0";
+    private static String markFeedReadURL = API_BASE_URL + "/edit-tag?a=user/-/state/com.google/read";
+    private static String markFeedUnReadURL = API_BASE_URL + "/edit-tag?r=user/-/state/com.google/read";
+
+    private static String markFeedStarredURL = API_BASE_URL + "/edit-tag?a=user/-/state/com.google/starred";
+    private static String markFeedUnStarredURL = API_BASE_URL + "/edit-tag?r=user/-/state/com.google/starred";
 
     /**
      * @param context
      */
     private InoApiFactory(Context context) {
         mContext = context;
-        rssDatabase = ReadablyApp.getInstance().getDatabase();
-        readablyPrefs = ReadablyPrefs.getInstance(context);
+        rssDatabase = PaperApp.getInstance().getDatabase();
+        feedParser = FeedParser.getInstance(context);
+        paperPrefs = PaperPrefs.getInstance(context);
         autoImageCache = AutoImageCache.getInstance(context);
         internalStatePrefs = InternalStatePrefs.getInstance(context);
-        houseKeeper = HouseKeeper.getInstance(context);
         accountBroker = AccountBroker.getInstance(context);
+        inoReaderAccountPreferences = InoReaderAccountPreferences.getInstance(context);
 
     }
 
@@ -84,6 +117,7 @@ public class InoApiFactory {
         }
         return inoApiFactory;
     }
+
 
     /**
      * User information like email address username image link and more..
@@ -103,12 +137,13 @@ public class InoApiFactory {
 
                     @Override
                     public void onNext(InoReaderUserInfo inoReaderUserInfo) {
-                        Log.d(TAG, "onNext: \t User email\t"
-                                + inoReaderUserInfo.getUserEmail()
-                                + "\tuserName\t" + inoReaderUserInfo.getUserName() +
-                                "\tUserProfileId\t" + inoReaderUserInfo.getUserProfileId()
-
-                        );
+//                        Log.d(TAG, "onNext: \t User email\t"
+//                                + inoReaderUserInfo.getUserEmail()
+//                                + "\tuserName\t" + inoReaderUserInfo.getUserName() +
+//                                "\tUserProfileId\t" + inoReaderUserInfo.getUserProfileId()
+//
+//                        );
+                        getSubscriptionList();
                     }
 
                     @Override
@@ -129,7 +164,7 @@ public class InoApiFactory {
      */
     public void getSubscriptionList() {
         mContext.sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_STAGE_SUBSCRIPTIONS));
-        syncStartTime = System.currentTimeMillis();
+        syncStartTime = System.currentTimeMillis();// calculating the current Time for the display
         InoReaderRetrofitClient.getRetrofit()
                 .create(InoReaderAPI.class)
                 .getSubscriptionList()
@@ -143,38 +178,88 @@ public class InoApiFactory {
                     @Override
                     public void onNext(InoSubscriptionList inoSubscriptionList) {
 
-                        List<SubscriptionEntity> entities = AddInoReaderSubscriptionToRoom(inoSubscriptionList.getSubscriptions());
-                        List<String> syncedSubscriptionIds = getSyncedSubscriptionIds(inoSubscriptionList.getSubscriptions());
-
-                        Log.d(TAG, "syncedSubscriptionIds: " + syncedSubscriptionIds);
-                        rssDatabase.dao().insertSubscriptions(entities);// inserting data to the Subscription Table
-                        for (String savedSubscriptionId : rssDatabase.dao().getAllSubscriptionIds()) {
-                            Log.d(TAG, "savedSubscriptionId: \t" + savedSubscriptionId);
-                            if (!syncedSubscriptionIds.contains(savedSubscriptionId)) {
-                                if (accountBroker.isCurrentAccountInoreader()) {
-                                    rssDatabase.dao().deleteSubscription(rssDatabase.dao().getSubscription(savedSubscriptionId)
-                                    );
-                                }
-                            }
-                            /*getting the Feeds by subscription ids*/
-                            List<TagEntity> tagEntity = addInoReaderTags(inoSubscriptionList.getSubscriptions());// getting the tag entities
-                            rssDatabase.dao().addTags(tagEntity);// adding the Tag into tags table
-                            Log.d(TAG, "subscriptionIds\t" + replaceDashWithSlash(savedSubscriptionId));
-                        }
                         //sync ino feed items
                         getInoUnreadCount();
+                        //..Preparing the subscription data as SubscriptionEntity Format...
+                        List<SubscriptionEntity> convertingSubscription = convertingToSubscriptionEntity(inoSubscriptionList.getSubscriptions());
+                        // collecting the subscription Ids.
+                        List<String> inoreaderFetchedSubscriptionIds = getSyncedSubscriptionIds(inoSubscriptionList.getSubscriptions());
+
+                        rssDatabase.dao().insertSubscriptions(convertingSubscription);// inserting subscription entities to the Subscription Table
+
+                        List<String> subscriptionIds = rssDatabase.dao().getAllSubscriptionIds();
+
+                        for (String inoReaderSavedSubscriptionIds : subscriptionIds) {
+                            if (!inoreaderFetchedSubscriptionIds.contains(inoReaderSavedSubscriptionIds)) {
+                                if (accountBroker.isCurrentAccountInoreader()) {
+                                    rssDatabase.dao().deleteSubscription(rssDatabase.dao().getSubscription(inoReaderSavedSubscriptionIds));
+                                }
+                            }
+                            // there was a tag here
+                        }
+                        //Updating the Subscription name
+                        for (SubscriptionEntity subscriptionEntity22 : rssDatabase.dao().getAllSubscriptions()) {
+                            for (SubscriptionEntity subscriptionEntity4 : convertingSubscription) {
+                                if (subscriptionEntity22.id.equals(subscriptionEntity4.id) && !subscriptionEntity22.title.equals(subscriptionEntity4.title)) {
+                                    Log.d("Updating_subscription", String.format("Updating_subscription: subscription %s has been renamed to %s ",
+                                            new Object[]{subscriptionEntity22.title, subscriptionEntity4.title}));
+                                    subscriptionEntity22.title = subscriptionEntity4.title;
+                                    rssDatabase.dao().updateSubscription(subscriptionEntity22);
+                                }
+                            }
+                        }
+                        // getting the tag entities
+                        List<TagEntity> tagEntityFromInoReader = convertingToTagEntity(inoSubscriptionList.getSubscriptions());
+                        rssDatabase.dao().addTags(tagEntityFromInoReader);// adding the Tag into tags table
+                        // Collect  all the server ids
+                        List<String> tagList = new ArrayList<>();
+                        for (TagEntity tag : tagEntityFromInoReader) {
+                            tagList.add(tag.serverId);
+                        }
+                        // Check if the tags in Paper tags table, are equal with the one that are coming from the server
+                        for (TagEntity tagsFromPaper : rssDatabase.dao().getAllTags()) {
+                            for (TagEntity tagsFrmIno : tagEntityFromInoReader) {
+                                if (tagsFromPaper.serverId.equals(tagsFrmIno.serverId) && tagsFromPaper.subscriptionId.equals(tagsFrmIno.subscriptionId) && !tagsFromPaper.name.equals(tagsFrmIno.name)) {
+                                    Log.e("TAGS_Compare",
+                                            String.format("tags_Update: tag %s has been renamed to %s updating...",
+                                                    new Object[]{tagsFromPaper.name, tagsFrmIno.name}));
+                                    tagsFromPaper.name = tagsFrmIno.name;
+                                    rssDatabase.dao().updateTag(tagsFromPaper);
+                                }
+                            }
+                        }
+                        // Checking for removed tags
+                        for (String tagsById : rssDatabase.dao().getAllTagsServerIds()) {
+                            if (!tagList.contains(tagsById)) {
+                                Log.w("deleting_tags",
+                                        String.format("Deleting_Tags: tag %s removed, deleting...", new Object[]{rssDatabase.dao().getTagByServerId(tagsById).name}));
+                                rssDatabase.dao().deletTagByServerId(tagsById);
+                            }
+                        }
+
+                        FeedItemEntity[] feedItemEntities = rssDatabase.dao().getModifiedFeedEntitiesSinceLastSync(true);
+                        Log.d(TAG, String.format("CountReadFeeds: %d", feedItemEntities.length));
+                        //  SyncReadFromPaper(rssDatabase.dao().getModifiedFeedEntitiesSinceLastSync(true));
+                        //markFeedItemsAsReadOnInoReader(rssDatabase.dao().getModifiedFeedEntitiesSinceLastSync(true));
+                        //markFeedItemsAsRead(rssDatabase.dao().getModifiedFeedEntitiesSinceLastSync(true));//will Mark items As read
+
                         //sync unread feed items to ino server
-                        markFeedItemsAsUnread(rssDatabase.dao().getModifiedFeedEntitiesSinceLastSync(false));//will Mark items as Unread
-                        //sync read feed items to ino server
-                        markFeedItemsAsRead(rssDatabase.dao().getModifiedFeedEntitiesSinceLastSync(true));//will Mark items As read
-                        //sync unStarred to ino server
-                        syncUnstarredItems(rssDatabase.dao().getFavedFeedItemEntitySinceLastSync(false));
+                        // markFeedItemsAsUnreadOnInoReader(rssDatabase.dao().getModifiedFeedEntitiesSinceLastSync(false));//will Mark items as Unread
+
+                        //trying to get the feed content by feed id
+                        if (subscriptionWithCount.size() > 0 && subscriptionWithCount != null) {
+                            for (Map.Entry<String, String> entry : subscriptionWithCount.entrySet()) {
+                                getInoReaderFeedsPerSubscription(entry.getKey(), entry.getValue());
+                            }
+                        }
+                        // marking the  feed as read if there is an id difference in inoServer and by database
+                        // markFeedItemsASReadOnPaper();
                         //sync starred feed items to ino server
-                        syncStarredItems(rssDatabase.dao().getFavedFeedItemEntitySinceLastSync(true));
+                        // syncStarredItems(rssDatabase.dao().getFavedFeedItemEntitySinceLastSync(true));
+                        //sync unStarred to ino server
+                        //syncUnStarredItems(rssDatabase.dao().getFavedFeedItemEntitySinceLastSync(false));
                         //get all the starred Items
                         getStarred();
-                        //get subscription Fav icons
-                        Utils.getSubscriptionFavIcon(rssDatabase);//will get all the necessary subscription logo
                         //if the auto cache is enabled it will Auto Cache the feed items images
                         autoImageCache();
                     }
@@ -193,56 +278,59 @@ public class InoApiFactory {
     }
 
     /**
-     * will Cache images
+     * marking the feedItems as read on paper
      */
-    private void autoImageCache() {
-        if (!readablyPrefs.autoCacheImages) {
-            return;
-        } else if (readablyPrefs.automaticSyncWiFiOnly && ConnectivityState.isOnWiFi()) {
-            autoImageCache.startCaching(syncStartTime);
-        } else if (readablyPrefs.autoCacheImages && !readablyPrefs.automaticSyncWiFiOnly && ConnectivityState.hasDataConnection()) {
-            autoImageCache.startCaching(syncStartTime);
+    private void markFeedItemsASReadOnPaper() {
+        List<String> feedIdsFromPaper = getAllFeedIds();
+        if (feedIdsFromPaper.size() > 0) {
+            for (String feedIds : feedIdsFromPaper) {
+                if (!idsFromIno.contains(feedIds)) {
+                    FeedItemEntity feedItemEntity = rssDatabase.dao().getFeedItem(feedIds);
+                    feedItemEntity.read = true;
+                    rssDatabase.dao().updateFeedItem(feedItemEntity);
+                }
+            }
         }
+        idsFromIno.clear();
     }
 
     /**
-     * get List of Feed items
+     * Trying to add Feed Items using Subscription Id for each of them
      *
-     * @param subscriptionId
-     *//*
-    public void getFeedItems(String subscriptionId, int count) {
-
-        mContext.sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_STAGE_ITEMS));
-
-        Map<String, String> query = new HashMap<>();
-        query.put("xt", InoReaderUrls.getQueryReadArticles());//will get the unread FeedEntries
-        query.put("n", String.valueOf(count));
+     * @param streamId
+     */
+    public void getInoReaderFeedsPerSubscription(final String streamId, String count) {
+        HashMap<String, String> queryMap = new HashMap<>();
+        queryMap.put("xt", "user/-/state/com.google/read");
+        queryMap.put("n", count);
 
         InoReaderRetrofitClient.getRetrofit()
                 .create(InoReaderAPI.class)
-                .getFeedItems(subscriptionId, query)
-                .filter(itemsBeans -> itemsBeans != null)
-                .subscribeOn(Schedulers.io())
-                .observeOn(new ComputationScheduler())
+                .getStreamContent(streamId.replace("_", "/").trim(), queryMap)
+                .filter(inoStreamContentList -> {
+                    Log.d(TAG, String.format("InoReaderFeedsPerSubscription:  %s", inoStreamContentList.getContinuation()));
+                    return inoStreamContentList.getItems().size() > 0 || inoStreamContentList != null;
+                })
                 .subscribe(new Observer<InoStreamContentList>() {
+
                     @Override
-                    public void onSubscribe(Disposable disposable) {
-                        if (disposable.isDisposed()) return;
+                    public void onSubscribe(Disposable d) {
+                        if (d.isDisposed()) return;
                     }
 
                     @Override
-                    public void onNext(InoStreamContentList itemsBeans) {
-                        Log.d(TAG, "Continuation: \t" + itemsBeans.getContinuation());
-                        rssDatabase.dao().insertFeedItems(addInoReaderEntries(itemsBeans.getItems(), subscriptionId));
-                        if (itemsBeans.getContinuation() != null) {
-                            getMoreArticles(itemsBeans.getContinuation());
+                    public void onNext(InoStreamContentList inoStreamContentList) {
+                        List<FeedItemEntity> unreadFeedItems = convertingToFeedEntity(inoStreamContentList);
+                        rssDatabase.dao().insertFeedItems(unreadFeedItems);
+                        if (inoStreamContentList.getContinuation() != null) {
+                            getMoreArticles(inoStreamContentList.getContinuation());
                         }
                     }
 
                     @Override
-                    public void onError(Throwable throwable) {
-                        throwable.printStackTrace();
-                        Log.d(TAG, "onError: " + throwable.getMessage());
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        Log.e(TAG, String.format("Error from  feed per subscription %s", e.getMessage()));
                     }
 
                     @Override
@@ -250,9 +338,34 @@ public class InoApiFactory {
                         Log.d(TAG, "onComplete: ");
                     }
                 });
-
     }
-*/
+
+
+    /**
+     * @return
+     */
+    public List<String> getAllFeedIds() {
+        List<String> ids = rssDatabase.dao().getAllFeedItemsIds();
+        if (ids != null && ids.size() > 0) return ids;
+        return null;
+    }
+
+
+    /**
+     * will Cache images
+     */
+    private void autoImageCache() {
+        if (!paperPrefs.autoCacheImages) {
+            return;
+        } else if (paperPrefs.automaticSyncWiFiOnly && ConnectivityState.isOnWiFi()) {
+            autoImageCache.startCaching(syncStartTime);
+        } else if (paperPrefs.autoCacheImages && !paperPrefs.automaticSyncWiFiOnly &&
+                ConnectivityState.hasDataConnection()) {
+            autoImageCache.startCaching(syncStartTime);
+        }
+    }
+
+
     /**
      * Add new InoReader subscription Just give it the site url
      *
@@ -295,109 +408,112 @@ public class InoApiFactory {
                 });
     }
 
-    /**
-     * Edit the subscription
-     *
-     * @param commandName
-     * @param url
-     * @param title
-     * @param folderName
-     * @param removeFolder
-     */
-    public void editInoSubscription(String commandName, String url, String title, String folderName, String removeFolder) {
+//    /**
+//     * Edit the subscription
+//     *
+//     * @param commandName
+//     * @param url
+//     * @param title
+//     * @param folderName
+//     * @param removeFolder
+//     */
+//    public void editInoSubscription(String commandName, String url, String title, String folderName, String removeFolder) {
+//
+//        Map<String, String> query = new HashMap<>();
+//        query.put("ac", commandName);
+//        query.put("s", url);
+//        query.put("t", title);
+//        query.put("a", folderName);
+//        query.put("r", removeFolder);
+//
+//        InoReaderRetrofitClient.getRetrofit()
+//                .create(InoReaderAPI.class)
+//                .editInoSubscription(query)
+//                .subscribeOn(new ComputationScheduler())
+//                .observeOn(new ComputationScheduler())
+//                .subscribe(new Observer<ResponseBody>() {
+//                    @Override
+//                    public void onSubscribe(Disposable disposable) {
+//                        if (disposable.isDisposed()) return;
+//                    }
+//
+//                    @Override
+//                    public void onNext(ResponseBody responseBody) {
+//                        try {
+//                            if (responseBody.equals("OK")) {
+//
+//                                Log.d(TAG, "editInoSubscription: " + responseBody.string());
+//                            }
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable throwable) {
+//                        throwable.printStackTrace();
+//                        Log.d(TAG, "onError_editInoSubscription\t" + throwable.getMessage());
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//                        Log.d(TAG, "onComplete: ");
+//                    }
+//                });
+//    }
 
-        Map<String, String> query = new HashMap<>();
-        query.put("ac", commandName);
-        query.put("s", url);
-        query.put("t", title);
-        query.put("a", folderName);
-        query.put("r", removeFolder);
+//    /**
+//     * Collect Ino Reader Tag list
+//     */
+//    public void getTagList() {
+//
+//        InoReaderRetrofitClient.getRetrofit()
+//                .create(InoReaderAPI.class)
+//                .getTagList()
+//                .filter(tagsBeans -> tagsBeans != null)
+//                .subscribeOn(new ComputationScheduler())
+//                .observeOn(new ComputationScheduler())
+//                .subscribe(new Observer<InoFoldersTagsList>() {
+//                    @Override
+//                    public void onSubscribe(Disposable disposable) {
+//                        if (disposable.isDisposed()) return;
+//                    }
+//
+//                    @Override
+//                    public void onNext(InoFoldersTagsList tagsBeans) {
+//                        for (InoFoldersTagsList.TagsBean tagsList : tagsBeans.getTags()) {
+//                            Log.d(TAG, "TagIds\n: " + tagsList.getId());
+//
+//                        }
+//
+//                       /* List<TagEntity> tagEntity = convertingToTagEntity(tagsBeans.getTags());// getting the tag entities
+//                        rssDatabase.dao().addTags(tagEntity);// adding the Tag into tags table*/
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable throwable) {
+//                        throwable.printStackTrace();
+//                        Log.d(TAG, "onError: " + throwable);
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//                });
+//    }
 
-        InoReaderRetrofitClient.getRetrofit()
-                .create(InoReaderAPI.class)
-                .editInoSubscription(query)
-                .subscribeOn(new ComputationScheduler())
-                .observeOn(new ComputationScheduler())
-                .subscribe(new Observer<ResponseBody>() {
-                    @Override
-                    public void onSubscribe(Disposable disposable) {
-                        if (disposable.isDisposed()) return;
-                    }
-                    @Override
-                    public void onNext(ResponseBody responseBody) {
-                        try {
-                            if (responseBody.equals("OK")) {
-
-                                Log.d(TAG, "editInoSubscription: " + responseBody.string());
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    @Override
-                    public void onError(Throwable throwable) {
-                        throwable.printStackTrace();
-                        Log.d(TAG, "onError_editInoSubscription\t" + throwable.getMessage());
-                    }
-                    @Override
-                    public void onComplete() {
-                        Log.d(TAG, "onComplete: ");
-                    }
-                });
-    }
-    /**
-     * Collect Ino Reader Tag list
-     */
-    public void getTagList() {
-
-        InoReaderRetrofitClient.getRetrofit()
-                .create(InoReaderAPI.class)
-                .getTagList()
-                .filter(tagsBeans -> tagsBeans != null)
-                .subscribeOn(new ComputationScheduler())
-                .observeOn(new ComputationScheduler())
-                .subscribe(new Observer<InoFoldersTagsList>() {
-                    @Override
-                    public void onSubscribe(Disposable disposable) {
-                        if (disposable.isDisposed()) return;
-                    }
-
-                    @Override
-                    public void onNext(InoFoldersTagsList tagsBeans) {
-                        for (InoFoldersTagsList.TagsBean tagsList : tagsBeans.getTags()) {
-                            Log.d(TAG, "TagIds\n: " + tagsList.getId());
-
-                        }
-
-                       /* List<TagEntity> tagEntity = addInoReaderTags(tagsBeans.getTags());// getting the tag entities
-                        rssDatabase.dao().addTags(tagEntity);// adding the Tag into tags table*/
-
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        throwable.printStackTrace();
-                        Log.d(TAG, "onError: " + throwable);
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
     /**
      * This method is for fetching  the unread counters
      * for folders, tags and feeds all the stuff that come with it .
      */
-    public void getInoUnreadCount(){
+    public void getInoUnreadCount() {
         mContext.sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_STAGE_ITEMS));
         InoReaderRetrofitClient.getRetrofit()
                 .create(InoReaderAPI.class)
                 .getInoUnreadCount()
                 .filter(unreadcountsBeans -> unreadcountsBeans != null)
-                .subscribeOn(new ComputationScheduler())
-                .observeOn(new ComputationScheduler())
                 .subscribe(new Observer<InoUnreadCount>() {
                     @Override
                     public void onSubscribe(Disposable disposable) {
@@ -406,12 +522,12 @@ public class InoApiFactory {
 
                     @Override
                     public void onNext(InoUnreadCount unreadcountsBeans) {
-                        // int itemCountToSync = readablyPrefs.unreadItemsToKeep;
+
                         for (InoUnreadCount.UnreadcountsBean unreadcounts : unreadcountsBeans.getUnreadcounts()) {
                             if (unreadcounts.getId().startsWith("feed")) {
-                                //int subUnreadCount = rssDatabase.dao()().getUnreadCountForSubscription(replaceSlashWithDash(unreadcounts.getId()));
-                                Log.d(TAG, "Unread_ids\t" + unreadcounts.getId() + "UnReadCount: \t" + unreadcounts.getCount());
-                                getAllFeedItems(ARTICLE_SYNC_COUNT, unreadcounts.getId());
+                                //  Log.d(TAG, String.format("UnreadCount: %s and Feed id which starts with feed %s", unreadcounts.getCount(), unreadcounts.getId()));
+                                subscriptionWithCount.put(unreadcounts.getId(), String.valueOf(unreadcounts.getCount()));
+
                             }
                         }
                     }
@@ -429,46 +545,93 @@ public class InoApiFactory {
                 });
     }
 
-    /**
-     * Collect all unread the Feed Items
-     * @param count
-     */
-    public void getAllFeedItems(int count, String streamId) {
-        mContext.sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_STAGE_ITEMS));
+//    /**
+//     * Collect all the unread the Feed Items
+//     *
+//     * @param count
+//     */
+//    public void getAllFeedItems(int count, String streamId, String UserId) {
+//        mContext.sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_STAGE_ITEMS));
+//
+//        Map<String, String> query = new HashMap<>();
+//        query.put("xt", "user/" + UserId + "/state/com.google/read");
+//        query.put("n", String.valueOf(count));
+//
+//        InoReaderRetrofitClient.getRetrofit()
+//                .create(InoReaderAPI.class)
+//                .getStreamContent(streamId, query)
+//                .filter(inoStreamContentList -> inoStreamContentList.getItems().size() > 0 || inoStreamContentList != null)
+//                .subscribe(new Observer<InoStreamContentList>() {
+//                    @Override
+//                    public void onSubscribe(Disposable disposable) {
+//                        if (disposable.isDisposed()) return;
+//                    }
+//
+//                    @Override
+//                    public void onNext(InoStreamContentList itemsBeans) {
+//                        Log.d(TAG, "onNext: allItemsCount\t" + itemsBeans.getItems().size());
+//                        rssDatabase.dao().insertFeedItems(convertingToFeedEntity(itemsBeans));
+//                        if (itemsBeans.getContinuation() != null) {
+//                            getMoreArticles(itemsBeans.getContinuation());
+//                            // will fetch more articles till the continuation is null.
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable throwable) {
+//                        throwable.printStackTrace();
+//                        Log.d(TAG, "onError: \t" + throwable.getMessage());
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//                        Log.d(TAG, "onComplete: ");
+//                    }
+//                });
+//    }
 
+
+    public void getMoreStarredItems(String continuation) {
         Map<String, String> query = new HashMap<>();
-        query.put("xt", "user/-/state/com.google/read");
-        query.put("n", String.valueOf(count));
-
-        InoReaderRetrofitClient.getRetrofit()
-                .create(InoReaderAPI.class)
-                .getStreamContent(streamId, query)
-                .filter(inoStreamContentList -> inoStreamContentList.getItems().size() > 0 || inoStreamContentList != null)
-                /*.subscribeOn(new ComputationScheduler())
-                .observeOn(new ComputationScheduler())*/
-                .subscribe(new Observer<InoStreamContentList>() {
-                    @Override
-                    public void onSubscribe(Disposable disposable) {
-                        if (disposable.isDisposed()) return;
-                    }
-                    @Override
-                    public void onNext(InoStreamContentList itemsBeans) {
-                        Log.d(TAG, "onNext: allItemsCount\t" + itemsBeans.getItems().size());
-                        rssDatabase.dao().insertFeedItems(addAllInoReaderEntries(itemsBeans));
-                        if (itemsBeans.getContinuation() != null) {
-                            getMoreArticles(itemsBeans.getContinuation());// will fetch more articles till the continuation is null.
+        if (continuation != null) {
+            query.put("it", "user/-/state/com.google/starred");
+            query.put("c", continuation);
+            InoReaderRetrofitClient.getRetrofit()
+                    .create(InoReaderAPI.class)
+                    .getStarred(query)
+                    .filter(new Predicate<InoStreamContentList>() {
+                        @Override
+                        public boolean test(InoStreamContentList itemsBeans) throws Exception {
+                            return itemsBeans != null;
                         }
-                    }
-                    @Override
-                    public void onError(Throwable throwable) {
-                        throwable.printStackTrace();
-                        Log.d(TAG, "onError: \t" + throwable.getMessage());
-                    }
-                    @Override
-                    public void onComplete() {
-                        Log.d(TAG, "onComplete: ");
-                    }
-                });
+                    })
+                    .subscribe(new Observer<InoStreamContentList>() {
+                        @Override
+                        public void onSubscribe(Disposable disposable) {
+                            if (disposable.isDisposed()) return;
+                        }
+
+                        @Override
+                        public void onNext(InoStreamContentList itemsBeans) {
+
+                            if (itemsBeans.getContinuation() != null) {
+                                rssDatabase.dao().insertFeedItems(convertingToFeedEntityForStarredItems(itemsBeans));
+                            }
+
+                        }
+
+                        @Override
+                        public void onError(Throwable throwable) {
+                            throwable.printStackTrace();
+                            Log.d(TAG, "onError getting Starred: " + throwable.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            Log.d(TAG, "onComplete: ");
+                        }
+                    });
+        }
     }
 
     /**
@@ -482,53 +645,63 @@ public class InoApiFactory {
         if (continuation != null) {
             queryMap.put("xt", "user/-/state/com.google/read");
             queryMap.put("c", continuation);
+            InoReaderRetrofitClient.getRetrofit()
+                    .create(InoReaderAPI.class)
+                    .getStreamContent(queryMap)
+                    .filter(new Predicate<InoStreamContentList>() {
+                        @Override
+                        public boolean test(InoStreamContentList inoStreamContentList) throws Exception {
+                            return inoStreamContentList.getItems().size() > 0 || inoStreamContentList != null;
+                        }
+                    })
+                    .subscribe(new Observer<InoStreamContentList>() {
+                        @Override
+                        public void onSubscribe(Disposable disposable) {
+                            if (disposable != null) return;
+                        }
+
+                        @Override
+                        public void onNext(InoStreamContentList inoStreamContentList) {
+                            Log.d(TAG, "continuation:\t " + continuation);
+                            // preparing the data for paper Db
+                            if (inoStreamContentList != null) {
+                                List<FeedItemEntity> unreadFeedItems = convertingToFeedEntity(inoStreamContentList);
+                                rssDatabase.dao().insertFeedItems(unreadFeedItems);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable throwable) {
+                            throwable.printStackTrace();
+                            Log.d(TAG, "onError: " + throwable.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            Log.d(TAG, "onComplete: ");
+                        }
+                    });
         }
-        InoReaderRetrofitClient.getRetrofit()
-                .create(InoReaderAPI.class)
-                .getStreamContent(queryMap)
-                .filter(inoStreamContentList -> inoStreamContentList.getItems().size() > 0 || inoStreamContentList != null)
-                /*.subscribeOn(new ComputationScheduler())
-                .observeOn(new ComputationScheduler())*/
-                .subscribe(new Observer<InoStreamContentList>() {
-                    @Override
-                    public void onSubscribe(Disposable disposable) {
-                        if (disposable != null) return;
-                    }
-
-                    @Override
-                    public void onNext(InoStreamContentList inoStreamContentList) {
-                        Log.d(TAG, "continuation:\t " + continuation);
-                        rssDatabase.dao().insertFeedItems(addAllInoReaderEntries(inoStreamContentList));
-
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        throwable.printStackTrace();
-                        Log.d(TAG, "onError: " + throwable.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d(TAG, "onComplete: ");
-                    }
-                });
-
     }
 
     /**
      * Collect all the starred items from inoReader Server
      */
     public void getStarred() {
-        Map<String, String> query = new HashMap<>();
-        query.put("it", InoReaderUrls.getQueryStarredArticles());
         final boolean[] lastSuccessfulSync = {false};
+        Map<String, String> query = new HashMap<>();
+        query.put("it", "user/-/state/com.google/starred");
+        query.put("c", "250");
+
         InoReaderRetrofitClient.getRetrofit()
                 .create(InoReaderAPI.class)
                 .getStarred(query)
-                .filter(itemsBeans -> itemsBeans != null)
-                /*.subscribeOn(new ComputationScheduler())
-                .observeOn(new ComputationScheduler())*/
+                .filter(new Predicate<InoStreamContentList>() {
+                    @Override
+                    public boolean test(InoStreamContentList itemsBeans) throws Exception {
+                        return itemsBeans != null;
+                    }
+                })
                 .subscribe(new Observer<InoStreamContentList>() {
                     @Override
                     public void onSubscribe(Disposable disposable) {
@@ -537,8 +710,11 @@ public class InoApiFactory {
 
                     @Override
                     public void onNext(InoStreamContentList itemsBeans) {
+                        rssDatabase.dao().insertFeedItems(convertingToFeedEntityForStarredItems(itemsBeans));
+                        if (itemsBeans.getContinuation() != null) {
+                            getMoreStarredItems(itemsBeans.getContinuation());
+                        }
                         lastSuccessfulSync[0] = true;
-                        rssDatabase.dao().insertFeedItems(addStarredInoreaderEntries(itemsBeans));
                         if (lastSuccessfulSync[0]) {
                             internalStatePrefs.setLongPref(InternalStatePrefs.LAST_SYNC_TIME_PREF_KEY, System.currentTimeMillis());
                         }
@@ -557,252 +733,167 @@ public class InoApiFactory {
                 });
     }
 
+
+    public BufferedReader connectServerToInoReader(HttpUrl url) {
+        Response response = null;
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        try {
+            response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                Log.d(TAG, String.format("connectToInoReaderServer: %s ", response.body().string()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response.body().source().inputStream(), "utf-8"));
+                return reader;
+            } else {
+                Log.d(TAG, String.format("connectServerToInoReader: Something went wrong %d ", response.code()));
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("connectServerToInoReader_Error: %s ", e.getMessage()));
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
+     * Closing the Reader
+     *
+     * @param reader
+     */
+    public static void closeReader(BufferedReader reader) {
+        if (reader != null) {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, String.format("closeReader: ", e.getMessage()));
+                // something bad happened here :(
+            }
+        }
+    }
+
+    /**
+     * marking the Feed items as read on InoReader server as read
      *
      * @param feedItemEntities
      */
-    private void syncUnstarredItems(FeedItemEntity[] feedItemEntities) {
-        Map<String, String> queryMap = new HashMap<>();
-        for (FeedItemEntity favItem : feedItemEntities) {
-            if (!favItem.favorite) {
-                queryMap.put("r", "user/-/state/com.google/starred");
+    public void markFeedItemsAsReadOnInoReader(FeedItemEntity[] feedItemEntities) {
+        new Completable() {
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
 
-            }
-            queryMap.put("i", favItem.id);
-            InoReaderRetrofitClient.getRetrofit()
-                    .create(InoReaderAPI.class)
-                    .editFeedItem(queryMap)
-                    /*.subscribeOn(new ComputationScheduler())
-                    .observeOn(new ComputationScheduler())*/
-                    .subscribe(new Observer<ResponseBody>() {
-                        @Override
-                        public void onSubscribe(Disposable disposable) {
-                            if (disposable.isDisposed()) return;
-                        }
+                Log.d(TAG, String.format("markFeedItemsAsReadOnInoReader: %d", feedItemEntities.length));
+                StringBuilder stringBuilder = new StringBuilder();
 
-                        @Override
-                        public void onNext(ResponseBody responseBody) {
-                            if (responseBody != null) {
-                                try {
-                                    String result = responseBody.string();
-                                    Log.d(TAG, "ItemsFav: " + result);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                HttpUrl URL = HttpUrl.parse(markFeedReadURL);
+                for (FeedItemEntity readItems : feedItemEntities) {
+                    if (readItems.read) {
+                        stringBuilder.append("&i=" + readItems.id);
 
-                        @Override
-                        public void onError(Throwable throwable) {
-                            throwable.printStackTrace();
-                            Log.d(TAG, "onError: " + throwable.getMessage());
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            Log.d(TAG, "ItemsAreMarkedAsRead \t onComplete: ");
-                        }
-                    });
-        }
-    }
-
-    private void syncStarredItems(FeedItemEntity[] feedItemEntities) {
-        Map<String, String> queryMap = new HashMap<>();
-        for (FeedItemEntity favItem : feedItemEntities) {
-            if (favItem.favorite) {
-                queryMap.put("a", "user/-/state/com.google/starred");
-
-            }
-            queryMap.put("i", favItem.id);
-            InoReaderRetrofitClient.getRetrofit()
-                    .create(InoReaderAPI.class)
-                    .editFeedItem(queryMap)
-                    .subscribeOn(new ComputationScheduler())
-                    .observeOn(new ComputationScheduler())
-                    .subscribe(new Observer<ResponseBody>() {
-                        @Override
-                        public void onSubscribe(Disposable disposable) {
-                            if (disposable.isDisposed()) return;
-                        }
-
-                        @Override
-                        public void onNext(ResponseBody responseBody) {
-                            if (responseBody != null) {
-                                try {
-                                    String result = responseBody.string();
-                                    Log.d(TAG, "ItemsFav: " + result);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onError(Throwable throwable) {
-                            throwable.printStackTrace();
-                            Log.d(TAG, "onError: " + throwable.getMessage());
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            Log.d(TAG, "ItemsAreMarkedAsRead \t onComplete: ");
-                        }
-                    });
-        }
-    }
-
-
-    /**
-     * Will mark items from room Db as read at once by checking if the FeedItem is read or not.
-     */
-    private void markFeedItemsAsRead(FeedItemEntity[] feedItemEntities) {
-        mContext.sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_STAGE_ITEMS));
-        Map<String, String> queryMap = new HashMap<>();
-        for (FeedItemEntity readItems : feedItemEntities) {
-            if (readItems.read) {
-                queryMap.put("a", "user/-/state/com.google/read");
-            }
-            queryMap.put("i", readItems.id);
-            InoReaderRetrofitClient.getRetrofit()
-                    .create(InoReaderAPI.class)
-                    .editFeedItem(queryMap)
-                    /*.subscribeOn(new ComputationScheduler())
-                    .observeOn(new ComputationScheduler())*/
-                    .subscribe(new Observer<ResponseBody>() {
-                        @Override
-                        public void onSubscribe(Disposable disposable) {
-                            if (disposable.isDisposed()) return;
-                        }
-
-                        @Override
-                        public void onNext(ResponseBody responseBody) {
-                            if (responseBody != null) {
-                                try {
-                                    String result = responseBody.string();
-                                    Log.d(TAG, "itemRead: " + result);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onError(Throwable throwable) {
-                            throwable.printStackTrace();
-                            Log.d(TAG, "onError: " + throwable.getMessage());
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            Log.d(TAG, "ItemsAreMarkedAsRead \t onComplete: ");
-                        }
-                    });
-        }
-    }
-
-    /**
-     * will Mark the Given feedItems As Unread
-     */
-    private void markFeedItemsAsUnread(FeedItemEntity[] feedItemEntities) {
-        mContext.sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_STAGE_ITEMS));
-        Map<String, String> queryMap = new HashMap<>();
-        if (feedItemEntities != null) {
-            for (FeedItemEntity itemEntity : feedItemEntities) {
-                if (!itemEntity.read) {
-                    queryMap.put("r", "user/-/state/com.google/read");
+                    }
                 }
-                queryMap.put("i", itemEntity.id);
-                InoReaderRetrofitClient.getRetrofit()
-                        .create(InoReaderAPI.class)
-                        .editFeedItem(queryMap)
-                       /* .subscribeOn(new ComputationScheduler())
-                        .observeOn(new ComputationScheduler())*/
-                        .subscribe(new Observer<ResponseBody>() {
-                            @Override
-                            public void onSubscribe(Disposable disposable) {
-                                if (disposable.isDisposed()) return;
-                            }
+                Log.d(TAG, String.format("Collected_ids: %s", stringBuilder.toString()));
+                BufferedReader reader = connectServerToInoReader(URL.newBuilder()
+                        .addPathSegment(stringBuilder.toString().trim())
+                        //.setQueryParameter("i", readItems.id)
+                        .build());
+                closeReader(reader);
 
-                            @Override
-                            public void onNext(ResponseBody responseBody) {
-                                if (responseBody != null) {
-                                    try {
-                                        String result = responseBody.string();
-                                        Log.d(TAG, "itemUnRead: " + result);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
 
-                            @Override
-                            public void onError(Throwable throwable) {
-                                throwable.printStackTrace();
-                                Log.d(TAG, "onError: " + throwable.getMessage());
-                            }
-
-                            @Override
-                            public void onComplete() {
-                                Log.d(TAG, "ItemsAreMarkedAsUnRead \t onComplete: ");
-                            }
-                        });
             }
-        }
+        }.subscribeActual(new CompletableObserver() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                if (d.isDisposed()) return;
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                Log.e(TAG, String.format("Error marking read on InoReader server: %s ", e.getMessage()));
+            }
+        });
+
     }
-    /**
-     * Update InoReader immediately if the user is online if not it will fallback and next time
-     * user is online the ba will take care of it h
-     *
-     * @param feedItemEntity
-     * @param state
-     */
-    public void updateFeedItemReadStatus(FeedItemEntity feedItemEntity, boolean state) {
-        HashMap<String, String> queryMap = new HashMap<>();
-        if (state) {
-            queryMap.put("a", "user/-/state/com.google/read");
-        } else {
-            queryMap.put("r", "user/-/state/com.google/read");
-        }
-        queryMap.put("i", feedItemEntity.id);
-        Log.d(TAG, "updateFeedItemReadStatus:\t" + queryMap);
+//
+//    /**
+//     *
+//     * @param feedItemEntities
+//     */
+//    private void markFeedItemsAsUnreadOnInoReader(FeedItemEntity[] feedItemEntities) {
+//        Log.d(TAG, String.format("markFeedItemsAsUnreadOnInoReader: ", feedItemEntities.length));
+//        if (feedItemEntities != null && feedItemEntities.length > 0) {
+//            StringBuilder stringBuilder = new StringBuilder();
+//        HttpUrl URL = HttpUrl.parse(markFeedUnReadURL);
+//            for (FeedItemEntity readItems : feedItemEntities) {
+//                if (!readItems.read) {
+//                    stringBuilder.append("&i="+readItems.id);
+//
+//                }
+//            }
+//            Log.d(TAG, String.format("StringBuilderFormat:%s ", stringBuilder.toString()));
+//            BufferedReader reader = connectServerToInoReader(URL.newBuilder()
+//                    .addPathSegment(stringBuilder.toString().trim())
+//                    .build());
+//            closeReader(reader);
+//        }
+//    }
+//
+//    /**
+//     * @param feedItemEntities
+//     */
+//    private void syncStarredItems(FeedItemEntity[] feedItemEntities) {
+//        if (feedItemEntities != null && feedItemEntities.length > 0) {
+//            StringBuilder stringBuilder = new StringBuilder();
+//            HttpUrl URL = HttpUrl.parse(markFeedStarredURL);
+//            for (FeedItemEntity starredItems : feedItemEntities) {
+//                if (starredItems.favorite) {
+//                    stringBuilder.append("&i="+starredItems.id);
+////                    BufferedReader reader = connectServerToInoReader(URL.newBuilder()
+////                            .setQueryParameter("i", starredItems.id)
+////                            .build());
+////                    closeReader(reader);
+//                }
+//            }
+//
+//            BufferedReader reader = connectServerToInoReader(URL.newBuilder()
+//                    .addPathSegment(stringBuilder.toString().trim())
+//                    .build());
+//            closeReader(reader);
+//        }
+//    }
+//
+//    /**
+//     *
+//     * @param feedItemEntities
+//     */
+//    private void syncUnStarredItems(FeedItemEntity[] feedItemEntities) {
+//        if (feedItemEntities != null && feedItemEntities.length > 0) {
+//            StringBuilder stringBuilder = new StringBuilder();
+//            HttpUrl URL = HttpUrl.parse(markFeedUnStarredURL);
+//            for (FeedItemEntity starredItems : feedItemEntities) {
+//                if (!starredItems.favorite) {
+//                    stringBuilder.append("&i="+starredItems.id);
+//
+//                }
+//            }
+//            BufferedReader reader = connectServerToInoReader(URL.newBuilder()
+//                    .addPathSegment(stringBuilder.toString().trim())
+//                    .build());
+//            closeReader(reader);
+//        }
+//    }
+//
 
-        InoReaderRetrofitClient.getRetrofit()
-                .create(InoReaderAPI.class)
-                .editFeedItem(queryMap)
-                .subscribeOn(Schedulers.io())
-                .observeOn(new ComputationScheduler())
-                .subscribe(new Observer<ResponseBody>() {
-                    @Override
-                    public void onSubscribe(Disposable disposable) {
-                        if (disposable.isDisposed()) return;
-                    }
-
-                    @Override
-                    public void onNext(ResponseBody responseBody) {
-                        if (responseBody != null) {
-                            try {
-                                String result = responseBody.string();
-                                Log.d(TAG, "Updated FeedItem read state: " + result);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        throwable.printStackTrace();
-                        Log.d(TAG, "onError: " + throwable.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d(TAG, "ItemStarred \t onComplete: ");
-                    }
-                });
-    }
     /**
      * Rename the Tag
+     *
      * @param source
      * @param destination
      */
@@ -886,19 +977,24 @@ public class InoApiFactory {
      * @param inoSubscriptionLists
      * @return
      */
-    private List<SubscriptionEntity> AddInoReaderSubscriptionToRoom(List<InoSubscriptionList.SubscriptionsBean> inoSubscriptionLists) {
+    private List<SubscriptionEntity> convertingToSubscriptionEntity
+    (List<InoSubscriptionList.SubscriptionsBean> inoSubscriptionLists) {
         // init the entities
         List<SubscriptionEntity> subscriptionEntities = new ArrayList<>();
         //InoSubscriptionList.SubscriptionsBean subscription:
         for (InoSubscriptionList.SubscriptionsBean inoSubscriptionListItems : inoSubscriptionLists) {
-            // Log.d(TAG, "AddInoReaderSubscriptionToRoom: "+inoSubscriptionListItems.getSubId());
+            Log.d(TAG, "convertingToSubscriptionEntity: " + inoSubscriptionListItems.getSubId());
             SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
             subscriptionEntity.id = inoSubscriptionListItems.getSubId();
             subscriptionEntity.title = inoSubscriptionListItems.getTitle();
             subscriptionEntity.siteLink = inoSubscriptionListItems.getHtmlUrl();
+            StringBuilder stringBuilder = new StringBuilder("https://logo-core.clearbit.com/");// getting the logo from the clearbit logo genarator site
+            stringBuilder.append(Uri.parse(subscriptionEntity.siteLink).getHost());
+            stringBuilder.append("?size=128");// with the image size of 128px
+            subscriptionEntity.iconUrl = stringBuilder.toString();
             subscriptionEntity.rssLink = inoSubscriptionListItems.getUrl();
             subscriptionEntity.createdTimestamp = inoSubscriptionListItems.getFirstitemmsec();
-            subscriptionEntities.add(subscriptionEntity);// adding the final result to the room subscription table
+            subscriptionEntities.add(subscriptionEntity);// adding the final result to the room subscription Entities Format
         }
         return subscriptionEntities;
     }
@@ -907,7 +1003,8 @@ public class InoApiFactory {
      * @param subscriptionsBean
      * @return
      */
-    private List<String> getSyncedSubscriptionIds(List<InoSubscriptionList.SubscriptionsBean> subscriptionsBean) {
+    private List<String> getSyncedSubscriptionIds
+    (List<InoSubscriptionList.SubscriptionsBean> subscriptionsBean) {
         List<String> syncedSubscriptionIds = new ArrayList<>();
         for (InoSubscriptionList.SubscriptionsBean subscriptionList : subscriptionsBean) {
             syncedSubscriptionIds.add(subscriptionList.getSubId());
@@ -933,8 +1030,12 @@ public class InoApiFactory {
      * @param subscriptionsBeans
      * @return
      */
-    private List<TagEntity> addInoReaderTags(List<InoSubscriptionList.SubscriptionsBean> subscriptionsBeans) {
+    private List<TagEntity> convertingToTagEntity
+    (List<InoSubscriptionList.SubscriptionsBean> subscriptionsBeans) {
+        //init Tag entity
         List<TagEntity> tagEntities = new ArrayList<>();
+
+        //Create a Tag for the subscription if that subscription contains a TAG
         for (InoSubscriptionList.SubscriptionsBean tags : subscriptionsBeans) {
             for (InoSubscriptionList.SubscriptionsBean.CategoriesBean categoriesBean : tags.getCategories()) {
                 TagEntity tagEntity = new TagEntity();
@@ -947,87 +1048,74 @@ public class InoApiFactory {
         return tagEntities;
     }
 
-    /**
-     * @param itemsBeans
-     * @param subscriptionId
-     * @return
-     */
-    private List<FeedItemEntity> addInoReaderEntries(List<InoStreamContentList.ItemsBean> itemsBeans, String subscriptionId) {
-
-        List<FeedItemEntity> feedItemEntities = new ArrayList<>();
-        FeedParser feedParser = FeedParser.getInstance(mContext);
-
-        for (InoStreamContentList.ItemsBean inoFeedItems : itemsBeans) {
-            FeedItemEntity existing = rssDatabase.dao().getFeedItem(getIdLastPath(inoFeedItems.getId()));
-            SubscriptionEntity subscriptionEntity = rssDatabase.dao().getSubscription(subscriptionId);
-
-            for (InoStreamContentList.ItemsBean.AlternateBean alternateBean : inoFeedItems.getAlternate()) {
-                if (existing == null && subscriptionEntity != null) {
-                    Log.d(TAG, "addInoReaderEntries: " + subscriptionId);
-                    FeedItemEntity feedItemEntity = new FeedItemEntity(
-                            inoFeedItems.getTitle(),
-                            replaceSlashWithDash(subscriptionId),
-                            getIdLastPath(inoFeedItems.getId()),
-                            setInoReaderProperDateTime(inoFeedItems.getPublished()),
-                            inoFeedItems.getSummary().getContent(),
-                            null,//this the excerpt cuz inoreader does not support excerpt at the moment.
-                            alternateBean.getHref(),
-                            subscriptionEntity.title
-                    );
-                    feedItemEntity.createdAt = Long.parseLong(inoFeedItems.getCrawlTimeMsec());
-                    feedItemEntity.author = inoFeedItems.getAuthor();
-                    feedItemEntity.syncedAt = System.currentTimeMillis();
-                    feedItemEntity = feedParser.parseFeedItem(feedItemEntity);
-                    feedItemEntities.add(feedItemEntity);
-                } else if (existing != null) {
-                    rssDatabase.dao().updateFeedItem(existing);
-                }
-            }
-        }
-        return feedItemEntities;
-    }
 
     /**
      * @param itemsBeans
      * @return
      */
-    private List<FeedItemEntity> addAllInoReaderEntries(InoStreamContentList itemsBeans) {
+    private List<FeedItemEntity> convertingToFeedEntity(InoStreamContentList itemsBeans) {
 
         List<FeedItemEntity> feedItemEntities = new ArrayList<>();
-        FeedParser feedParser = FeedParser.getInstance(mContext);
-
+        //init the feed Parser here
         for (InoStreamContentList.ItemsBean inoFeedItems : itemsBeans.getItems()) {
+            idsFromIno.add(getIdLastPath(inoFeedItems.getId()));//ids
+            FeedItemEntity savedFeedItemEntity = rssDatabase.dao().getFeedItem(getIdLastPath(inoFeedItems.getId()));
+            SubscriptionEntity subscriptionEntity = rssDatabase.dao().getSubscription(replaceSlashWithDash(inoFeedItems.getOrigin().getStreamId()));
 
-            FeedItemEntity existing = rssDatabase.dao().getFeedItem(getIdLastPath(inoFeedItems.getId()));
-            SubscriptionEntity subscriptionEntity = rssDatabase.dao()
-                    .getSubscription(replaceSlashWithDash(inoFeedItems.getOrigin().getStreamId()));
-
-            for (InoStreamContentList.ItemsBean.AlternateBean alternateBean : inoFeedItems.getAlternate()) {
-                if (existing == null && subscriptionEntity != null) {
-                    Log.d(TAG, "StreamId: \t" + inoFeedItems.getOrigin().getStreamId());
-                    FeedItemEntity feedItemEntity = new FeedItemEntity(
-                            inoFeedItems.getTitle(),
-                            replaceSlashWithDash(inoFeedItems.getOrigin().getStreamId()),
-                            getIdLastPath(inoFeedItems.getId()),
-                            setInoReaderProperDateTime(inoFeedItems.getPublished()),
-                            inoFeedItems.getSummary().getContent(),
-                            null,//this the excerpt cuz inoreader does not support excerpt at the moment.
-                            alternateBean.getHref(),
-                            subscriptionEntity.title
-                    );
-                    feedItemEntity.createdAt = Long.parseLong(inoFeedItems.getCrawlTimeMsec());
-                    feedItemEntity.author = inoFeedItems.getAuthor();
-                    feedItemEntity.syncedAt = System.currentTimeMillis();
-                    feedItemEntity = feedParser.parseFeedItem(feedItemEntity);
-                    feedItemEntities.add(feedItemEntity);
-                } else if (existing != null) {
-                    rssDatabase.dao().updateFeedItem(existing);
-                }
+            if (savedFeedItemEntity == null) {
+                FeedItemEntity feedItemEntity = new FeedItemEntity(
+                        inoFeedItems.getTitle(),
+                        replaceSlashWithDash(inoFeedItems.getOrigin().getStreamId()),
+                        getIdLastPath(inoFeedItems.getId()),
+                        setInoReaderProperDateTime(inoFeedItems.getPublished()),
+                        inoFeedItems.getSummary().getContent(),
+                        null,//this the excerpt cuz inoreader does not support excerpt at the moment.
+                        inoFeedItems.getAlternate().iterator().next().getHref(),
+                        subscriptionEntity.title);
+                feedItemEntity.createdAt = Long.parseLong(inoFeedItems.getCrawlTimeMsec());
+                feedItemEntity.author = inoFeedItems.getAuthor();
+                feedItemEntity.syncedAt = System.currentTimeMillis();
+                feedItemEntity = feedParser.parseFeedItem(feedItemEntity);
+                feedItemEntities.add(feedItemEntity);
+            } else{
+                rssDatabase.dao().updateFeedItem(savedFeedItemEntity);
             }
         }
+
         return feedItemEntities;
     }
 
+    /**
+     * Dividing the Whole list of items into manageable list
+     *
+     * @param list
+     * @return
+     */
+    private static List<List<String>> divideLongList(List<String> list) {
+        List<String> container = list;
+        List<List<String>> arrayList = new ArrayList();
+        if (container.size() / 250 != 0 || container.size() <= 0) {
+            int size = container.size() / 250;
+            int start = 0;
+            int end = 249;
+            int index = 0;
+            while (start < size) {
+                arrayList.add(container.subList(index, end));
+                if (start <= size - 1) {
+                    int count = end;
+                    end += 250;
+                    index = count;
+                }
+                start++;
+            }
+            if (container.size() % 250 <= 0) {
+                return arrayList;
+            }
+            container = container.subList(250 * size, container.size());
+        }
+        arrayList.add(container);
+        return arrayList;
+    }
 
     /**
      * Adding the starred items to the database
@@ -1035,92 +1123,84 @@ public class InoApiFactory {
      * @param itemsBeans
      * @return
      */
-    private List<FeedItemEntity> addStarredInoreaderEntries(InoStreamContentList itemsBeans) {
-
+    private List<FeedItemEntity> convertingToFeedEntityForStarredItems(InoStreamContentList
+                                                                               itemsBeans) {
         List<FeedItemEntity> feedItemEntities = new ArrayList<>();
         FeedParser feedParser = FeedParser.getInstance(mContext);
-
         for (InoStreamContentList.ItemsBean inoFeedItems : itemsBeans.getItems()) {
-
             FeedItemEntity existing = rssDatabase.dao().getFeedItem(getIdLastPath(inoFeedItems.getId()));
-
-            if (existing != null) {
+            if (existing == null) {
+                FeedItemEntity feedItemEntity = new FeedItemEntity(
+                        inoFeedItems.getTitle(),
+                        replaceSlashWithDash(inoFeedItems.getOrigin().getStreamId()),
+                        getIdLastPath(inoFeedItems.getId()),
+                        setInoReaderProperDateTime(inoFeedItems.getPublished()),
+                        inoFeedItems.getSummary().getContent(),
+                        null,
+                        inoFeedItems.getAlternate().iterator().next().getHref(),
+                        inoFeedItems.getOrigin().getTitle()
+                );
+                feedItemEntity.createdAt = Long.parseLong(inoFeedItems.getCrawlTimeMsec());
+                feedItemEntity.author = inoFeedItems.getAuthor();
+                feedItemEntity.syncedAt = System.currentTimeMillis();
+                feedItemEntity = feedParser.parseFeedItem(feedItemEntity);
+                feedItemEntities.add(feedItemEntity);
+            } else if (!existing.favorite) {
                 existing.favorite = true;
+                existing.starredUnStarredmodified = 0;
                 rssDatabase.dao().updateFeedItem(existing);
-
-            } else {
-
-                for (InoStreamContentList.ItemsBean.AlternateBean alternateBean : inoFeedItems.getAlternate()) {
-                    FeedItemEntity feedItemEntity = new FeedItemEntity(
-                            inoFeedItems.getTitle(),
-                            replaceSlashWithDash(inoFeedItems.getOrigin().getStreamId()),
-                            getIdLastPath(inoFeedItems.getId()),
-                            setInoReaderProperDateTime(inoFeedItems.getPublished()),
-                            inoFeedItems.getSummary().getContent(),
-                            null,
-                            alternateBean.getHref(),
-                            inoFeedItems.getOrigin().getTitle()
-                    );
-                    feedItemEntity.createdAt = Long.parseLong(inoFeedItems.getCrawlTimeMsec());
-                    feedItemEntity.author = inoFeedItems.getAuthor();
-                    feedItemEntity.syncedAt = System.currentTimeMillis();
-                    feedItemEntity.modifiedAt = 0;
-                    feedItemEntity.favorite = true;
-                    feedItemEntity.read = false;
-                    feedItemEntity = feedParser.parseFeedItem(feedItemEntity);
-                    feedItemEntities.add(feedItemEntity);
-                }
             }
         }
         return feedItemEntities;
     }
 
-    /**
-     * This method marks all items in a given stream as read. Please provide the ts parameter - unix timestamp,
-     * generated the last time the list stream was fetched and displayed to the user,
-     * so it won't mark as read items that the user never got.
-     * @param url
-     * @param lastSyncTime
-     */
-    public void markAllAsRead(String url, long lastSyncTime) {
-        markAllAsReadInRoom(url);// will mark the items in that subscription id as Read
-        Map<String, String> queryMap = new HashMap<>();
-        queryMap.put("ts", Long.toString(lastSyncTime));
-        queryMap.put("s", url);
+//    /**
+//     * This method marks all items in a given stream as read. Please provide the ts parameter - unix timestamp,
+//     * generated the last time the list stream was fetched and displayed to the user,
+//     * so it won't mark as read items that the user never got.
+//     *
+//     * @param url
+//     * @param lastSyncTime
+//     */
+//    public void markAllAsRead(String url, long lastSyncTime) {
+//        markAllAsReadInRoom(url);// will mark the items in that subscription id as Read
+//        Map<String, String> queryMap = new HashMap<>();
+//        queryMap.put("ts", Long.toString(lastSyncTime));
+//        queryMap.put("s", url);
+//
+//        InoReaderRetrofitClient.getRetrofit()
+//                .create(InoReaderAPI.class)
+//                .markAllAsRead(queryMap)
+//                .subscribe(new Observer<ResponseBody>() {
+//                    @Override
+//                    public void onSubscribe(Disposable disposable) {
+//                        if (disposable.isDisposed()) return;
+//                    }
+//
+//                    @Override
+//                    public void onNext(ResponseBody responseBody) {
+//                        if (responseBody != null) {
+//                            try {
+//                                Log.d(TAG, "markAllAsRead_responseBody: " + responseBody.string());
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable throwable) {
+//                        throwable.printStackTrace();
+//                        Log.d(TAG, "onError: " + throwable.getMessage());
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//                        Log.d(TAG, "onComplete: From MarkAllRead");
+//                    }
+//                });
+//    }
 
-        InoReaderRetrofitClient.getRetrofit()
-                .create(InoReaderAPI.class)
-                .markAllAsRead(queryMap)
-                .subscribeOn(new ComputationScheduler())
-                .observeOn(new ComputationScheduler())
-                .subscribe(new Observer<ResponseBody>() {
-                    @Override
-                    public void onSubscribe(Disposable disposable) {
-                        if (disposable.isDisposed()) return;
-                    }
-                    @Override
-                    public void onNext(ResponseBody responseBody) {
-                        if (responseBody != null) {
-                            try {
-                                Log.d(TAG, "markAllAsRead_responseBody: " + responseBody.string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        throwable.printStackTrace();
-                        Log.d(TAG, "onError: " + throwable.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d(TAG, "onComplete: From MarkAllRead");
-                    }
-                });
-    }
     /**
      * will the feed items as Read
      *
@@ -1174,59 +1254,32 @@ public class InoApiFactory {
         return subsId.replace("_", "/").trim();
     }
 
-    /**
-     * @param lastId
-     * @return
-     */
-    private String appendFeedIdProperId(String lastId) {
-        return "tag:google.com,2005:reader/item/" + lastId.trim();
-    }
 
-
-    /**
-     * we can Unsubscribe from the feed Subscription
-     *
-     * @param feedId
-     */
-    public void unsubscribe(String feedId) {
-        editInoSubscription("unsubscribe", feedId, "", "", "");
-    }
-
-    /**
-     * @param title
-     * @param feedId
-     * @param categories
-     */
-    public void subscribeFeed(String title, String feedId, String categories) {
-        editInoSubscription("subscribe", feedId, title, categories, "");
-    }
-
-    /**
-     * @param title
-     * @param feedId
-     * @param addCategories
-     * @param removeCategories
-     */
-    public void editFeed(String title, String feedId, String addCategories, String removeCategories) {
-        editInoSubscription("edit", title, feedId, addCategories, removeCategories);
-    }
-
-    /**
-     * Will compare Number of Feed Items to Pull per subscription
-     *
-     * @param subscriptionsCount
-     * @return
-     */
-    private int computeNumberOfFeedItemsToSync(int subscriptionsCount) {
-        Log.d(TAG, "computeNumberOfFeedItemsToSync:\t " + subscriptionsCount);
-        int count = 0;
-        if (subscriptionsCount > 0) {
-            count = subscriptionsCount * readablyPrefs.unreadItemsToKeep;
-            if (count >= MAX_LIMIT) {
-                count = MAX_LIMIT;
-            }
-        }
-        return count;
-    }
-
+//    /**
+//     * we can Unsubscribe from the feed Subscription
+//     *
+//     * @param feedId
+//     */
+//    public void unsubscribe(String feedId) {
+//        editInoSubscription("unsubscribe", feedId, "", "", "");
+//    }
+//
+//    /**
+//     * @param title
+//     * @param feedId
+//     * @param categories
+//     */
+//    public void subscribeFeed(String title, String feedId, String categories) {
+//        editInoSubscription("subscribe", feedId, title, categories, "");
+//    }
+//
+//    /**
+//     * @param title
+//     * @param feedId
+//     * @param addCategories
+//     * @param removeCategories
+//     */
+//    public void editFeed(String title, String feedId, String addCategories, String removeCategories) {
+//        editInoSubscription("edit", title, feedId, addCategories, removeCategories);
+//    }
 }

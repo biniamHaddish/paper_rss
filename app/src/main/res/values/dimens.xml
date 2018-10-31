@@ -8,6 +8,7 @@
     <dimen name="very_small_font_size">12sp</dimen>
     <dimen name="extra_large_padding">32dp</dimen>
     <dimen name="medium_padding">20dp</dimen>
+    <dimen name="medium_padding_nav">30dp</dimen>
     <dimen name="min_selectable">48dp</dimen>
 
     <dimen name="feed_source_buttons_margin">15dp</dimen>

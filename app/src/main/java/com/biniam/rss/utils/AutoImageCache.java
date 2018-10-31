@@ -8,7 +8,7 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.db.roomentities.FeedItemEntity;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
 import com.biniam.rss.ui.controllers.FeedParser;
@@ -41,14 +41,14 @@ public class AutoImageCache {
 
     private static AutoImageCache autoImageCache;
     private Context context;
-    private ReadablyDatabase readablyDatabase;
+    private PaperDatabase paperDatabase;
     private OkHttpClient client = new OkHttpClient();
     private long since = -1;
 
 
     private AutoImageCache(Context context) {
         this.context = context;
-        readablyDatabase = ReadablyApp.getInstance().getDatabase();
+        paperDatabase = PaperApp.getInstance().getDatabase();
     }
 
     public static AutoImageCache getInstance(Context context) {
@@ -64,9 +64,9 @@ public class AutoImageCache {
 
         context.sendBroadcast(new Intent(AccountBroker.ACTION_SYNC_STAGE_IMAGES));
 
-        SubscriptionEntity[] subscriptionEntities = readablyDatabase.dao().getAllSubscriptions();
+        SubscriptionEntity[] subscriptionEntities = paperDatabase.dao().getAllSubscriptions();
         for (SubscriptionEntity subscriptionEntity : subscriptionEntities) {
-            FeedItemEntity[] feedItemEntities = readablyDatabase.dao().getFeedItemsForSubscriptionSyncAt(subscriptionEntity.id, since);
+            FeedItemEntity[] feedItemEntities = paperDatabase.dao().getFeedItemsForSubscriptionSyncAt(subscriptionEntity.id, since);
             for (FeedItemEntity feedItemEntity : feedItemEntities) {
                 cacheImagesForFeedEntity(feedItemEntity);
             }
@@ -121,69 +121,72 @@ public class AutoImageCache {
         if (url.contains(ImageDownloadCallable.FEED_BURNER)) {
             Log.d(TAG, "call: feedburner image returning");
             return;
-        }
-
-        Request request = new Request.Builder().url(url).build();
-        Response response = client.newCall(request).execute();
-        ResponseBody responseBody = response.body();
-        InputStream imgDownloadInputStream = responseBody.byteStream();
-
-        byte[] buffer = new byte[1024 * 4];
-        long downloadedBytes = 0;
-        long target = responseBody.contentLength();
-
-        if (target > 0 && imgFile.exists() && imgFile.length() == target) {
-            // This file has already been downloaded
+        } else if (url.contains(ImageDownloadCallable.INOREADER_COM)) {
+            Log.d(TAG, "downloadImg: inoreader ad image skipping download");
             return;
-        } else if (target > 0 && imgFile.exists() && imgFile.length() != target) {
-            // If a file exists with the same name but with different size
-            // We will append "_" to the filename about to be downloaded
-            String nameWoExt = imgFileName.replace("." + imgFileExtension, "");
-            nameWoExt = nameWoExt + "_";
-            imgFileName = nameWoExt + "." + imgFileExtension;
-            imgFile = new File(feedItemDir, imgFileName);
-        }
+        } else {
 
+            Request request = new Request.Builder().url(url).build();
+            Response response = client.newCall(request).execute();
+            ResponseBody responseBody = response.body();
+            InputStream imgDownloadInputStream = responseBody.byteStream();
 
-        FileOutputStream imgFileOutputStream = new FileOutputStream(imgFile);
+            byte[] buffer = new byte[1024 * 4];
+            long downloadedBytes = 0;
+            long target = responseBody.contentLength();
 
-        // Downloading the image
-        while (true) {
-            int read = imgDownloadInputStream.read(buffer);
-            if (read == -1) {
-                // We have reached the end of imgDownloadInputStream
-                break;
+            if (target > 0 && imgFile.exists() && imgFile.length() == target) {
+                // This file has already been downloaded
+                return;
+            } else if (target > 0 && imgFile.exists() && imgFile.length() != target) {
+                // If a file exists with the same name but with different size
+                // We will append "_" to the filename about to be downloaded
+                String nameWoExt = imgFileName.replace("." + imgFileExtension, "");
+                nameWoExt = nameWoExt + "_";
+                imgFileName = nameWoExt + "." + imgFileExtension;
+                imgFile = new File(feedItemDir, imgFileName);
             }
 
-            Log.d(TAG, String.format("doInBackground: id %s download status %s / %s",
-                    domId,
-                    downloadedBytes >= 1000 ? String.valueOf(((float) downloadedBytes) / 1000f) + " KB" : downloadedBytes + " Bytes",
-                    target >= 1000 ? String.valueOf(((float) target) / 1000f) + " KB" : target + " Bytes"));
 
-            imgFileOutputStream.write(buffer, 0, read);
-            downloadedBytes += read;
+            FileOutputStream imgFileOutputStream = new FileOutputStream(imgFile);
+
+            // Downloading the image
+            while (true) {
+                int read = imgDownloadInputStream.read(buffer);
+                if (read == -1) {
+                    // We have reached the end of imgDownloadInputStream
+                    break;
+                }
+
+                Log.d(TAG, String.format("doInBackground: id %s download status %s / %s",
+                        domId,
+                        downloadedBytes >= 1000 ? String.valueOf(((float) downloadedBytes) / 1000f) + " KB" : downloadedBytes + " Bytes",
+                        target >= 1000 ? String.valueOf(((float) target) / 1000f) + " KB" : target + " Bytes"));
+
+                imgFileOutputStream.write(buffer, 0, read);
+                downloadedBytes += read;
+            }
+
+            imgFileOutputStream.flush();
+            imgFileOutputStream.close();
+            imgDownloadInputStream.close();
+
+            feedEntityDom.getElementById(domId)
+                    .attr(FeedParser.IMG_DOWNLAODED, "true");
+
+            feedEntityDom
+                    .getElementById(domId)
+                    .attr(FeedParser.SRC_ATTR, Uri.fromFile(imgFile).toString());
+
+            feedItemEntity.leadImgPath = Uri.fromFile(imgFile).toString();
+
+            if (feedItemEntity.hasFullArticle()) {
+                feedItemEntity.fullArticle = feedEntityDom.toString();
+            } else {
+                feedItemEntity.content = feedEntityDom.toString();
+            }
+
+            paperDatabase.dao().updateFeedItem(feedItemEntity);
         }
-
-        imgFileOutputStream.flush();
-        imgFileOutputStream.close();
-        imgDownloadInputStream.close();
-
-        feedEntityDom.getElementById(domId)
-                .attr(FeedParser.IMG_DOWNLAODED, "true");
-
-        feedEntityDom
-                .getElementById(domId)
-                .attr(FeedParser.SRC_ATTR, Uri.fromFile(imgFile).toString());
-
-        feedItemEntity.leadImgPath = Uri.fromFile(imgFile).toString();
-
-        if (feedItemEntity.hasFullArticle()) {
-            feedItemEntity.fullArticle = feedEntityDom.toString();
-        } else {
-            feedItemEntity.content = feedEntityDom.toString();
-        }
-
-        readablyDatabase.dao().updateFeedItem(feedItemEntity);
     }
-
 }

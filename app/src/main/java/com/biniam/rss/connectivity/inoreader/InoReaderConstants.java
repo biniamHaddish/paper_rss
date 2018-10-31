@@ -11,6 +11,7 @@ public class InoReaderConstants {
     public static final String TOKEN_TYPE = "TOKEN_TYPE";
     public static final String EXPIRES_IN = "EXPIRES_IN";
     public static final String IS_AUTHENTICATED = "IS_AUTHENTICATED";
+    public static final String REDIRECT_URI="paper://oauth";
 
 
 }

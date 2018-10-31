@@ -3,7 +3,7 @@ package com.biniam.rss.models;
 import android.support.annotation.Keep;
 
 /**
- * Created by  on 5/3/17.
+ * Created by biniam_haddish on 5/3/17.
  * <p>
  * This class represents a data returned by mercury parser
  */

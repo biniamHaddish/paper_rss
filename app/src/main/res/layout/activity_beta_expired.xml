@@ -15,14 +15,15 @@
             android:id="@+id/appIcon"
             android:layout_width="65dp"
             android:layout_height="65dp"
+            android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/readably_icon_minimal" />
+            android:src="@drawable/ic_paper" />
 
 
         <TextView
             android:id="@+id/expiryDescription"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:layout_below="@id/appIcon"
             android:layout_centerHorizontal="true"
             android:layout_marginEnd="@dimen/extra_large_padding"

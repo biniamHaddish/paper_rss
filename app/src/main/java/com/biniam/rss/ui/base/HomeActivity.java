@@ -2,6 +2,7 @@ package com.biniam.rss.ui.base;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
@@ -39,11 +40,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.biniam.rss.R;
-import com.biniam.rss.persistence.db.ReadablyDatabase;
+import com.biniam.rss.persistence.db.PaperDatabase;
 import com.biniam.rss.persistence.db.roomentities.FeedItemEntity;
 import com.biniam.rss.persistence.db.roomentities.SubscriptionEntity;
 import com.biniam.rss.persistence.preferences.InternalStatePrefs;
-import com.biniam.rss.persistence.preferences.ReadablyPrefs;
+import com.biniam.rss.persistence.preferences.PaperPrefs;
 import com.biniam.rss.persistence.preferences.ReadingPrefs;
 import com.biniam.rss.ui.controllers.NavigationItem;
 import com.biniam.rss.ui.controllers.NavigationListAdapter;
@@ -57,7 +58,7 @@ import com.biniam.rss.ui.viewmodels.NavigationTagItemModel;
 import com.biniam.rss.utils.AccountBroker;
 import com.biniam.rss.utils.AutoSyncManagers.FeedBinSyncJobService;
 import com.biniam.rss.utils.ConnectivityState;
-import com.biniam.rss.utils.ReadablyApp;
+import com.biniam.rss.utils.PaperApp;
 import com.biniam.rss.utils.TemplateExtractor;
 import com.biniam.rss.utils.Utils;
 import com.bumptech.glide.Glide;
@@ -98,14 +99,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
     private FeedListViewModel feedListViewModel;
 
     // Room database
-    private ReadablyDatabase readablyDatabase;
+    private PaperDatabase paperDatabase;
 
     private String selectedSubscriptionId;
     private String selectedTagName;
     private boolean allSubscriptionSelected;
 
     private AccountBroker accountBroker;
-    private ReadablyPrefs readablySettings; // App preferences helper
+    private PaperPrefs readablySettings; // App preferences helper
     private ReadingPrefs readingPrefs;
     private RecyclerView feedListRecyclerView;
 
@@ -156,7 +157,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
 
         readingPrefs = ReadingPrefs.getInstance(getApplicationContext());
         accountBroker = AccountBroker.getInstance(getApplicationContext());
-        readablySettings = ReadablyPrefs.getInstance(getApplicationContext());
+        readablySettings = PaperPrefs.getInstance(getApplicationContext());
         internalStatePrefs = InternalStatePrefs.getInstance(getApplicationContext());
 
         // Schedule repeating sync
@@ -166,7 +167,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
         applyTheme(false);
 
         setContentView(R.layout.activity_home_activity);
-        readablyDatabase = ReadablyApp.getInstance().getDatabase();
+        paperDatabase = PaperApp.getInstance().getDatabase();
         feedListViewModel = ViewModelProviders.of(this).get(FeedListViewModel.class);
 
         feedListViewModel.init();
@@ -178,18 +179,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
         });
 
         // Observe changes on tags and subscriptions and showFeedItemsForSubscription the drawer navigation menu accordingly
+
         feedListViewModel.getTagSubscriptionAggregateMediatorLiveData().observe(this, new Observer() {
             @Override
             public void onChanged(@Nullable Object o) {
+                Log.d(TAG, String.format("Live_Data_Changed: ", o.toString()));
                 updateNavigationList();
             }
         });
 
 
-        readablyDatabase.dao().getFeedItemsLiveData().observe(this, new Observer<FeedItemEntity[]>() {
+        paperDatabase.dao().getFeedItemsLiveData().observe(this, new Observer<FeedItemEntity[]>() {
             @Override
             public void onChanged(@Nullable FeedItemEntity[] feedItemEntities) {
                 //if (internalStatePrefs.selectedFeedFilter == InternalStatePrefs.UNREAD)
+                Log.d(TAG, String.format("onChanged_fromdatabaseupdate: ", feedItemEntities.length));
                 restoreStates();
                 updateNavigationList();
                 updateTopDateHeader();
@@ -212,8 +216,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
         intentFilter.addAction(AccountBroker.ACTION_SYNC_STAGE_ITEMS);
         intentFilter.addAction(AccountBroker.ACTION_SYNC_STAGE_IMAGES);
         intentFilter.addAction(AccountBroker.ACTION_SYNC_FINISHED);
-
         registerReceiver(syncStatusBroadcastReceiver, intentFilter);
+
     }
 
     private void setUpToolBar() {
@@ -375,6 +379,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
         }
     }
 
+    @SuppressLint("CheckResult")
     private void restoreStates() {
         // Restore states
 
@@ -392,7 +397,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
             new Observable<String>() {
                 @Override
                 protected void subscribeActual(io.reactivex.Observer<? super String> observer) {
-                    SubscriptionEntity subscriptionEntity = readablyDatabase.dao().getSubscription(selectedSubscriptionId);
+                    SubscriptionEntity subscriptionEntity = paperDatabase.dao().getSubscription(selectedSubscriptionId);
                     if (subscriptionEntity != null) observer.onNext(subscriptionEntity.title);
                 }
             }
@@ -446,6 +451,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
         templatesExtractionHelper.startExtraction();
     }
 
+    @SuppressLint("CheckResult")
     private void updateNavigationList() {
 
         RecyclerView navigationRecyclerView = findViewById(R.id.navigationList);
@@ -457,22 +463,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
         new Observable<List<NavigationItem>>() {
             @Override
             protected void subscribeActual(io.reactivex.Observer<? super List<NavigationItem>> observer) {
-                List<NavigationTagItemModel> tagNames = readablyDatabase.dao().getNavigationTags();
+                List<NavigationTagItemModel> tagNames = paperDatabase.dao().getNavigationTags();
                 List<NavigationItem> tagGroups = new ArrayList<>();
 
                 // Add item to show everything
                 int allCount = 0;
                 if (internalStatePrefs.selectedFeedFilter == InternalStatePrefs.FAVORITES) {
-                    allCount = readablyDatabase.dao().getAllSubscriptionsFavCount();
+                    allCount = paperDatabase.dao().getAllSubscriptionsFavCount();
                 } else {
-                    allCount = readablyDatabase.dao().getAllSubscriptionsUnreadCount();
+                    allCount = paperDatabase.dao().getAllSubscriptionsUnreadCount();
                 }
 
-                NavigationItem everythingNavigationItem = new NavigationItem(new NavigationTagItemModel(getString(R.string.all_subscriptions), allCount), null, null, null);
+                NavigationItem everythingNavigationItem = new NavigationItem(new NavigationTagItemModel(getString(R.string.all_subscriptions), allCount),
+                        null, null, null);
                 everythingNavigationItem.setAllSubscriptions(true);
                 tagGroups.add(everythingNavigationItem);
                 for (NavigationTagItemModel tag : tagNames) {
-                    List<NavigationSubscriptionItemModel> navigationSubscriptions = readablyDatabase.dao().getNavigationSubscriptionsForTag(tag.name);
+                    List<NavigationSubscriptionItemModel> navigationSubscriptions = paperDatabase.dao().getNavigationSubscriptionsForTag(tag.name);
                     List<NavigationSubscriptionItemModel> filteredSubscriptionItemModels = new ArrayList<>();
 
                     List<Integer> count = new ArrayList<>();
@@ -483,9 +490,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                         int subscriptionCount = 0;
 
                         if (internalStatePrefs.selectedFeedFilter == InternalStatePrefs.FAVORITES) {
-                            subscriptionCount = readablyDatabase.dao().getFavCountForSubscription(navigationSubscriptionItemModel.id);
+                            subscriptionCount = paperDatabase.dao().getFavCountForSubscription(navigationSubscriptionItemModel.id);
                         } else {
-                            subscriptionCount = readablyDatabase.dao().getUnreadCountForSubscription(navigationSubscriptionItemModel.id);
+                            subscriptionCount = paperDatabase.dao().getUnreadCountForSubscription(navigationSubscriptionItemModel.id);
                         }
 
                         if ((internalStatePrefs.selectedFeedFilter == InternalStatePrefs.UNREAD ||
@@ -511,14 +518,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                     tagGroups.add(tagGroup);
                 }
 
-                List<NavigationSubscriptionItemModel> untaggedSubscriptionEntities = readablyDatabase.dao().getUntaggedNavigationSubscriptions();
+                List<NavigationSubscriptionItemModel> untaggedSubscriptionEntities = paperDatabase.dao().getUntaggedNavigationSubscriptions();
 
                 for (NavigationSubscriptionItemModel untagged : untaggedSubscriptionEntities) {
 
                     if (internalStatePrefs.selectedFeedFilter == InternalStatePrefs.FAVORITES) {
-                        untagged.count = readablyDatabase.dao().getFavCountForSubscription(untagged.id);
+                        untagged.count = paperDatabase.dao().getFavCountForSubscription(untagged.id);
                     } else {
-                        untagged.count = readablyDatabase.dao().getUnreadCountForSubscription(untagged.id);
+                        untagged.count = paperDatabase.dao().getUnreadCountForSubscription(untagged.id);
                     }
 
                     // Remove tags with zero unread items when unread filter is selected
@@ -536,7 +543,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                     @Override
                     public void onNext(List<com.biniam.rss.ui.controllers.NavigationItem> navigationItems) {
 
-                        NavigationListAdapter listAdapter = new NavigationListAdapter(navigationItems, HomeActivity.this, internalStatePrefs.expandedNavTags);
+                        Log.d(TAG, String.format("navigationItems_warbling: ",navigationItems.iterator().next().getUnreadCount() ));
+                        NavigationListAdapter listAdapter = new NavigationListAdapter(navigationItems,
+                                HomeActivity.this, internalStatePrefs.expandedNavTags);
                         navigationRecyclerView.setAdapter(listAdapter);
 
                         if (selectedTagName != null) {
@@ -556,6 +565,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
 
                     @Override
                     public void onComplete() {
+                        Log.d(TAG, "onComplete: ");
                     }
                 });
     }
@@ -655,7 +665,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                 new Completable() {
                     @Override
                     protected void subscribeActual(CompletableObserver s) {
-                        SubscriptionEntity subscriptionEntity = readablyDatabase.dao().getSubscription(selectedSubscriptionId);
+                        SubscriptionEntity subscriptionEntity = paperDatabase.dao().getSubscription(selectedSubscriptionId);
                         Intent intent = new Intent(HomeActivity.this, EditSubscriptionActivity.class);
                         intent.putExtra(EditSubscriptionActivity.SAVED_SUBSCRIPTION_ITEM_KEY, (Serializable) subscriptionEntity);
                         startActivity(intent);
@@ -767,6 +777,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
         super.onConfigurationChanged(newConfig);
     }
 
+    @SuppressLint("CheckResult")
     private void startSyncService() {
 
         if (accountBroker.isAccountSyncServiceRunning()) {
@@ -788,7 +799,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                 new Observable<List<String>>() {
                     @Override
                     protected void subscribeActual(io.reactivex.Observer<? super List<String>> observer) {
-                        observer.onNext(readablyDatabase.dao().getSubscriptionIdsForTag(selectedTagName));
+                        observer.onNext(paperDatabase.dao().getSubscriptionIdsForTag(selectedTagName));
                     }
                 }.subscribeOn(Schedulers.io()).subscribeWith(new DisposableObserver<List<String>>() {
                     @Override
@@ -812,7 +823,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                 new Observable<List<String>>() {
                     @Override
                     protected void subscribeActual(io.reactivex.Observer<? super List<String>> observer) {
-                        observer.onNext(readablyDatabase.dao().getAllSubscriptionIds());
+                        observer.onNext(paperDatabase.dao().getAllSubscriptionIds());
                     }
                 }.subscribeOn(Schedulers.io()).subscribeWith(new DisposableObserver<List<String>>() {
                     @Override
@@ -936,15 +947,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
             @Override
             protected void subscribeActual(io.reactivex.Observer<? super Boolean> observer) {
                 if (selectedTagName != null) {
-                    FeedItemEntity[] feedItemEntities = readablyDatabase.dao().getAllFeedItemsForTag(selectedTagName);
+                    FeedItemEntity[] feedItemEntities = paperDatabase.dao().getAllFeedItemsForTag(selectedTagName);
                     observer.onNext(
                             feedItemEntities == null || feedItemEntities.length == 0);
                 } else if (selectedSubscriptionId != null) {
-                    FeedItemEntity[] feedItemEntities = readablyDatabase.dao().getAllFeedItemsForSubscription(selectedSubscriptionId);
+                    FeedItemEntity[] feedItemEntities = paperDatabase.dao().getAllFeedItemsForSubscription(selectedSubscriptionId);
                     observer.onNext(
                             feedItemEntities == null || feedItemEntities.length == 0);
                 } else {
-                    FeedItemEntity[] feedItemEntities = readablyDatabase.dao().getAllFeedItems();
+                    FeedItemEntity[] feedItemEntities = paperDatabase.dao().getAllFeedItems();
                     observer.onNext(
                             feedItemEntities == null || feedItemEntities.length == 0);
                 }
@@ -960,7 +971,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                         } else {
                             switch (internalStatePrefs.selectedFeedFilter) {
                                 case InternalStatePrefs.FAVORITES:
-                                    emptyViewImageView.setImageResource(R.drawable.ic_favorite_feeds_24dp);
+                                    emptyViewImageView.setImageResource(R.drawable.ic_star_24dp);
                                     if (allSubscriptionSelected) {
                                         emptyViewTextView.setText(getString(R.string.empty_favs_message));
                                     } else {
@@ -970,7 +981,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                                     }
                                     break;
                                 case InternalStatePrefs.UNREAD:
-                                    emptyViewImageView.setImageResource(R.drawable.ic_hammock_relaxing_);
+                                    emptyViewImageView.setImageResource(R.drawable.ic_rss_logo);
                                     if (allSubscriptionSelected) {
                                         emptyViewTextView.setText(getString(R.string.all_caught_up_message));
                                     } else {
@@ -1116,7 +1127,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                     new Completable() {
                         @Override
                         protected void subscribeActual(CompletableObserver s) {
-                            readablyDatabase.dao().
+                            paperDatabase.dao().
                                     toggleFeedItemFavStatus(feedItem.id, !feedItem.favorite, System.currentTimeMillis());
                         }
                     }.subscribeOn(Schedulers.io())
@@ -1126,7 +1137,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                                 public void onComplete() {
                                     togglefavStatusItem.setImageResource(feedItem.favorite ?
                                             R.drawable.ic_favorite_feeds_24dp :
-                                            R.drawable.ic_favorite_border_black_24dp);
+                                            R.drawable.ic_star_border_white_24dp);
                                 }
 
                                 @Override
@@ -1141,7 +1152,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                     new Completable() {
                         @Override
                         protected void subscribeActual(CompletableObserver s) {
-                            readablyDatabase.dao()
+                            paperDatabase.dao()
                                     .toggleFeedItemReadStatus(feedItem.id, !feedItem.read, System.currentTimeMillis());
 
                         }
@@ -1151,8 +1162,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
                                 @Override
                                 public void onComplete() {
                                     toggleReadStatusItem.setImageResource(feedItem.read ?
-                                            R.drawable.ic_read_24dp :
-                                            R.drawable.ic_unread_24dp);
+                                            R.drawable.ic_nav_unread :
+                                            R.drawable.ic_unread_white_24dp);
                                 }
 
                                 @Override
@@ -1203,12 +1214,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
             this.feedItem = feedListItemModel;
 
             togglefavStatusItem.setImageResource(feedItem.favorite ?
-                    R.drawable.ic_favorite_feeds_24dp :
-                    R.drawable.ic_favorite_border_black_24dp);
+                    R.drawable.ic_star_orange500_24dp :
+                    R.drawable.ic_star_border_white_24dp);
 
             toggleReadStatusItem.setImageResource(feedItem.read ?
-                    R.drawable.ic_read_24dp :
-                    R.drawable.ic_unread_24dp);
+                    R.drawable.ic_read_black_24dp :
+                    R.drawable.ic_unread_white_24dp);
 
             feedItemTitle.setText(feedListItemModel.title.trim());
 
@@ -1371,6 +1382,4 @@ public class HomeActivity extends AppCompatActivity implements NavigationSelecti
             }
         }
     }
-
-
 }

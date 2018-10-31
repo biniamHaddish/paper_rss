@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by biniam on 28/8/17.
@@ -81,5 +82,28 @@ public final class DateUtils {
 
         return null;
     }
+
+    public  static long numDaysToMiliSec(long numDays) {
+        long result = 0;
+        switch ((int) numDays) {
+            case 1:
+                result = TimeUnit.DAYS.toMillis(numDays);
+                break;
+            case 2:
+                result = TimeUnit.DAYS.toMillis(numDays);
+                break;
+            case 7:
+                result = TimeUnit.DAYS.toMillis(numDays);
+                break;
+            case 30:
+                result = TimeUnit.DAYS.toMillis(numDays);
+                break;
+            default:
+                result = 0;
+                break;
+        }
+        return result;
+    }
+
 
 }
